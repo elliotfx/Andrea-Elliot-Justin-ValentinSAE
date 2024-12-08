@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Indicators</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="title">Select a Doctor</div>
+
+    <div id="doctor-select-container">
+        <label for="doctor-select">Choose a doctor:</label>
+        <select id="doctor-select">
+            <!-- Options will be populated dynamically -->
+        </select>
+    </div>
+
+    <div id="doctor-indicators-container">
+        <div class="chart-title">Consultations per Month</div>
+        <svg id="consultations-chart" width="1000" height="500"></svg>
+        <!-- Add more indicators here as needed -->
+    </div>
+
+    <script src="doctorIndicators.js"></script>
+</body>
+</html>

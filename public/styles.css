@@ -1,0 +1,413 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.title {
+    font-size: 24px;
+    text-align: center;
+    margin: 20px 0;
+    color: #333;
+}
+
+/* Menu latéral */
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 60px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px 15px;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #575757;
+    color: #fff;
+}
+
+/* Style du bouton d'ouverture/fermeture */
+.menu-icon {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+/* Transition pour le menu */
+#menu-toggle.open + .sidebar {
+    width: 250px;
+}
+
+/* Ajustement des sections lorsque le menu est ouvert */
+body.with-sidebar {
+    margin-left: 250px;
+    transition: margin-left 0.3s;
+}
+
+/* Mobile-friendly */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 0;
+    }
+    #menu-toggle.open + .sidebar {
+        width: 200px;
+    }
+    body.with-sidebar {
+        margin-left: 200px;
+    }
+}
+
+/* Stats Card Container */
+#stats-card-container {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+    padding: 0 20px;
+    flex-wrap: wrap;
+}
+
+.stats-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    width: 30%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #666;
+    min-height: 60px; /* Ensure uniform height for the titles */
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Vertically align the text */
+}
+
+.stats-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+}
+
+/* Charts Container */
+.charts-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+
+.chart-container {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    width: 65%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+/* Ajustement de la marge pour réduire l'espace entre le graphique et le texte */
+.chart-description, .chart-interpretation {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+/* SVG Chart Styles */
+svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Tooltip styling */
+.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 8px;
+    font: 12px sans-serif;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s;
+}
+
+/* Legend styling */
+.legend rect {
+    stroke-width: 0;
+}
+
+.legend text {
+    font-size: 12px;
+    fill: #333;
+}
+
+/* Specific Styles for Visits and Revenue per Month Chart */
+#visits-revenue-chart .bar {
+    fill: steelblue;
+}
+
+#visits-revenue-chart .line {
+    fill: none;
+    stroke: orange;
+    stroke-width: 2px;
+}
+
+#visits-revenue-chart .axis-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Specific Styles for Consultations per Doctor Chart */
+#consultations-chart .bar {
+    fill: steelblue;
+}
+
+#consultations-chart .line-new-patients {
+    fill: none;
+    stroke: blue;
+    stroke-width: 2px;
+}
+
+#consultations-chart .line-returning-patients {
+    fill: none;
+    stroke: green;
+    stroke-width: 2px;
+}
+
+#consultations-chart .axis-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Specific Styles for Evolution of Patients with at least Two Visits Chart */
+#patient-visits-chart .bar-one-visit {
+    fill: #4682B4; /* SteelBlue for one visit */
+}
+
+#patient-visits-chart .bar-two-visits {
+    fill: #32CD32; /* LimeGreen for two visits */
+}
+
+#patient-visits-chart .line-two-visits {
+    fill: none;
+    stroke: #896F94; /* Custom color for cumulative two visits */
+    stroke-width: 3px;
+}
+
+#patient-visits-chart .line-one-visit {
+    fill: none;
+    stroke: #FF0000; /* Red for cumulative one visit */
+    stroke-width: 3px;
+}
+
+#patient-visits-chart .axis-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Specific Styles for Doctor Indicators Chart */
+#doctor-indicators-chart .bar {
+    fill: steelblue;
+}
+
+#doctor-indicators-chart .line-new-patients {
+    fill: none;
+    stroke: blue;
+    stroke-width: 2px;
+}
+
+#doctor-indicators-chart .line-returning-patients {
+    fill: none;
+    stroke: green;
+    stroke-width: 2px;
+}
+
+#doctor-indicators-chart .axis-label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Table Styles */
+.table-container {
+    margin: 40px 0 40px 0; 
+    width: 80%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 20px;
+}
+
+/* Style du tableau */
+#actes-table, #medecins-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+}
+
+#actes-table thead, #medecins-table thead {
+    background-color: #f4f4f4;
+    color: #333;
+    font-weight: bold;
+}
+
+#actes-table th, #actes-table td, #medecins-table th, #medecins-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+}
+
+#actes-table th, #medecins-table th {
+    text-align: left;
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+#actes-table tbody tr:nth-child(even), #medecins-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#actes-table tbody tr:hover, #medecins-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+#actes-table .text-right, #medecins-table .text-right {
+    text-align: right;
+}
+
+#actes-table .highlight, #medecins-table .highlight {
+    font-weight: bold;
+    color: #007BFF; /* Couleur de mise en évidence */
+}
+
+/* Responsive Design for Table */
+@media (max-width: 768px) {
+    #acts-table, #acts-table thead, #acts-table tbody, #acts-table th, #acts-table td, #acts-table tr {
+        display: block;
+    }
+
+    #acts-table th {
+        display: none;
+    }
+
+    #acts-table td {
+        position: relative;
+        padding-left: 50%;
+        text-align: left;
+    }
+
+    #acts-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+    }
+
+    .table-container {
+        width: 100%;
+    }
+}
+
+/* Responsive Table Design */
+@media (max-width: 768px) {
+    #actes-table, #actes-table thead, #actes-table tbody, #actes-table th, #actes-table td, #actes-table tr,
+    #medecins-table, #medecins-table thead, #medecins-table tbody, #medecins-table th, #medecins-table td, #medecins-table tr {
+        display: block;
+    }
+
+    #actes-table th, #medecins-table th {
+        display: none; /* Masquer les en-têtes dans la version mobile */
+    }
+
+    #actes-table td, #medecins-table td {
+        position: relative;
+        padding-left: 50%;
+        text-align: left;
+    }
+
+    #actes-table td::before, #medecins-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+    }
+
+    .table-container {
+        width: 100%;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .charts-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .chart-container {
+        width: 90%;
+    }
+
+    #stats-card-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stats-card {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+}

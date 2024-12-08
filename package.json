@@ -1,0 +1,19 @@
+{
+  "name": "kbmdocv2",
+  "version": "1.0.0",
+  "description": "Node.js application for KBMDocV2",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql2": "^3.11.1",
+    "jsonwebtoken": "^9.0.0", 
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.0",
+    "luxon": "^3.0.0"
+  }
+}

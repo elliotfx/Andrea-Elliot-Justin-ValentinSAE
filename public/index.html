@@ -1,0 +1,210 @@
+<!-- Index.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord de la clinique</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <!-- Bouton pour ouvrir/fermer le menu -->
+    <div id="menu-toggle" class="menu-icon">
+        &#9776; <!-- Icône hamburger -->
+    </div>
+
+    <!-- Menu latéral -->
+    <nav id="sidebar" class="sidebar">
+        <ul>
+            <li><a href="#stats-card-container">Indicateurs</a></li>
+            <li><a href="#visits-revenue-chart">Visites et Revenus</a></li>
+            <li><a href="#patient-visits-chart">Évolution des Patients</a></li>
+            <li><a href="#hourly-revenue-heatmap">Revenus Horaires</a></li>
+            <li><a href="#actes-table">Tableau des Actes</a></li>
+            <li><a href="#medecins-table">Performance des Médecins</a></li>
+            <li><a href="#tarif-heure-chart">Tarif et Temps Travaillé</a></li>
+            <li><a href="#waiting-time-monthly-chart">Temps d'Attente Clinique</a></li>
+            <li><a href="#waiting-time-doctors-chart">Temps d'Attente Médecin</a></li>
+            <li><a href="#stacked-bar-chart">Rendez-vous</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenu principal -->
+    <div class="title">Tableau de bord des performances de la clinique
+        <div class="period-selector">
+            <label for="start-date">Début :</label>
+            <input type="date" id="start-date" name="start-date">
+        
+            <label for="end-date">Fin :</label>
+            <input type="date" id="end-date" name="end-date">
+        
+            <button id="apply-period">Appliquer</button>
+        </div>
+    </div>
+
+    <!-- Section des indicateurs -->
+    <div id="stats-card-container">
+        <div class="stats-card">
+            <div class="stats-title">Nombre de patients</div>
+            <div class="stats-value" id="total_patients">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Nombre de visites</div>
+            <div class="stats-value" id="total-visits">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Chiffre d'affaires</div>
+            <div class="stats-value" id="CA">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">CA par Heure</div>
+            <div class="stats-value" id="CA_Per_hour">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Nouveaux patients</div>
+            <div class="stats-value" id="new-patients">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Patients fidèles</div>
+            <div class="stats-value" id="loyal-patients">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Nouveaux patients revenants</div>
+            <div class="stats-value" id="new-patients-continued">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Rendez-vous planifiés</div>
+            <div class="stats-value" id="total_rendez_vous">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Temps d'attente moyen</div>
+            <div class="stats-value" id="avg-waiting-time">Chargement...</div>
+        </div>
+    </div>
+
+    <!-- Première visualisation : Visites et revenus par mois -->
+    <div class="chart-container">
+        <div class="chart-title">Analyse de la relation entre le nombre de visites et les revenus par mois</div>
+        <svg id="visits-revenue-chart"></svg>
+    </div>
+
+    <!-- Deuxième visualisation : Évolution des patients avec au moins deux visites -->
+    <div class="chart-container">
+        <div class="chart-title">Évolution des patients avec au moins deux visites</div>
+        <svg id="patient-visits-chart"></svg>
+    </div>
+
+    <!-- Visualisation: Heatmap des revenus horaires -->
+    <div class="chart-container">
+        <div class="chart-title">Analyse des revenus par tranche horaire et par mois</div>
+        <svg id="hourly-revenue-heatmap"></svg>
+    </div>
+
+    <!-- Visualisation : Heatmap pour les patients uniques -->
+    <div class="chart-container">
+        <div class="chart-title">Analyse du nombre de patients uniques ayant visité la clinique pendant chaque créneau horaire</div>
+        <svg id="unique-patients-heatmap"></svg>
+    </div>
+
+    <!-- Visualisation : Heatmap des visites successives -->
+    <div class="chart-container">
+        <div class="chart-title">Analyse du nombre de visites supplémentaires après la première visite par tranche horaire</div>
+        <svg id="subsequent-visits-heatmap"></svg>
+    </div>
+
+    <!-- Tableau des Actes Dentaires -->
+    <div class="title">Tableau des Actes Dentaires</div>
+    <div class="table-container">
+        <h2>Analyse des Actes Dentaires</h2>
+        <table id="actes-table">
+            <thead>
+                <tr>
+                    <th>Acte</th>
+                    <th>Patients Uniques</th>
+                    <th>Total Visites</th>
+                    <th>Chiffre d'Affaires (DA)</th>
+                    <th>Total Heures</th>
+                    <th>Coût Moyen par Heure (DA)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les données seront injectées ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h2>Performance par Médecin</h2>
+        <table id="medecins-table">
+            <thead>
+                <tr>
+                    <th>Médecin</th>
+                    <th>Consultations</th>
+                     <th>Chiffre d'Affaires (DA)</th>
+                    <th>Coût par Consultation (DA)</th>
+                    <th>Total Heures</th>
+                    <th>Tarif par Heure (DA)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les données seront injectées ici via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Comparaison du tarif et du temps de travail -->
+    <div class="chart-container">
+        <h2>Comparaison du Tarif par Heure et du Temps Travaillé</h2>
+        <svg id="tarif-heure-chart" width="800" height="500"></svg>
+    </div>
+
+    <!-- Temps d'attente moyen par mois -->
+    <div class="chart-container">
+        <h2>Temps d'Attente Moyen (Clinique)</h2>
+        <svg id="waiting-time-monthly-chart"></svg>
+    </div>
+    
+    <!-- Temps d'attente moyen par médecin -->
+    <div class="chart-container">
+        <h2>Temps d'Attente Moyen par Médecin</h2>
+        <svg id="waiting-time-doctors-chart"></svg>
+    </div>
+    
+    <!-- Temps d'attente moyen par plage horaire -->
+    <div class="chart-container">
+        <h2>Temps d'Attente Moyen par Plage Horaire et par Mois</h2>
+        <svg id="waiting-time-heatmap"></svg>
+    </div>
+
+    <!-- Analyse des rendez-vous -->
+    <div class="chart-container">
+        <h2>Analyse des rendez-vous</h2>
+        <svg id="stacked-bar-chart"></svg>
+    </div>
+
+    <!-- Scripts pour les visualisations -->
+    <script type="module"  src="./clinic/visitsRevenue.js"></script>
+    <script type="module"  src="./clinic/patientVisits.js"></script>
+    <script type="module"  src="./clinic/consultations.js"></script>
+    <script type="module"  src="./clinic/heatmap.js"></script>
+    <script type="module"  src="./clinic/hourlyRevenueHeatmap.js"></script>
+    <script type="module"  src="./clinic/actesTable.js"></script>
+    <script type="module"  src="./clinic/stats.js"></script>
+    <script type="module"  src="./clinic/medecinsPerformance.js"></script>
+    <script type="module"  src="./clinic/waitingTimes.js"></script>
+    <script type="module"  src="./clinic/heatmap-waiting-time.js"></script>
+    <script type="module"  src="./clinic/rendezvous.js"></script>
+    <script type="module"  src="./clinic/main.js"></script><!-- New JS file for doctor performance -->
+    <script type="module"  src="./utilities/utils.js"></script>
+
+</body>
+</html>

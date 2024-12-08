@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse des Performances des Médecins</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Reusing existing styles -->
+    <script src="https://d3js.org/d3.v7.min.js"></script> <!-- Include D3.js for charts -->
+</head>
+<body>
+
+    <div class="title">Analyse des Performances des Médecins</div>
+
+    <!-- Form to select the doctor and time range -->
+    <div class="period-selector">
+        <label for="doctor-select">Sélectionnez un médecin :</label>
+        <select id="doctor-select">
+            <!-- Dynamic doctor options will be loaded here -->
+        </select>
+
+        <label for="start-date">Début :</label>
+        <input type="date" id="start-date" name="start-date">
+        
+        <label for="end-date">Fin :</label>
+        <input type="date" id="end-date" name="end-date">
+        
+        <button id="apply-period">Appliquer</button>
+    </div>
+
+    <!-- Section for displaying the performance indicators -->
+    <div id="stats-card-container">
+        <!-- Existing Indicators -->
+        <div class="stats-card">
+            <div class="stats-title">#Patients uniques</div>
+            <div class="stats-value" id="unique-patients">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">#Visites</div>
+            <div class="stats-value" id="total-visits">Chargement...</div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-title">#Patients (pas de retour)</div>
+            <div class="stats-value" id="patients-premiere-visite-pas-retour">Chargement...</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-title">#Nouveaux patients</div>
+            <div class="stats-value" id="new-patients">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">#Visites générées par les nouveaux patients</div>
+            <div class="stats-value" id="visits-generated-by-new-patients">Chargement...</div>
+        </div>
+         <!-- New indicators based on your SQL query -->
+         <div class="stats-card">
+            <div class="stats-title">#Patients (1ère visite - clinique)</div>
+            <div class="stats-value" id="patients-premiere-visite">Chargement...</div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-title">#Visites générées (1ère visite - clinique)</div>
+            <div class="stats-value" id="visites-premiere-visite">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Patients fidèles</div>
+            <div class="stats-value" id="loyal-patients">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Visites de suivi des patients fidèles</div>
+            <div class="stats-value" id="follow-up-visits">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Total des revenus</div>
+            <div class="stats-value" id="total-revenue-consultations">Chargement...</div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-title">#heures patient</div>
+            <div class="stats-value" id="total-hours-worked">Chargement...</div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-title">CA par heure</div>
+            <div class="stats-value" id="revenue-per-hour">Chargement...</div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-title">Temps Patient moyen</div>
+            <div class="stats-value" id="hours-worked">Chargement...</div>
+        </div>
+
+        <!-- New card for average waiting time -->
+        <div class="stats-card">
+            <div class="stats-title">Temps d'attente moyen</div>
+            <div class="stats-value" id="avg-waiting-time">Chargement...</div>
+        </div>
+    </div>
+    <div class="chart-container">
+        <div class="chart-title">Analyse de la relation entre le nombre de visites et les revenus par mois</div>
+        <svg id="visits-revenue-chart"></svg>
+    </div>
+
+    
+    <!-- Table for showing the number of acts -->
+    <div class="table-container">
+        <h2>Nombre d'actes effectués</h2>
+        <table id="actes-table">
+            <thead>
+                <tr>
+                    <th>Acte</th>
+                    <th>Nombre de patients</th>
+                    <th>Nombre d'actes</th>
+                    <th>Total des revenus (DA)</th>
+                    <th>Total Heures</th>
+                    <th>Coût Moyen par Heure (DA)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic rows will be appended here -->
+            </tbody>
+        </table>
+    </div>
+   
+    <div class="chart-container">
+        <div class="chart-title">Analyse de la fidélité des patients</div>
+        <svg id="patients-chart"></svg> <!-- Correction de l'ID et structure -->
+    </div>
+    
+    <!-- Section for charts (e.g., performance evolution over time) -->
+    <div class="chart-container">
+        <div class="chart-title">Évolution du Temps</div>
+        <svg id="performance-chart"></svg> <!-- Updated title for time analysis -->
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">Génération des rendez-vous</div>
+        <svg id="appointments-chart"></svg> 
+    </div>
+    <div class="chart-container"></div>
+        <div class="chart-title">Génération des rendez-vous</div>
+        <svg id="work-time-chart"></svg> 
+    </div>
+    <div class="chart-container">
+        <h2>Temps d'Attente Moyen par Plage Horaire et par Mois</h2>
+        <svg id="waiting-time-heatmap"></svg>
+    </div>
+    <!-- Include your JavaScript file -->
+    <script type="module" src="./doctor/main.js"></script><!-- New JS file for doctor performance -->
+    <script type="module" src="./utilities/utils.js"></script>
+</body>
+</html>
