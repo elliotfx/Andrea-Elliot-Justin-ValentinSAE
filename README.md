@@ -13,8 +13,9 @@ Le centre dentaire "MYDental" est doté d'une application BI permettant de suivr
 ---
 
 ## **Installation**  
+1. Décompressez le fichier `import.sql.zip`  
 
-1. Lancez l'application avec Docker Compose :  
+2. Lancez l'application avec Docker Compose :  
    ```bash
    docker-compose up --build
    ```
