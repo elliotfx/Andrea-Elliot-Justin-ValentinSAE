@@ -12,6 +12,12 @@ services:
       MYSQL_DATABASE: kbmdocv2
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   app:
     build:
@@ -19,7 +25,8 @@ services:
       dockerfile: Dockerfile
     container_name: node-app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "3000:3000"
     command: sh start-app.sh
