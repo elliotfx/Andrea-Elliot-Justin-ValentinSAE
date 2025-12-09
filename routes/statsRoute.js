@@ -167,18 +167,17 @@ module.exports = (connection) => {
         });
       });
 
-      // Requête 12 : Taux de non-présentation (no-show rate)
-      const noShowRate = new Promise((resolve, reject) => {
+      // Requête 12 : Visite moyenne par patient
+      const avgVisitsPerPatient = new Promise((resolve, reject) => {
         const query = `
           SELECT 
               ROUND(
-                  ((SELECT COUNT(*) FROM patient_service_event WHERE dateTaking BETWEEN ? AND ?) -
-                   (SELECT COUNT(DISTINCT v.id) FROM visit v WHERE v.currentLocalTimeAssignment BETWEEN ? AND ?)) /
-                  NULLIF((SELECT COUNT(*) FROM patient_service_event WHERE dateTaking BETWEEN ? AND ?), 0) * 100,
+                  (SELECT COUNT(DISTINCT v.id) FROM visit v WHERE v.currentLocalTimeAssignment BETWEEN ? AND ?) /
+                  NULLIF((SELECT COUNT(DISTINCT v.patient_id) FROM visit v WHERE v.currentLocalTimeAssignment BETWEEN ? AND ?), 0),
                   2
-              ) AS no_show_rate;
+              ) AS avg_visits_per_patient;
         `;
-        connection.query(query, [startDate, endDate, startDate, endDate, startDate, endDate], (error, results) => {
+        connection.query(query, [startDate, endDate, startDate, endDate], (error, results) => {
           if (error) return reject(error);
           resolve(results[0]);
         });
@@ -195,7 +194,7 @@ module.exports = (connection) => {
         takedVisits,
         avgRevenuePerVisit,
         avgVisitDuration,
-        noShowRate
+        avgVisitsPerPatient
       ]);
 
       // Envoi des résultats en réponse
@@ -211,7 +210,7 @@ module.exports = (connection) => {
         taked_visits: results[6].taked_visits,
         avg_revenue_per_visit: results[7].avg_revenue_per_visit || 0,
         avg_visit_duration: results[8].avg_visit_duration || 0,
-        no_show_rate: results[9].no_show_rate || 0
+        avg_visits_per_patient: results[9].avg_visits_per_patient || 0
       });
 
     } catch (error) {
