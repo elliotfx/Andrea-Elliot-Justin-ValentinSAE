@@ -121,7 +121,8 @@ body.with-sidebar {
     transition: transform 0.2s ease-in-out;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 15px;
     flex: 1;
 }
@@ -140,6 +141,7 @@ body.with-sidebar {
     justify-content: center;
     align-items: center;
     font-weight: 600;
+    text-align: center;
 }
 
 .stats-value {
@@ -147,6 +149,7 @@ body.with-sidebar {
     font-weight: bold;
     color: #4CAF50;
     margin-top: 10px;
+    text-align: center;
 }
 
 /* Charts Container */
