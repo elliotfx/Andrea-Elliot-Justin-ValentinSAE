@@ -368,8 +368,28 @@ function generateProfitabilityTable(actePrice) {
     }
     
     // Définir les pourcentages
-    const doctorPercentages = [20, 25, 30, 35, 40, 45, 50, 55, 60];
-    const centerPercentages = [10, 15, 20, 25, 30, 35, 40, 45, 50];
+    let doctorPercentages = [20, 25, 30, 35, 40, 45, 50, 55, 60];
+    let centerPercentages = [10, 15, 20, 25, 30, 35, 40, 45, 50];
+    
+    // Ajouter les pourcentages personnalisés s'ils existent
+    const customDoctorPct = document.getElementById('custom-doctor-pct');
+    const customCenterPct = document.getElementById('custom-center-pct');
+    
+    if (customDoctorPct && customDoctorPct.value && !isNaN(customDoctorPct.value)) {
+        const customDocValue = parseInt(customDoctorPct.value);
+        if (customDocValue >= 0 && customDocValue <= 100 && !doctorPercentages.includes(customDocValue)) {
+            doctorPercentages.push(customDocValue);
+            doctorPercentages.sort((a, b) => a - b);
+        }
+    }
+    
+    if (customCenterPct && customCenterPct.value && !isNaN(customCenterPct.value)) {
+        const customCenValue = parseInt(customCenterPct.value);
+        if (customCenValue >= 0 && customCenValue <= 100 && !centerPercentages.includes(customCenValue)) {
+            centerPercentages.push(customCenValue);
+            centerPercentages.sort((a, b) => a - b);
+        }
+    }
     
     // Créer les en-têtes de colonnes
     thead.innerHTML = '<th style="background-color: #2c3e50; color: white; padding: 12px; border: 1px solid #ddd;">% Médecin \\ % Centre</th>';
@@ -396,7 +416,7 @@ function generateProfitabilityTable(actePrice) {
         // Autres colonnes : rentabilité
         centerPercentages.forEach(centerPct => {
             const cell = document.createElement('td');
-            cell.style.cssText = 'padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold;';
+            cell.style.cssText = 'padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold; transition: transform 0.2s, box-shadow 0.2s;';
             
             const total = doctorPct + centerPct;
             
@@ -437,30 +457,32 @@ function generateProfitabilityTable(actePrice) {
                 cell.style.cursor = 'pointer';
                 cell.textContent = `${profitMargin.toFixed(0)}%`;
                 
-                // Créer le contenu du tooltip
-                const tooltipContent = `
-                    <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #4fc3f7; padding-bottom: 5px;">
-                        📊 Détails de la rentabilité
-                    </div>
-                    <div><strong>Prix de l'acte :</strong> ${actePrice.toFixed(2)} €</div>
-                    <div style="margin-top: 8px; color: #ffab91;">
-                        <strong>💰 Coût médecin (${doctorPct}%) :</strong> ${doctorCost.toFixed(2)} €
-                    </div>
-                    <div style="color: #90caf9;">
-                        <strong>🏥 Coût centre (${centerPct}%) :</strong> ${centerCost.toFixed(2)} €
-                    </div>
-                    <div style="margin-top: 8px; border-top: 1px solid #555; padding-top: 8px;">
-                        <strong>Total des coûts :</strong> ${(doctorCost + centerCost).toFixed(2)} €
-                    </div>
-                    <div style="font-size: 15px; font-weight: bold; color: #81c784; margin-top: 8px;">
-                        <strong>✅ Marge nette :</strong> ${profit.toFixed(2)} € (${profitMargin.toFixed(1)}%)
-                    </div>
-                `;
-                
-                // Ajouter les événements inline
+                // Effet hover pour la heatmap interactive
                 cell.onmouseenter = function(e) {
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+                    this.style.zIndex = '100';
+                    
                     const tooltip = document.getElementById('cell-tooltip');
                     if (tooltip) {
+                        const tooltipContent = `
+                            <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #4fc3f7; padding-bottom: 5px;">
+                                📊 Détails de la rentabilité
+                            </div>
+                            <div><strong>Prix de l'acte :</strong> ${actePrice.toFixed(2)} €</div>
+                            <div style="margin-top: 8px; color: #ffab91;">
+                                <strong>💰 Coût médecin (${doctorPct}%) :</strong> ${doctorCost.toFixed(2)} €
+                            </div>
+                            <div style="color: #90caf9;">
+                                <strong>🏥 Coût centre (${centerPct}%) :</strong> ${centerCost.toFixed(2)} €
+                            </div>
+                            <div style="margin-top: 8px; border-top: 1px solid #555; padding-top: 8px;">
+                                <strong>Total des coûts :</strong> ${(doctorCost + centerCost).toFixed(2)} €
+                            </div>
+                            <div style="font-size: 15px; font-weight: bold; color: #81c784; margin-top: 8px;">
+                                <strong>✅ Marge nette :</strong> ${profit.toFixed(2)} € (${profitMargin.toFixed(1)}%)
+                            </div>
+                        `;
                         tooltip.innerHTML = tooltipContent;
                         tooltip.style.position = 'fixed';
                         tooltip.style.left = (e.clientX + 15) + 'px';
@@ -479,6 +501,10 @@ function generateProfitabilityTable(actePrice) {
                 };
                 
                 cell.onmouseleave = function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = 'none';
+                    this.style.zIndex = 'auto';
+                    
                     const tooltip = document.getElementById('cell-tooltip');
                     if (tooltip) {
                         tooltip.style.display = 'none';
