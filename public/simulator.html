@@ -166,6 +166,43 @@
         .result-card.negative .result-value {
             color: #c62828;
         }
+        
+        .result-subtitle {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-bottom: 8px;
+        }
+        
+        .cell-tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            z-index: 10000;
+            pointer-events: none;
+            max-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+        }
+        
+        .cell-tooltip.show {
+            display: block;
+        }
+        
+        .cell-tooltip div {
+            margin: 5px 0;
+        }
+        
+        .cell-tooltip strong {
+            color: #4fc3f7;
+        }
+        
+        #profitability-table td {
+            position: relative;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -196,53 +233,73 @@
 
         <!-- Section des pourcentages -->
         <div class="section" id="percentage-section" style="display: none;">
-            <h2>📊 Paramètres de Rentabilité</h2>
+            <h2>📊 Saisir le Prix de l'Acte</h2>
             <div class="dropdown-container">
                 <div class="dropdown-box">
                     <label for="acte-price">Prix de l'acte (€) :</label>
                     <input type="number" id="acte-price" min="0" step="0.01" placeholder="Ex: 100.00">
-                </div>
-                <div class="dropdown-box">
-                    <label for="doctor-percentage">Pourcentage de rémunération du médecin (%) :</label>
-                    <input type="number" id="doctor-percentage" min="0" max="100" step="0.1" placeholder="Ex: 40">
-                </div>
-                <div class="dropdown-box">
-                    <label for="center-percentage">Pourcentage de coût pour le centre (%) :</label>
-                    <input type="number" id="center-percentage" min="0" max="100" step="0.1" placeholder="Ex: 30">
+                    <div id="average-price-info" style="margin-top: 10px; padding: 10px; background: #e3f2fd; border-radius: 4px; font-size: 14px; display: none;">
+                        <strong>💡 Suggestion :</strong> <span id="average-price-text">Chargement...</span>
+                    </div>
                 </div>
             </div>
             <div style="text-align: center; margin-top: 20px;">
-                <button id="calculate-btn" class="btn-validate">Calculer la rentabilité</button>
+                <button id="calculate-btn" class="btn-validate">Générer le tableau de rentabilité</button>
             </div>
         </div>
 
-        <!-- Section des résultats -->
-        <div class="section" id="results-section" style="display: none;">
-            <h2>💰 Résultats de la Rentabilité</h2>
-            <div class="results-grid">
-                <div class="result-card">
-                    <div class="result-label">Prix de l'acte</div>
-                    <div class="result-value" id="result-price">0.00 €</div>
-                </div>
-                <div class="result-card">
-                    <div class="result-label">Coût médecin</div>
-                    <div class="result-value" id="result-doctor-cost">0.00 €</div>
-                </div>
-                <div class="result-card">
-                    <div class="result-label">Coût centre</div>
-                    <div class="result-value" id="result-center-cost">0.00 €</div>
-                </div>
-                <div class="result-card highlight">
-                    <div class="result-label">Marge brute</div>
-                    <div class="result-value" id="result-profit">0.00 €</div>
-                </div>
-                <div class="result-card highlight">
-                    <div class="result-label">Taux de rentabilité</div>
-                    <div class="result-value" id="result-margin">0.00 %</div>
-                </div>
-                <div class="result-card" id="profitability-status">
-                    <div class="result-label">Statut</div>
-                    <div class="result-value" id="result-status">-</div>
+        <!-- Section du tableau de rentabilité -->
+        <div class="section" id="chart-section" style="display: none;">
+            <h2>📊 Tableau de Rentabilité</h2>
+            <p style="text-align: center; color: #7f8c8d; margin-bottom: 20px;">
+                Rentabilité selon les différentes combinaisons de pourcentages médecin/centre
+            </p>
+            <div style="overflow-x: auto; position: relative;">
+                <div class="cell-tooltip" id="cell-tooltip"></div>
+                <table id="profitability-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="background-color: #2c3e50; color: white; padding: 12px; border: 1px solid #ddd;">
+                                % Médecin \ % Centre
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="profitability-tbody">
+                        <!-- Généré dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 6px;">
+                <p style="margin: 5px 0;"><strong>💡 Légende des couleurs :</strong></p>
+                <div style="display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background-color: #1b5e20; border-radius: 3px;"></div>
+                        <span>≥ 40% - Excellent</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background-color: #2e7d32; border-radius: 3px;"></div>
+                        <span>30-39% - Très bon</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background-color: #66bb6a; border-radius: 3px;"></div>
+                        <span>20-29% - Bon</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background-color: #fdd835; border-radius: 3px;"></div>
+                        <span>10-19% - Acceptable</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background-color: #ff9800; border-radius: 3px;"></div>
+                        <span>5-9% - Faible</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background-color: #e53935; border-radius: 3px;"></div>
+                        <span>&lt; 5% - Très faible</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 20px; height: 20px; background-color: #cfd8dc; border-radius: 3px;"></div>
+                        <span>Impossible (&gt;100%)</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -253,9 +310,64 @@
             populateActesDropdown, 
             populateDoctorsDropdown,
             handleValidateSelection,
-            handlePercentageChange,
             handleCalculateProfitability
         } from './simulator/simulator.js';
+        
+        // Fonctions pour le tooltip
+        window.showTooltip = function(event) {
+            const cell = event.currentTarget;
+            const tooltip = document.getElementById('cell-tooltip');
+            
+            if (!tooltip || !cell.dataset.doctorPct) return;
+            
+            const doctorPct = cell.dataset.doctorPct;
+            const centerPct = cell.dataset.centerPct;
+            const profitMargin = cell.dataset.profitMargin;
+            const profit = cell.dataset.profit;
+            const doctorCost = cell.dataset.doctorCost;
+            const centerCost = cell.dataset.centerCost;
+            const actePrice = cell.dataset.actePrice;
+            
+            tooltip.innerHTML = `
+                <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #4fc3f7; padding-bottom: 5px;">
+                    📊 Détails de la rentabilité
+                </div>
+                <div><strong>Prix de l'acte :</strong> ${actePrice} €</div>
+                <div style="margin-top: 8px; color: #ffab91;">
+                    <strong>💰 Coût médecin (${doctorPct}%) :</strong> ${doctorCost} €
+                </div>
+                <div style="color: #90caf9;">
+                    <strong>🏥 Coût centre (${centerPct}%) :</strong> ${centerCost} €
+                </div>
+                <div style="margin-top: 8px; border-top: 1px solid #555; padding-top: 8px;">
+                    <strong>Total des coûts :</strong> ${(parseFloat(doctorCost) + parseFloat(centerCost)).toFixed(2)} €
+                </div>
+                <div style="font-size: 15px; font-weight: bold; color: #81c784; margin-top: 8px;">
+                    <strong>✅ Marge nette :</strong> ${profit} € (${profitMargin}%)
+                </div>
+            `;
+            
+            tooltip.classList.add('show');
+            moveTooltip(event);
+        };
+        
+        window.moveTooltip = function(event) {
+            const tooltip = document.getElementById('cell-tooltip');
+            if (!tooltip) return;
+            
+            const offsetX = 15;
+            const offsetY = 15;
+            
+            tooltip.style.left = (event.pageX + offsetX) + 'px';
+            tooltip.style.top = (event.pageY + offsetY) + 'px';
+        };
+        
+        window.hideTooltip = function() {
+            const tooltip = document.getElementById('cell-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('show');
+            }
+        };
         
         // Au chargement de la page
         document.addEventListener('DOMContentLoaded', () => {
@@ -267,7 +379,6 @@
             
             // Initialiser les gestionnaires d'événements
             handleValidateSelection();
-            handlePercentageChange();
             handleCalculateProfitability();
         });
     </script>

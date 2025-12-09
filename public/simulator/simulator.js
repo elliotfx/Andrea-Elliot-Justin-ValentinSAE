@@ -213,11 +213,74 @@ export function handleValidateSelection() {
         // Afficher la section des pourcentages
         percentageSection.style.display = 'block';
         
+        // Charger le prix moyen
+        loadAveragePrice(selectedActe, selectedDoctor);
+        
         // Smooth scroll vers la section
         percentageSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         
         console.log('Acte sélectionné:', selectedActe);
         console.log('Médecin sélectionné:', selectedDoctor);
+    });
+}
+
+// Fonction pour charger le prix moyen d'un acte pour un médecin
+function loadAveragePrice(acte, doctorId) {
+    checkAuth();
+    const token = localStorage.getItem('token');
+    
+    // Utiliser une période large pour calculer la moyenne
+    const endDate = new Date().toISOString().split('T')[0];
+    const startDate = new Date(new Date().setFullYear(new Date().getFullYear() - 2))
+        .toISOString().split('T')[0];
+    
+    const avgPriceInfo = document.getElementById('average-price-info');
+    const avgPriceText = document.getElementById('average-price-text');
+    const actePriceInput = document.getElementById('acte-price');
+    
+    if (!avgPriceInfo || !avgPriceText) return;
+    
+    // Afficher un message de chargement
+    avgPriceInfo.style.display = 'block';
+    avgPriceText.textContent = 'Calcul du prix moyen...';
+    
+    // Appel API pour récupérer les données de l'acte
+    fetch(`/api/actes?start=${startDate}&end=${endDate}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Échec de la récupération des données');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Trouver l'acte sélectionné
+        const acteData = data.find(a => a.acte === acte);
+        
+        if (acteData && acteData.total_visits > 0) {
+            const avgPrice = acteData.CA / acteData.total_visits;
+            
+            avgPriceText.innerHTML = `Le prix moyen de <strong>${acte}</strong> est de <strong>${avgPrice.toFixed(2)}€</strong> (basé sur ${acteData.total_visits} visites)`;
+            
+            // Pré-remplir le champ avec le prix moyen
+            if (actePriceInput) {
+                actePriceInput.value = avgPrice.toFixed(2);
+                actePriceInput.style.backgroundColor = '#e8f5e9';
+            }
+        } else {
+            avgPriceText.innerHTML = `Aucune donnée disponible pour <strong>${acte}</strong>. Veuillez saisir un prix manuellement.`;
+            avgPriceInfo.style.backgroundColor = '#fff3e0';
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors du chargement du prix moyen:', error);
+        avgPriceText.textContent = 'Impossible de charger le prix moyen. Veuillez saisir un prix manuellement.';
+        avgPriceInfo.style.backgroundColor = '#ffebee';
     });
 }
 
@@ -267,19 +330,15 @@ export function handlePercentageChange() {
 export function handleCalculateProfitability() {
     const calculateBtn = document.getElementById('calculate-btn');
     const actePriceInput = document.getElementById('acte-price');
-    const doctorPercentageInput = document.getElementById('doctor-percentage');
-    const centerPercentageInput = document.getElementById('center-percentage');
-    const resultsSection = document.getElementById('results-section');
+    const chartSection = document.getElementById('chart-section');
     
-    if (!calculateBtn || !actePriceInput || !doctorPercentageInput || !centerPercentageInput || !resultsSection) {
+    if (!calculateBtn || !actePriceInput || !chartSection) {
         console.error('Éléments manquants pour le calcul');
         return;
     }
     
     calculateBtn.addEventListener('click', () => {
         const actePrice = parseFloat(actePriceInput.value);
-        const doctorPercentage = parseFloat(doctorPercentageInput.value);
-        const centerPercentage = parseFloat(centerPercentageInput.value);
         
         // Validation
         if (!actePrice || actePrice <= 0) {
@@ -287,57 +346,150 @@ export function handleCalculateProfitability() {
             return;
         }
         
-        if (!doctorPercentage || doctorPercentage < 0) {
-            alert('Veuillez saisir un pourcentage valide pour le médecin');
-            return;
-        }
+        // Générer et afficher le tableau
+        generateProfitabilityTable(actePrice);
         
-        if (!centerPercentage || centerPercentage < 0) {
-            alert('Veuillez saisir un pourcentage valide pour le centre');
-            return;
-        }
-        
-        // Calcul de la rentabilité
-        const results = calculateProfitability(actePrice, doctorPercentage, centerPercentage);
-        
-        // Afficher les résultats
-        displayResults(actePrice, results);
-        
-        // Afficher la section des résultats
-        resultsSection.style.display = 'block';
-        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        // Afficher la section
+        chartSection.style.display = 'block';
+        chartSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
 }
 
-// Fonction pour afficher les résultats
-function displayResults(actePrice, results) {
-    document.getElementById('result-price').textContent = `${actePrice.toFixed(2)} €`;
-    document.getElementById('result-doctor-cost').textContent = `${results.doctorCost} €`;
-    document.getElementById('result-center-cost').textContent = `${results.centerCost} €`;
-    document.getElementById('result-profit').textContent = `${results.profit} €`;
-    document.getElementById('result-margin').textContent = `${results.profitMargin} %`;
+// Fonction pour générer le tableau de rentabilité
+function generateProfitabilityTable(actePrice) {
+    const tbody = document.getElementById('profitability-tbody');
+    const table = document.getElementById('profitability-table');
+    const thead = table.querySelector('thead tr');
+    const tooltip = document.getElementById('cell-tooltip');
     
-    // Déterminer le statut de rentabilité
-    const profit = parseFloat(results.profit);
-    const profitMargin = parseFloat(results.profitMargin);
-    const statusCard = document.getElementById('profitability-status');
-    const statusValue = document.getElementById('result-status');
-    
-    // Réinitialiser les classes
-    statusCard.classList.remove('highlight', 'negative');
-    
-    if (profit > 0) {
-        if (profitMargin >= 20) {
-            statusValue.textContent = '✅ Très rentable';
-            statusCard.classList.add('highlight');
-        } else if (profitMargin >= 10) {
-            statusValue.textContent = '✓ Rentable';
-            statusCard.classList.add('highlight');
-        } else {
-            statusValue.textContent = '⚠️ Peu rentable';
-        }
-    } else {
-        statusValue.textContent = '❌ Non rentable';
-        statusCard.classList.add('negative');
+    if (!tbody || !thead) {
+        console.error('Tableau non trouvé');
+        return;
     }
+    
+    // Définir les pourcentages
+    const doctorPercentages = [20, 25, 30, 35, 40, 45, 50, 55, 60];
+    const centerPercentages = [10, 15, 20, 25, 30, 35, 40, 45, 50];
+    
+    // Créer les en-têtes de colonnes
+    thead.innerHTML = '<th style="background-color: #2c3e50; color: white; padding: 12px; border: 1px solid #ddd;">% Médecin \\ % Centre</th>';
+    centerPercentages.forEach(centerPct => {
+        const th = document.createElement('th');
+        th.style.cssText = 'background-color: #34495e; color: white; padding: 12px; border: 1px solid #ddd; text-align: center;';
+        th.textContent = `${centerPct}%`;
+        thead.appendChild(th);
+    });
+    
+    // Vider le tbody
+    tbody.innerHTML = '';
+    
+    // Créer les lignes
+    doctorPercentages.forEach(doctorPct => {
+        const row = document.createElement('tr');
+        
+        // Première colonne : % médecin
+        const headerCell = document.createElement('td');
+        headerCell.style.cssText = 'background-color: #ecf0f1; font-weight: bold; padding: 12px; border: 1px solid #ddd; text-align: center;';
+        headerCell.textContent = `${doctorPct}%`;
+        row.appendChild(headerCell);
+        
+        // Autres colonnes : rentabilité
+        centerPercentages.forEach(centerPct => {
+            const cell = document.createElement('td');
+            cell.style.cssText = 'padding: 12px; border: 1px solid #ddd; text-align: center; font-weight: bold;';
+            
+            const total = doctorPct + centerPct;
+            
+            if (total > 100) {
+                cell.textContent = '-';
+                cell.style.backgroundColor = '#cfd8dc';
+                cell.style.color = '#607d8b';
+            } else {
+                const profitMargin = 100 - total;
+                const profit = (actePrice * profitMargin) / 100;
+                const doctorCost = (actePrice * doctorPct / 100);
+                const centerCost = (actePrice * centerPct / 100);
+                
+                // Définir la couleur selon la rentabilité
+                let bgColor, textColor;
+                if (profitMargin >= 40) {
+                    bgColor = '#1b5e20';
+                    textColor = 'white';
+                } else if (profitMargin >= 30) {
+                    bgColor = '#2e7d32';
+                    textColor = 'white';
+                } else if (profitMargin >= 20) {
+                    bgColor = '#66bb6a';
+                    textColor = 'white';
+                } else if (profitMargin >= 10) {
+                    bgColor = '#fdd835';
+                    textColor = '#000';
+                } else if (profitMargin >= 5) {
+                    bgColor = '#ff9800';
+                    textColor = 'white';
+                } else {
+                    bgColor = '#e53935';
+                    textColor = 'white';
+                }
+                
+                cell.style.backgroundColor = bgColor;
+                cell.style.color = textColor;
+                cell.style.cursor = 'pointer';
+                cell.textContent = `${profitMargin.toFixed(0)}%`;
+                
+                // Créer le contenu du tooltip
+                const tooltipContent = `
+                    <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #4fc3f7; padding-bottom: 5px;">
+                        📊 Détails de la rentabilité
+                    </div>
+                    <div><strong>Prix de l'acte :</strong> ${actePrice.toFixed(2)} €</div>
+                    <div style="margin-top: 8px; color: #ffab91;">
+                        <strong>💰 Coût médecin (${doctorPct}%) :</strong> ${doctorCost.toFixed(2)} €
+                    </div>
+                    <div style="color: #90caf9;">
+                        <strong>🏥 Coût centre (${centerPct}%) :</strong> ${centerCost.toFixed(2)} €
+                    </div>
+                    <div style="margin-top: 8px; border-top: 1px solid #555; padding-top: 8px;">
+                        <strong>Total des coûts :</strong> ${(doctorCost + centerCost).toFixed(2)} €
+                    </div>
+                    <div style="font-size: 15px; font-weight: bold; color: #81c784; margin-top: 8px;">
+                        <strong>✅ Marge nette :</strong> ${profit.toFixed(2)} € (${profitMargin.toFixed(1)}%)
+                    </div>
+                `;
+                
+                // Ajouter les événements inline
+                cell.onmouseenter = function(e) {
+                    const tooltip = document.getElementById('cell-tooltip');
+                    if (tooltip) {
+                        tooltip.innerHTML = tooltipContent;
+                        tooltip.style.position = 'fixed';
+                        tooltip.style.left = (e.clientX + 15) + 'px';
+                        tooltip.style.top = (e.clientY + 15) + 'px';
+                        tooltip.style.display = 'block';
+                        tooltip.classList.add('show');
+                    }
+                };
+                
+                cell.onmousemove = function(e) {
+                    const tooltip = document.getElementById('cell-tooltip');
+                    if (tooltip) {
+                        tooltip.style.left = (e.clientX + 15) + 'px';
+                        tooltip.style.top = (e.clientY + 15) + 'px';
+                    }
+                };
+                
+                cell.onmouseleave = function() {
+                    const tooltip = document.getElementById('cell-tooltip');
+                    if (tooltip) {
+                        tooltip.style.display = 'none';
+                        tooltip.classList.remove('show');
+                    }
+                };
+            }
+            
+            row.appendChild(cell);
+        });
+        
+        tbody.appendChild(row);
+    });
 }
