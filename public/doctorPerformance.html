@@ -139,6 +139,41 @@
         <h2>Temps d'Attente Moyen par Plage Horaire et par Mois</h2>
         <svg id="waiting-time-heatmap"></svg>
     </div>
+
+    <!-- Yearly Visits Comparison Chart -->
+    <div class="chart-container">
+        <h2>Comparaison des Visites par Année</h2>
+        <div style="margin-bottom: 15px; display: flex; gap: 20px; align-items: center;">
+            <div>
+                <label for="granularity-select">Granularité : </label>
+                <select id="granularity-select">
+                    <option value="month" selected>Mois</option>
+                    <option value="week">Semaine</option>
+                    <option value="day">Jour</option>
+                </select>
+            </div>
+            <div>
+                <label for="month-filter-select">Filtrer par mois : </label>
+                <select id="month-filter-select">
+                    <option value="all" selected>Tous les mois</option>
+                    <option value="1">Janvier</option>
+                    <option value="2">Février</option>
+                    <option value="3">Mars</option>
+                    <option value="4">Avril</option>
+                    <option value="5">Mai</option>
+                    <option value="6">Juin</option>
+                    <option value="7">Juillet</option>
+                    <option value="8">Août</option>
+                    <option value="9">Septembre</option>
+                    <option value="10">Octobre</option>
+                    <option value="11">Novembre</option>
+                    <option value="12">Décembre</option>
+                </select>
+            </div>
+        </div>
+        <svg id="yearly-visits-chart"></svg>
+    </div>
+
     <!-- Include your JavaScript file -->
     <script type="module" src="./doctor/main.js"></script><!-- New JS file for doctor performance -->
     <script type="module" src="./utilities/utils.js"></script>

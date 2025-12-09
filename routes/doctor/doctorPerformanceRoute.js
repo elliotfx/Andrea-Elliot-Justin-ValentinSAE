@@ -287,5 +287,51 @@ module.exports = (connection) => {
         }
     });
 
+    // Route to fetch visits by day of year for yearly comparison chart
+    router.get('/visits-by-day-of-year', async (req, res) => {
+        try {
+            const { doctorId } = req.query;
+
+            if (!doctorId) {
+                return res.status(400).json({ error: 'Doctor ID is required' });
+            }
+
+            // Query to get visits grouped by day of year and year
+            const visitsByDayQuery = `
+                SELECT 
+                    YEAR(currentLocalTimeAssignment) as year,
+                    DAYOFYEAR(currentLocalTimeAssignment) as day_of_year,
+                    COUNT(*) as visit_count
+                FROM visit
+                WHERE user_activated_id = ?
+                GROUP BY YEAR(currentLocalTimeAssignment), DAYOFYEAR(currentLocalTimeAssignment)
+                ORDER BY year, day_of_year
+            `;
+
+            const results = await query(visitsByDayQuery, [doctorId]);
+            
+            // Transform data into format suitable for D3.js multi-line chart
+            const dataByYear = {};
+            results.forEach(row => {
+                if (!dataByYear[row.year]) {
+                    dataByYear[row.year] = [];
+                }
+                dataByYear[row.year].push({
+                    dayOfYear: row.day_of_year,
+                    visitCount: row.visit_count
+                });
+            });
+
+            res.json(dataByYear);
+        } catch (error) {
+            console.error('Erreur lors de la récupération des visites par jour:', error);
+            res.status(500).json({
+                error: 'An error occurred while fetching visits by day of year.',
+                details: error.message
+            });
+        }
+    });
+
     return router;
 };
+
