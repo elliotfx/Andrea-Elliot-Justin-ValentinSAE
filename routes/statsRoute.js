@@ -132,6 +132,44 @@ module.exports = (connection) => {
         });
       });
 
+      // Requête 10 : Revenu moyen par visite (hors pourcentage)
+      const avgRevenuePerVisit = new Promise((resolve, reject) => {
+        const query = `
+          SELECT 
+              ROUND(
+                  (SELECT COALESCE(SUM(amount), 0) FROM payment WHERE payment.date BETWEEN ? AND ?) /
+                  NULLIF((SELECT COUNT(DISTINCT v.id) FROM visit v WHERE v.currentLocalTimeAssignment BETWEEN ? AND ?), 0),
+                  2
+              ) AS avg_revenue_per_visit;
+        `;
+        connection.query(query, [startDate, endDate, startDate, endDate], (error, results) => {
+          if (error) return reject(error);
+          resolve(results[0]);
+        });
+      });
+
+      // Requête 11 : Taux de rétention des patients (% de patients avec au moins 2 visites)
+      const retentionRate = new Promise((resolve, reject) => {
+        const query = `
+          SELECT 
+              ROUND(
+                  (SELECT COUNT(DISTINCT patient_id) 
+                   FROM visit 
+                   WHERE patient_id IN (
+                       SELECT patient_id FROM visit WHERE arrivalDate BETWEEN ? AND ?
+                   )
+                   GROUP BY patient_id 
+                   HAVING COUNT(id) >= 2) * 100.0 /
+                  NULLIF((SELECT COUNT(DISTINCT patient_id) FROM visit WHERE arrivalDate BETWEEN ? AND ?), 0),
+                  2
+              ) AS retention_rate;
+        `;
+        connection.query(query, [startDate, endDate, startDate, endDate], (error, results) => {
+          if (error) return reject(error);
+          resolve(results[0]);
+        });
+      });
+
       // Exécution de toutes les requêtes en parallèle
       const results = await Promise.all([
         totalVisitsAndPatients,
@@ -140,7 +178,9 @@ module.exports = (connection) => {
         newPatientsContinued,
         caAndCaPerHour,
         avgWaitingTime,
-        takedVisits
+        takedVisits,
+        avgRevenuePerVisit,
+        retentionRate
       ]);
 
       // Envoi des résultats en réponse
@@ -153,7 +193,9 @@ module.exports = (connection) => {
         CA: results[4].CA,
         CA_Per_hour: results[4].CA_Per_hour,
         avg_waiting_time: results[5].avg_waiting_time,
-        taked_visits: results[6].taked_visits
+        taked_visits: results[6].taked_visits,
+        avg_revenue_per_visit: results[7].avg_revenue_per_visit || 0,
+        retention_rate: results[8].retention_rate || 0
       });
 
     } catch (error) {
