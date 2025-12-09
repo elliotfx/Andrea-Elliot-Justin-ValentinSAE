@@ -262,3 +262,82 @@ export function handlePercentageChange() {
     doctorPercentageInput.addEventListener('input', updateCalculation);
     centerPercentageInput.addEventListener('input', updateCalculation);
 }
+
+// Fonction pour gérer le calcul de rentabilité
+export function handleCalculateProfitability() {
+    const calculateBtn = document.getElementById('calculate-btn');
+    const actePriceInput = document.getElementById('acte-price');
+    const doctorPercentageInput = document.getElementById('doctor-percentage');
+    const centerPercentageInput = document.getElementById('center-percentage');
+    const resultsSection = document.getElementById('results-section');
+    
+    if (!calculateBtn || !actePriceInput || !doctorPercentageInput || !centerPercentageInput || !resultsSection) {
+        console.error('Éléments manquants pour le calcul');
+        return;
+    }
+    
+    calculateBtn.addEventListener('click', () => {
+        const actePrice = parseFloat(actePriceInput.value);
+        const doctorPercentage = parseFloat(doctorPercentageInput.value);
+        const centerPercentage = parseFloat(centerPercentageInput.value);
+        
+        // Validation
+        if (!actePrice || actePrice <= 0) {
+            alert('Veuillez saisir un prix valide pour l\'acte');
+            return;
+        }
+        
+        if (!doctorPercentage || doctorPercentage < 0) {
+            alert('Veuillez saisir un pourcentage valide pour le médecin');
+            return;
+        }
+        
+        if (!centerPercentage || centerPercentage < 0) {
+            alert('Veuillez saisir un pourcentage valide pour le centre');
+            return;
+        }
+        
+        // Calcul de la rentabilité
+        const results = calculateProfitability(actePrice, doctorPercentage, centerPercentage);
+        
+        // Afficher les résultats
+        displayResults(actePrice, results);
+        
+        // Afficher la section des résultats
+        resultsSection.style.display = 'block';
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+}
+
+// Fonction pour afficher les résultats
+function displayResults(actePrice, results) {
+    document.getElementById('result-price').textContent = `${actePrice.toFixed(2)} €`;
+    document.getElementById('result-doctor-cost').textContent = `${results.doctorCost} €`;
+    document.getElementById('result-center-cost').textContent = `${results.centerCost} €`;
+    document.getElementById('result-profit').textContent = `${results.profit} €`;
+    document.getElementById('result-margin').textContent = `${results.profitMargin} %`;
+    
+    // Déterminer le statut de rentabilité
+    const profit = parseFloat(results.profit);
+    const profitMargin = parseFloat(results.profitMargin);
+    const statusCard = document.getElementById('profitability-status');
+    const statusValue = document.getElementById('result-status');
+    
+    // Réinitialiser les classes
+    statusCard.classList.remove('highlight', 'negative');
+    
+    if (profit > 0) {
+        if (profitMargin >= 20) {
+            statusValue.textContent = '✅ Très rentable';
+            statusCard.classList.add('highlight');
+        } else if (profitMargin >= 10) {
+            statusValue.textContent = '✓ Rentable';
+            statusCard.classList.add('highlight');
+        } else {
+            statusValue.textContent = '⚠️ Peu rentable';
+        }
+    } else {
+        statusValue.textContent = '❌ Non rentable';
+        statusCard.classList.add('negative');
+    }
+}
