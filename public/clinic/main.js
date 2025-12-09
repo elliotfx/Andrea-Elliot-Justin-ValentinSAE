@@ -61,14 +61,4 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Veuillez sélectionner les deux dates.');
         }
     });
-
-    // Gestion du menu latéral
-    const menuToggle = document.getElementById("menu-toggle");
-    const sidebar = document.getElementById("sidebar");
-    
-    menuToggle.addEventListener("click", function() {
-        sidebar.style.width = sidebar.style.width === '250px' ? '0' : '250px';
-        document.body.classList.toggle("with-sidebar");
-        this.classList.toggle("open"); // Change l'icône de menu
-    });
 });
