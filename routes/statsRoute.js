@@ -148,23 +148,37 @@ module.exports = (connection) => {
         });
       });
 
-      // Requête 11 : Taux de rétention des patients (% de patients avec au moins 2 visites)
-      const retentionRate = new Promise((resolve, reject) => {
+      // Requête 11 : Durée moyenne des visites (en minutes)
+      const avgVisitDuration = new Promise((resolve, reject) => {
         const query = `
           SELECT 
               ROUND(
-                  (SELECT COUNT(DISTINCT patient_id) 
-                   FROM visit 
-                   WHERE patient_id IN (
-                       SELECT patient_id FROM visit WHERE arrivalDate BETWEEN ? AND ?
-                   )
-                   GROUP BY patient_id 
-                   HAVING COUNT(id) >= 2) * 100.0 /
-                  NULLIF((SELECT COUNT(DISTINCT patient_id) FROM visit WHERE arrivalDate BETWEEN ? AND ?), 0),
+                  AVG(TIMESTAMPDIFF(MINUTE, v.startdate, v.enddate)),
                   2
-              ) AS retention_rate;
+              ) AS avg_visit_duration
+          FROM visit v
+          WHERE v.startdate IS NOT NULL 
+              AND v.enddate IS NOT NULL 
+              AND v.currentLocalTimeAssignment BETWEEN ? AND ?;
         `;
-        connection.query(query, [startDate, endDate, startDate, endDate], (error, results) => {
+        connection.query(query, [startDate, endDate], (error, results) => {
+          if (error) return reject(error);
+          resolve(results[0]);
+        });
+      });
+
+      // Requête 12 : Taux de non-présentation (no-show rate)
+      const noShowRate = new Promise((resolve, reject) => {
+        const query = `
+          SELECT 
+              ROUND(
+                  ((SELECT COUNT(*) FROM patient_service_event WHERE dateTaking BETWEEN ? AND ?) -
+                   (SELECT COUNT(DISTINCT v.id) FROM visit v WHERE v.currentLocalTimeAssignment BETWEEN ? AND ?)) /
+                  NULLIF((SELECT COUNT(*) FROM patient_service_event WHERE dateTaking BETWEEN ? AND ?), 0) * 100,
+                  2
+              ) AS no_show_rate;
+        `;
+        connection.query(query, [startDate, endDate, startDate, endDate, startDate, endDate], (error, results) => {
           if (error) return reject(error);
           resolve(results[0]);
         });
@@ -180,7 +194,8 @@ module.exports = (connection) => {
         avgWaitingTime,
         takedVisits,
         avgRevenuePerVisit,
-        retentionRate
+        avgVisitDuration,
+        noShowRate
       ]);
 
       // Envoi des résultats en réponse
@@ -195,7 +210,8 @@ module.exports = (connection) => {
         avg_waiting_time: results[5].avg_waiting_time,
         taked_visits: results[6].taked_visits,
         avg_revenue_per_visit: results[7].avg_revenue_per_visit || 0,
-        retention_rate: results[8].retention_rate || 0
+        avg_visit_duration: results[8].avg_visit_duration || 0,
+        no_show_rate: results[9].no_show_rate || 0
       });
 
     } catch (error) {
