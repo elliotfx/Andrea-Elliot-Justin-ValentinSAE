@@ -118,6 +118,48 @@
 
     <div class="chart-container">
         <div class="chart-title">Analyse de la fidélité des patients</div>
+
+        <!-- KPI Evolution Section -->
+        <div id="patients-kpi-section"
+            style="display: none; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+            <h3 style="margin: 0 0 15px 0; font-size: 16px;">Évolution Année N vs N-1</h3>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div class="kpi-card"
+                    style="flex: 1; min-width: 200px; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #4A90E2;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Nouveaux Patients</div>
+                    <div id="kpi-nouveaux" style="font-size: 24px; font-weight: bold; color: #4A90E2;">-</div>
+                    <div id="kpi-nouveaux-change" style="font-size: 14px; margin-top: 5px;">-</div>
+                </div>
+                <div class="kpi-card"
+                    style="flex: 1; min-width: 200px; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #50C878;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Patients Fidèles</div>
+                    <div id="kpi-fideles" style="font-size: 24px; font-weight: bold; color: #50C878;">-</div>
+                    <div id="kpi-fideles-change" style="font-size: 14px; margin-top: 5px;">-</div>
+                </div>
+                <div class="kpi-card"
+                    style="flex: 1; min-width: 200px; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #FF6B6B;">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Patients Sans Retour</div>
+                    <div id="kpi-pasretour" style="font-size: 24px; font-weight: bold; color: #FF6B6B;">-</div>
+                    <div id="kpi-pasretour-change" style="font-size: 14px; margin-top: 5px;">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px; display: flex; gap: 20px; align-items: center;">
+            <div>
+                <label for="patients-period-select">Période : </label>
+                <select id="patients-period-select">
+                    <option value="year" selected>Par Année</option>
+                    <option value="month">Par Mois</option>
+                </select>
+            </div>
+            <div id="year-selector-container" style="display: none;">
+                <label for="patients-year-select">Année : </label>
+                <select id="patients-year-select">
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+        </div>
         <svg id="patients-chart"></svg> <!-- Correction de l'ID et structure -->
     </div>
 
@@ -127,14 +169,8 @@
         <svg id="performance-chart"></svg> <!-- Updated title for time analysis -->
     </div>
 
-    <div class="chart-container">
-        <div class="chart-title">Génération des rendez-vous</div>
-        <svg id="appointments-chart"></svg>
-    </div>
-    <div class="chart-container"></div>
-    <div class="chart-title">Génération des rendez-vous</div>
-    <svg id="work-time-chart"></svg>
-    </div>
+
+
     <div class="chart-container">
         <h2>Temps d'Attente Moyen par Plage Horaire et par Mois</h2>
         <svg id="waiting-time-heatmap"></svg>
