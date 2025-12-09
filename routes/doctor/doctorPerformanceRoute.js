@@ -72,6 +72,8 @@ module.exports = (connection) => {
                 SELECT COUNT(*) AS total_visits 
                 FROM visit 
                 WHERE patient_id IN (SELECT patient_id FROM new_patients)
+                AND user_activated_id = ?
+                AND currentLocalTimeAssignment BETWEEN ? AND ?
                 `;
 
             // 5. Loyal Patients
@@ -221,7 +223,7 @@ module.exports = (connection) => {
             const uniquePatients = await query(uniquePatientsQuery, [doctorId, startDate, endDate]);
             const totalVisits = await query(totalVisitsQuery, [doctorId, startDate, endDate]);
             const newPatients = await query(newPatientsQuery, [doctorId, startDate, endDate, startDate]);
-            const visitsGeneratedByNewPatients = await query(visitsGeneratedByNewPatientsQuery, [doctorId, startDate, endDate, startDate]);
+            const visitsGeneratedByNewPatients = await query(visitsGeneratedByNewPatientsQuery, [doctorId, startDate, endDate, startDate, doctorId, startDate, endDate]);
             const loyalPatients = await query(loyalPatientsQuery, [doctorId, startDate, doctorId, startDate, endDate]);
             const followUpVisits = await query(followUpVisitsQuery, [doctorId, startDate, doctorId, startDate, endDate, doctorId]);
             const hoursWorked = await query(hoursWorkedQuery, [doctorId, startDate, endDate]);
