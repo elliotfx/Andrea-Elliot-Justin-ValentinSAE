@@ -70,6 +70,14 @@
             margin-bottom: 20px;
         }
         
+        .dropdown-container:has(#acte-price) {
+            grid-template-columns: 1fr;
+        }
+        
+        .dropdown-container:has(#acte-price) .dropdown-box:first-child {
+            grid-column: 1 / -1;
+        }
+        
         .dropdown-box {
             background: #f8f9fa;
             padding: 15px;
@@ -81,6 +89,36 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: #2c3e50;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .btn-validate {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-validate:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-validate:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -105,13 +143,40 @@
                     </select>
                 </div>
             </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="validate-selection" class="btn-validate">Valider la sélection</button>
+            </div>
+        </div>
+
+        <!-- Section des pourcentages -->
+        <div class="section" id="percentage-section" style="display: none;">
+            <h2>📊 Paramètres de Rentabilité</h2>
+            <div class="dropdown-container">
+                <div class="dropdown-box">
+                    <label for="acte-price">Prix de l'acte (€) :</label>
+                    <input type="number" id="acte-price" min="0" step="0.01" placeholder="Ex: 100.00">
+                </div>
+                <div class="dropdown-box">
+                    <label for="doctor-percentage">Pourcentage de rémunération du médecin (%) :</label>
+                    <input type="number" id="doctor-percentage" min="0" max="100" step="0.1" placeholder="Ex: 40">
+                </div>
+                <div class="dropdown-box">
+                    <label for="center-percentage">Pourcentage de coût pour le centre (%) :</label>
+                    <input type="number" id="center-percentage" min="0" max="100" step="0.1" placeholder="Ex: 30">
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="calculate-btn" class="btn-validate">Calculer la rentabilité</button>
+            </div>
         </div>
     </div>
     
     <script type="module">
         import { 
             populateActesDropdown, 
-            populateDoctorsDropdown
+            populateDoctorsDropdown,
+            handleValidateSelection,
+            handlePercentageChange
         } from './simulator/simulator.js';
         
         // Au chargement de la page
@@ -121,6 +186,10 @@
             // Charger les dropdowns
             populateActesDropdown('acte-select');
             populateDoctorsDropdown('doctor-select');
+            
+            // Initialiser les gestionnaires d'événements
+            handleValidateSelection();
+            handlePercentageChange();
         });
     </script>
 </body>

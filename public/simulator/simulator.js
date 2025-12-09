@@ -186,10 +186,79 @@ export function displayDoctorsTable(tableId = 'doctors-list', startDate, endDate
 document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     
-    // Exemple : charger et afficher les données
     console.log('Simulator.js chargé');
-    
-    // Vous pouvez appeler ces fonctions selon vos besoins
-    // populateActesDropdown();
-    // populateDoctorsDropdown();
 });
+
+// Fonction pour gérer la validation de la sélection
+export function handleValidateSelection() {
+    const validateBtn = document.getElementById('validate-selection');
+    const acteSelect = document.getElementById('acte-select');
+    const doctorSelect = document.getElementById('doctor-select');
+    const percentageSection = document.getElementById('percentage-section');
+    
+    if (!validateBtn || !acteSelect || !doctorSelect || !percentageSection) {
+        console.error('Éléments manquants dans le DOM');
+        return;
+    }
+    
+    validateBtn.addEventListener('click', () => {
+        const selectedActe = acteSelect.value;
+        const selectedDoctor = doctorSelect.value;
+        
+        if (!selectedActe || !selectedDoctor) {
+            alert('Veuillez sélectionner un acte et un médecin');
+            return;
+        }
+        
+        // Afficher la section des pourcentages
+        percentageSection.style.display = 'block';
+        
+        // Smooth scroll vers la section
+        percentageSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        console.log('Acte sélectionné:', selectedActe);
+        console.log('Médecin sélectionné:', selectedDoctor);
+    });
+}
+
+// Fonction pour calculer la rentabilité
+export function calculateProfitability(actePrice, doctorPercentage, centerPercentage) {
+    const doctorCost = (actePrice * doctorPercentage) / 100;
+    const centerCost = (actePrice * centerPercentage) / 100;
+    const profit = actePrice - doctorCost - centerCost;
+    const profitMargin = (profit / actePrice) * 100;
+    
+    return {
+        doctorCost: doctorCost.toFixed(2),
+        centerCost: centerCost.toFixed(2),
+        profit: profit.toFixed(2),
+        profitMargin: profitMargin.toFixed(2)
+    };
+}
+
+// Fonction pour gérer le changement des pourcentages
+export function handlePercentageChange() {
+    const doctorPercentageInput = document.getElementById('doctor-percentage');
+    const centerPercentageInput = document.getElementById('center-percentage');
+    
+    if (!doctorPercentageInput || !centerPercentageInput) {
+        console.error('Champs de pourcentage manquants');
+        return;
+    }
+    
+    const updateCalculation = () => {
+        const doctorPercentage = parseFloat(doctorPercentageInput.value) || 0;
+        const centerPercentage = parseFloat(centerPercentageInput.value) || 0;
+        
+        console.log('Pourcentage médecin:', doctorPercentage);
+        console.log('Pourcentage centre:', centerPercentage);
+        
+        // Vérifier que le total ne dépasse pas 100%
+        if (doctorPercentage + centerPercentage > 100) {
+            alert('Attention : Le total des pourcentages dépasse 100% !');
+        }
+    };
+    
+    doctorPercentageInput.addEventListener('input', updateCalculation);
+    centerPercentageInput.addEventListener('input', updateCalculation);
+}
