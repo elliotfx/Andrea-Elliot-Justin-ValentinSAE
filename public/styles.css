@@ -108,7 +108,7 @@ body.with-sidebar {
     font-weight: bold;
     color: #333;
     padding-bottom: 10px;
-    border-bottom: 2px solid #4CAF50;
+    border-bottom: 2px solid #2196F3;
 }
 
 .stats-card {
@@ -147,7 +147,7 @@ body.with-sidebar {
 .stats-value {
     font-size: 28px;
     font-weight: bold;
-    color: #4CAF50;
+    color: #2196F3;
     margin-top: 10px;
     text-align: center;
 }
@@ -241,7 +241,7 @@ svg {
 
 #consultations-chart .line-returning-patients {
     fill: none;
-    stroke: green;
+    stroke: #2196F3;
     stroke-width: 2px;
 }
 
@@ -256,7 +256,7 @@ svg {
 }
 
 #patient-visits-chart .bar-two-visits {
-    fill: #32CD32; /* LimeGreen for two visits */
+    fill: #42A5F5; /* Bleu dentiste pour deux visites */
 }
 
 #patient-visits-chart .line-two-visits {
@@ -289,7 +289,7 @@ svg {
 
 #doctor-indicators-chart .line-returning-patients {
     fill: none;
-    stroke: green;
+    stroke: #2196F3;
     stroke-width: 2px;
 }
 
