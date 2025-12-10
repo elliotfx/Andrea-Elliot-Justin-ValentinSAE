@@ -108,9 +108,9 @@ module.exports = (connection) => {
       const avgWaitingTime = new Promise((resolve, reject) => {
         const query = `
           SELECT 
-              ROUND(AVG(TIMESTAMPDIFF(MINUTE, v.arrivalDate, v.endDate))) AS avg_waiting_time
+              ROUND(AVG(TIMESTAMPDIFF(MINUTE, v.arrivalDate, v.startDate))) AS avg_waiting_time
           FROM visit v
-          WHERE v.endDate IS NOT NULL AND v.currentLocalTimeAssignment BETWEEN ? AND ?;
+          WHERE v.arrivalDate IS NOT NULL AND v.startDate IS NOT NULL AND v.currentLocalTimeAssignment BETWEEN ? AND ?;
         `;
         connection.query(query, [startDate, endDate], (error, results) => {
           if (error) return reject(error);
