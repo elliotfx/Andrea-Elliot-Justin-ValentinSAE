@@ -12,12 +12,16 @@ module.exports = (connection) => {
             return res.status(400).json({ message: 'Les dates de début et de fin sont requises.' });
         }
 
+
         try {
-            // Requête : Taux de ponctualité global par mois
-            const punctualityByMonth = new Promise((resolve, reject) => {
+            const period = req.query['period'] || 'month'; // Default to month
+            const dateFormat = period === 'year' ? '%Y' : '%Y-%m';
+
+            // Requête : Taux de ponctualité global par mois/année
+            const punctualityByPeriod = new Promise((resolve, reject) => {
                 const query = `
           SELECT 
-              DATE_FORMAT(v.currentLocalTimeAssignment, '%Y-%m') AS month,
+              DATE_FORMAT(v.currentLocalTimeAssignment, '${dateFormat}') AS period,
               COUNT(*) AS total_appointments,
               SUM(
                   CASE 
@@ -57,8 +61,8 @@ module.exports = (connection) => {
           AND v.startDate IS NOT NULL
           AND v.currentLocalTimeAssignment BETWEEN ? AND ?
           ${doctorId ? 'AND v.user_activated_id = ?' : ''}
-          GROUP BY DATE_FORMAT(v.currentLocalTimeAssignment, '%Y-%m')
-          ORDER BY month;
+          GROUP BY DATE_FORMAT(v.currentLocalTimeAssignment, '${dateFormat}')
+          ORDER BY period;
         `;
                 const params = doctorId ? [startDate, endDate, doctorId] : [startDate, endDate];
                 connection.query(query, params, (error, results) => {
@@ -176,14 +180,14 @@ module.exports = (connection) => {
 
             // Exécution des requêtes en parallèle
             const results = await Promise.all([
-                punctualityByMonth,
+                punctualityByPeriod,
                 punctualityByDoctor,
                 overallStats
             ]);
 
             // Envoi des résultats en réponse
             res.json({
-                punctuality_by_month: results[0],
+                punctuality_by_period: results[0],
                 punctuality_by_doctor: results[1],
                 overall_stats: results[2]
             });

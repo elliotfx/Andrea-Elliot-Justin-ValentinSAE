@@ -1,7 +1,8 @@
 // main.js
 
 import { setupEventListeners, loadDashboardData } from './eventHandlers.js';
-import { checkAuth, getDataDateRange } from '../utilities/utils.js'
+import { checkAuth, getDataDateRange } from '../utilities/utils.js';
+import { initPunctualityKPI } from './punctualityKPI.js';
 
 // Function to populate the doctor dropdown
 async function populateDoctorDropdown() {
@@ -53,6 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Wait for doctors to be loaded before loading dashboard data
     await populateDoctorDropdown(); // Wait for doctor dropdown to populate
     setupEventListeners(); // Setup the other event listeners
+    initPunctualityKPI(); // Initialize punctuality KPI event listeners
 
     // Load dashboard data automatically on page load AFTER doctors are loaded
     console.log('Chargement automatique des données...');

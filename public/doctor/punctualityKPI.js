@@ -5,12 +5,40 @@ export function initPunctualityKPI() {
     if (applyButton) {
         applyButton.addEventListener('click', loadPunctualityData);
     }
+
+    // Add event listener for period selector
+    const periodSelector = document.getElementById('punctuality-period-select');
+    if (periodSelector) {
+        periodSelector.addEventListener('change', () => {
+            toggleYearSelector();
+            loadPunctualityData();
+        });
+    }
+
+    // Add event listener for year selector
+    const yearSelector = document.getElementById('punctuality-year-select');
+    if (yearSelector) {
+        yearSelector.addEventListener('change', loadPunctualityData);
+    }
+
+    // Initialize year selector visibility
+    toggleYearSelector();
+}
+
+function toggleYearSelector() {
+    const period = document.getElementById('punctuality-period-select')?.value;
+    const yearContainer = document.getElementById('punctuality-year-selector-container');
+
+    if (yearContainer) {
+        yearContainer.style.display = period === 'month' ? 'block' : 'none';
+    }
 }
 
 export async function loadPunctualityData() {
     const startDate = document.getElementById('start-date').value;
     const endDate = document.getElementById('end-date').value;
     const doctorId = document.getElementById('doctor-select').value;
+    const period = document.getElementById('punctuality-period-select')?.value || 'month';
 
     if (!startDate || !endDate) {
         console.error('Les dates de début et de fin sont requises.');
@@ -26,8 +54,8 @@ export async function loadPunctualityData() {
 
 
     try {
-        // Build URL with doctor filter if selected
-        let url = `/api/punctuality?start-date=${startDate}&end-date=${endDate}`;
+        // Build URL with doctor filter and period if selected
+        let url = `/api/punctuality?start-date=${startDate}&end-date=${endDate}&period=${period}`;
         if (doctorId && doctorId !== 'all') {
             url += `&doctor-id=${doctorId}`;
         }
@@ -45,9 +73,51 @@ export async function loadPunctualityData() {
 
         const data = await response.json();
         updatePunctualityDisplay(data, doctorId);
-        drawPunctualityChart(data.punctuality_by_month);
+
+        // If monthly view, populate year selector and filter data
+        if (period === 'month') {
+            populateYearSelector(data.punctuality_by_period);
+            const selectedYear = document.getElementById('punctuality-year-select')?.value;
+            const filteredData = selectedYear
+                ? data.punctuality_by_period.filter(d => d.period.startsWith(selectedYear))
+                : data.punctuality_by_period;
+            drawPunctualityChart(filteredData, period);
+        } else {
+            drawPunctualityChart(data.punctuality_by_period, period);
+        }
     } catch (error) {
         console.error('Erreur:', error);
+    }
+}
+
+function populateYearSelector(periodData) {
+    if (!periodData || periodData.length === 0) return;
+
+    const yearSelector = document.getElementById('punctuality-year-select');
+    if (!yearSelector) return;
+
+    // Extract unique years from period data
+    const years = [...new Set(periodData.map(d => d.period.substring(0, 4)))].sort().reverse();
+
+    // Only repopulate if years have changed
+    const currentOptions = Array.from(yearSelector.options).map(opt => opt.value);
+    if (JSON.stringify(currentOptions) === JSON.stringify(years)) return;
+
+    const currentValue = yearSelector.value;
+    yearSelector.innerHTML = '';
+
+    years.forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelector.appendChild(option);
+    });
+
+    // Restore previous selection or select most recent year
+    if (years.includes(currentValue)) {
+        yearSelector.value = currentValue;
+    } else if (years.length > 0) {
+        yearSelector.value = years[0];
     }
 }
 
@@ -85,11 +155,11 @@ function updatePunctualityDisplay(data, doctorId) {
     }
 }
 
-function drawPunctualityChart(monthlyData) {
+function drawPunctualityChart(periodData, period = 'month') {
     const svg = d3.select('#punctuality-chart');
     svg.selectAll('*').remove();
 
-    if (!monthlyData || monthlyData.length === 0) {
+    if (!periodData || periodData.length === 0) {
         svg.append('text')
             .attr('x', 400)
             .attr('y', 200)
@@ -113,7 +183,7 @@ function drawPunctualityChart(monthlyData) {
 
     // Scales
     const x = d3.scaleBand()
-        .domain(monthlyData.map(d => d.month))
+        .domain(periodData.map(d => d.period))
         .range([0, width])
         .padding(0.3);
 
@@ -126,19 +196,19 @@ function drawPunctualityChart(monthlyData) {
         .attr('transform', `translate(0,${height})`)
         .call(d3.axisBottom(x))
         .selectAll('text')
-        .attr('transform', 'rotate(-45)')
-        .style('text-anchor', 'end');
+        .attr('transform', period === 'year' ? 'rotate(0)' : 'rotate(-45)')
+        .style('text-anchor', period === 'year' ? 'middle' : 'end');
 
     g.append('g')
         .call(d3.axisLeft(y).tickFormat(d => d + '%'));
 
     // Add bars
     g.selectAll('.bar')
-        .data(monthlyData)
+        .data(periodData)
         .enter()
         .append('rect')
         .attr('class', 'bar')
-        .attr('x', d => x(d.month))
+        .attr('x', d => x(d.period))
         .attr('y', d => y(d.punctuality_rate))
         .attr('width', x.bandwidth())
         .attr('height', d => height - y(d.punctuality_rate))
@@ -147,11 +217,11 @@ function drawPunctualityChart(monthlyData) {
 
     // Add value labels on bars
     g.selectAll('.label')
-        .data(monthlyData)
+        .data(periodData)
         .enter()
         .append('text')
         .attr('class', 'label')
-        .attr('x', d => x(d.month) + x.bandwidth() / 2)
+        .attr('x', d => x(d.period) + x.bandwidth() / 2)
         .attr('y', d => y(d.punctuality_rate) - 5)
         .attr('text-anchor', 'middle')
         .style('font-size', '12px')

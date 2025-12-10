@@ -114,6 +114,21 @@
     <!-- Punctuality Chart -->
     <div class="chart-container">
         <div class="chart-title">Évolution de la ponctualité par mois</div>
+        <div style="margin-bottom: 15px; display: flex; gap: 20px; align-items: center;">
+            <div>
+                <label for="punctuality-period-select">Période : </label>
+                <select id="punctuality-period-select">
+                    <option value="month" selected>Par Mois</option>
+                    <option value="year">Par Année</option>
+                </select>
+            </div>
+            <div id="punctuality-year-selector-container" style="display: none;">
+                <label for="punctuality-year-select">Année : </label>
+                <select id="punctuality-year-select">
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+        </div>
         <svg id="punctuality-chart"></svg>
     </div>
 
