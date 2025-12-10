@@ -75,7 +75,7 @@ export function getAuthToken() {
 // Fonction pour formater les nombres avec une précision décimale
 export function formatWaitingTime(value) {
     // Vérifier si la valeur est un nombre valide et supérieure à 0
-    return typeof value === 'number' && value > 0 ? value.toFixed(1) + ' min' : '0 min';  // Afficher '0 min' si la valeur est 0 ou invalide
+    return typeof value === 'number' && value > 0 ? value.toFixed(1) : '0';  // Afficher '0' si la valeur est 0 ou invalide
 }
 
 // Fonction pour formater les nombres en milliers (k) ou millions (m)
