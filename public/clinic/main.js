@@ -6,9 +6,6 @@ import {loadVisitsRevenue} from '../clinic/visitsRevenue.js';
 import {loadWaitingTimes} from '../clinic/waitingTimes.js';
 import {loadActesData}  from '../clinic/actesTable.js';
 import {loadChartData} from '../clinic/patientVisits.js';
-import {loadHourlyRevenueHeatmap} from '../clinic/hourlyRevenueHeatmap.js';
-import {loadPatientsHeatmap} from '../clinic/heatmap.js';
-import {loadWaitingTimeHeatmap} from '../clinic/heatmap-waiting-time.js';
 import {loadStackedBarData} from '../clinic/rendezvous.js'
 
 
@@ -27,20 +24,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const { startDate, endDate } = getLastMonthDateRange();
 
     // Initialiser les champs de date avec les valeurs du mois précédent
-    document.getElementById('start-date').value = startDate;
+    document.getElementById('start-date').value = '2023-01-01';
     document.getElementById('end-date').value = endDate;
     
     // Charger les données pour le mois précédent
-    loadStats(startDate, endDate);
-    loadMedecinsData(startDate, endDate);
-    loadVisitsRevenue(startDate, endDate);
-    loadChartData(startDate, endDate);
-    loadHourlyRevenueHeatmap(startDate, endDate);
-    loadPatientsHeatmap(startDate, endDate);
-    loadActesData(startDate, endDate);
-    loadWaitingTimes(startDate, endDate);
-    loadWaitingTimeHeatmap(startDate, endDate);
-    loadStackedBarData(startDate, endDate);
+    loadStats('2023-01-01', endDate);
+    loadMedecinsData('2023-01-01', endDate);
+    loadVisitsRevenue('2023-01-01', endDate);
+    loadChartData('2023-01-01', endDate);
+    loadActesData('2023-01-01', endDate);
+    loadWaitingTimes('2023-01-01', endDate);
+    loadStackedBarData('2023-01-01', endDate);
 
     // Ajouter un écouteur pour le bouton "Appliquer"
     document.getElementById('apply-period').addEventListener('click', function () {
@@ -50,12 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
             loadVisitsRevenue(startDate, endDate);
             loadStats(startDate, endDate);
             loadChartData(startDate, endDate);
-            loadHourlyRevenueHeatmap(startDate, endDate);
-            loadPatientsHeatmap(startDate, endDate);
             loadActesData(startDate, endDate);
             loadMedecinsData(startDate, endDate);
             loadWaitingTimes(startDate, endDate);
-            loadWaitingTimeHeatmap(startDate, endDate);
             loadStackedBarData(startDate, endDate);
         } else {
             alert('Veuillez sélectionner les deux dates.');

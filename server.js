@@ -98,6 +98,7 @@ app.use('/api/patient-visits', authenticateToken, require('./routes/patientVisit
 app.use('/api/consultations', authenticateToken, require('./routes/consultationsRoute')(connection));
 app.use('/api/heatmap-data', authenticateToken, require('./routes/heatmapRoute')(connection)); // Ensure this line is correct
 app.use('/api/hourly-revenue',authenticateToken, require('./routes/hourlyRevenueRoute')(connection));
+app.use('/api/daily-revenue', authenticateToken, require('./routes/dailyRevenueRoute')(connection));
 app.use('/api/medecins', authenticateToken, require('./routes/medecinsRoute')(connection));
 app.use('/api/doctor-time-analysis', authenticateToken,require('./routes/doctorTimeAnalysisRoute')(connection));
 app.use('/api/waiting-times', authenticateToken,require('./routes/waitingTimeRoute')(connection));

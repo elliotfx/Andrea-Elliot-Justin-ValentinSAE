@@ -3,12 +3,12 @@ import { checkAuth } from "../utilities/utils.js";
 
 function drawStackedBarChart(data) {
     const svg = d3.select("#stacked-bar-chart");
-    const margin = { top: 20, right: 20, bottom: 70, left: 60 };
-    const width = 800 - margin.left - margin.right;
-    const height = 400 - margin.top - margin.bottom;
+    const margin = { top: 30, right: 20, bottom: 70, left: 70 };
+    const width = 900 - margin.left - margin.right;
+    const height = 420 - margin.top - margin.bottom;
 
-    // Vérification des données
-    console.log("Data reçue pour le graphique : ", data);
+    // Clear previous
+    svg.selectAll("*").remove();
 
     svg.attr("width", width + margin.left + margin.right)
        .attr("height", height + margin.top + margin.bottom);
@@ -16,30 +16,35 @@ function drawStackedBarChart(data) {
     const g = svg.append("g")
                  .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const xScale = d3.scaleBand().range([0, width]).padding(0.4);
+    const parsed = data.map(d => ({
+        mois_prise: d.mois_prise,
+        rendezvous_meme_mois: Number(d.rendezvous_meme_mois) || 0,
+        rendezvous_mois_suivants: Number(d.rendezvous_mois_suivants) || 0
+    }));
+
+    const xScale = d3.scaleBand().range([0, width]).padding(0.35);
     const yScale = d3.scaleLinear().range([height, 0]);
 
-    // Vérification des données après le mapping
-    const months = data.map(d => d.mois_prise);
-    console.log("Mois : ", months);
-
-    // Définir les couleurs pour les barres empilées
     const color = d3.scaleOrdinal()
                     .domain(["rendezvous_meme_mois", "rendezvous_mois_suivants"])
-                    .range(["#4CAF50", "#FF9800"]);
+                    .range(["#4CAF50", "#FFC107"]);
 
-    // Empiler les données pour rendezvous_meme_mois et rendezvous_mois_suivants
     const stackedData = d3.stack()
         .keys(["rendezvous_meme_mois", "rendezvous_mois_suivants"])
-        (data);
+        (parsed);
 
-    console.log("Stacked data : ", stackedData);
+    xScale.domain(parsed.map(d => d.mois_prise));
+    const maxY = d3.max(stackedData[stackedData.length - 1], d => d[1]) || 1;
+    yScale.domain([0, maxY * 1.1]).nice();
 
-    // Définir les domaines des échelles
-    xScale.domain(data.map(d => d.mois_prise));  // Utilisation de la clé correcte 'mois_prise'
-    yScale.domain([0, d3.max(stackedData[stackedData.length - 1], d => d[1])]);
+    // Grid
+    g.append("g")
+     .attr("class", "grid")
+     .call(d3.axisLeft(yScale).ticks(6).tickSize(-width).tickFormat(""))
+     .selectAll("line")
+     .attr("stroke", "#e6e6e6");
 
-    // Ajout des axes
+    // Axes
     g.append("g")
      .attr("transform", `translate(0,${height})`)
      .call(d3.axisBottom(xScale))
@@ -48,17 +53,17 @@ function drawStackedBarChart(data) {
      .style("text-anchor", "end");
 
     g.append("g")
-     .call(d3.axisLeft(yScale).ticks(10))
+     .call(d3.axisLeft(yScale).ticks(8))
      .append("text")
      .attr("transform", "rotate(-90)")
      .attr("y", -50)
      .attr("x", -height / 2)
      .attr("dy", "1em")
      .attr("text-anchor", "middle")
-     .attr("fill", "black")
+     .attr("fill", "#333")
      .text("Nombre de rendez-vous");
 
-    // Création des barres empilées
+    // Stacked bars
     const layers = g.selectAll(".layer")
                     .data(stackedData)
                     .enter()
@@ -70,26 +75,58 @@ function drawStackedBarChart(data) {
           .data(d => d)
           .enter()
           .append("rect")
-          .attr("x", d => xScale(d.data.mois_prise))  // Utilisation de 'mois_prise' pour l'axe des X
+          .attr("x", d => xScale(d.data.mois_prise))
           .attr("y", d => yScale(d[1]))
           .attr("height", d => yScale(d[0]) - yScale(d[1]))
-          .attr("width", xScale.bandwidth());
+          .attr("width", xScale.bandwidth())
+          .attr("rx", 2);
 
-    // Ajout du tooltip au survol
+    // Tooltip
     const tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
     g.selectAll("rect")
         .on("mouseover", function(event, d) {
-            tooltip.transition().duration(200).style("opacity", .9);
-            tooltip.html(`Mois: ${d.data.mois_prise}<br/>Rendez-vous même mois: ${d.data.rendezvous_meme_mois}<br/>Rendez-vous mois suivant: ${d.data.rendezvous_mois_suivants}`)
-                .style("left", (event.pageX + 5) + "px")
-                .style("top", (event.pageY - 28) + "px");
+            tooltip.transition().duration(150).style("opacity", 0.95);
+            tooltip.html(`Mois: ${d.data.mois_prise}<br/>Même mois: ${d.data.rendezvous_meme_mois}<br/>Mois suivants: ${d.data.rendezvous_mois_suivants}`)
+                .style("left", (event.pageX + 8) + "px")
+                .style("top", (event.pageY - 30) + "px");
         })
         .on("mouseout", function() {
-            tooltip.transition().duration(500).style("opacity", 0);
+            tooltip.transition().duration(200).style("opacity", 0);
         });
+
+    // Légende
+    const legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform", `translate(${width - 150}, 10)`);
+
+    const legendData = [
+        { label: "Rendez-vous même mois", color: "#4CAF50" },
+        { label: "Rendez-vous mois suivants", color: "#FFC107" }
+    ];
+
+    legend.selectAll("rect")
+        .data(legendData)
+        .enter()
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", (d, i) => i * 22)
+        .attr("width", 14)
+        .attr("height", 14)
+        .attr("fill", d => d.color)
+        .attr("rx", 2);
+
+    legend.selectAll("text")
+        .data(legendData)
+        .enter()
+        .append("text")
+        .attr("x", 20)
+        .attr("y", (d, i) => i * 22 + 11)
+        .text(d => d.label)
+        .style("font-size", "12px")
+        .style("fill", "#333");
 }
 
 // Chargement des données
