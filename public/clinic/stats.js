@@ -30,6 +30,9 @@ export function loadStats(startDate, endDate) {
         d3.select('#total_patients').text(data.total_patients);
         d3.select('#CA_Per_hour').text(data.CA_Per_hour + ' €');
         d3.select('#CA').text(data.CA + ' €');
+        d3.select('#avg-revenue-per-visit').text(data.avg_revenue_per_visit + ' €');
+        d3.select('#avg-visit-duration').text(data.avg_visit_duration + ' min');
+        d3.select('#avg-visits-per-patient').text(data.avg_visits_per_patient);
     })
     .catch(error => console.error('Erreur lors de la récupération des données :', error));
 }
