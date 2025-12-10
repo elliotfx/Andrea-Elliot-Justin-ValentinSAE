@@ -335,41 +335,73 @@ svg {
 .tooltip {
     position: absolute;
     text-align: center;
-    padding: 8px;
-    font: 12px sans-serif;
-    background: rgba(0, 0, 0, 0.75);
+    padding: 12px 16px;
+    font: 13px sans-serif;
+    background: rgba(0, 0, 0, 0.95);
     color: #fff;
     border: 0px;
     border-radius: 8px;
     pointer-events: none;
-    opacity: 0; /* Hidden by default */
+    opacity: 0;
     transition: opacity 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
 }
 
 /* Legend styling */
 .legend rect {
     stroke-width: 0;
+    rx: 3;
 }
 
 .legend text {
     font-size: 12px;
     fill: #333;
+    font-weight: 500;
 }
 
 /* Specific Styles for Visits and Revenue per Month Chart */
 #visits-revenue-chart .bar {
-    fill: steelblue;
+    fill: #5BA3F5;
+    stroke: none;
+    filter: drop-shadow(0 2px 4px rgba(91, 163, 245, 0.2));
+    transition: all 0.2s ease;
+}
+
+#visits-revenue-chart .bar:hover {
+    filter: drop-shadow(0 4px 8px rgba(91, 163, 245, 0.4));
+    opacity: 1;
 }
 
 #visits-revenue-chart .line {
     fill: none;
-    stroke: orange;
-    stroke-width: 2px;
+    stroke: #FF9500;
+    stroke-width: 3px;
+    filter: drop-shadow(0 2px 4px rgba(255, 149, 0, 0.2));
+}
+
+#visits-revenue-chart .dot {
+    fill: #FF9500;
+    stroke: #fff;
+    stroke-width: 2;
+    filter: drop-shadow(0 1px 3px rgba(255, 149, 0, 0.4));
+    transition: all 0.2s ease;
+}
+
+#visits-revenue-chart .dot:hover {
+    r: 7;
+    filter: drop-shadow(0 2px 6px rgba(255, 149, 0, 0.6));
 }
 
 #visits-revenue-chart .axis-label {
     font-size: 14px;
     font-weight: bold;
+}
+
+#visits-revenue-chart .grid {
+    stroke: #e0e0e0;
+    stroke-dasharray: 3,3;
+    opacity: 0.3;
 }
 
 /* Specific Styles for Consultations per Doctor Chart */

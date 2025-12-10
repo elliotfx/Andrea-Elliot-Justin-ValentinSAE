@@ -74,6 +74,24 @@ import { checkAuth } from "../utilities/utils.js";
                 .attr("class", "line")
                 .attr("d", line);
 
+            // Ajouter des points sur la ligne
+            svg.selectAll(".dot")
+                .data(data)
+                .enter().append("circle")
+                .attr("class", "dot")
+                .attr("cx", d => x(d.month) + x.bandwidth() / 2)
+                .attr("cy", d => yRight(d.revenue))
+                .attr("r", 5)
+                .on("mouseover", function(event, d) {
+                    tooltip.transition().duration(200).style("opacity", .9);
+                    tooltip.html(`Visits: ${d.visit_count}<br>Revenue: ${d.revenue} €`)
+                        .style("left", (event.pageX + 5) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
+
             svg.append("g")
                 .attr("class", "x-axis")
                 .attr("transform", `translate(0,${height})`)
@@ -109,32 +127,46 @@ import { checkAuth } from "../utilities/utils.js";
                 .style("text-anchor", "middle")
                 .text("Revenue (€)");
 
-            // Adding the legend
+            // Adding the legend on the right side
             const legend = svg.append("g")
                 .attr("class", "legend")
-                .attr("transform", `translate(${width - 150},${-margin.top})`);
+                .attr("transform", `translate(${width + 80},${height / 2 - 40})`);
+
+            // Cadre de la légende
+            legend.append("rect")
+                .attr("x", -15)
+                .attr("y", -15)
+                .attr("width", 150)
+                .attr("height", 80)
+                .attr("rx", 6)
+                .attr("fill", "#ffffff")
+                .attr("stroke", "#ddd")
+                .attr("stroke-width", 1);
 
             const legendData = [
                 { label: "Number of Visits", color: "steelblue" },
                 { label: "Revenue (€)", color: "orange" }
             ];
 
-            legend.selectAll("rect")
+            legend.selectAll("rect.legend-box")
                 .data(legendData)
                 .enter().append("rect")
+                .attr("class", "legend-box")
                 .attr("x", 0)
-                .attr("y", (d, i) => i * 20)
+                .attr("y", (d, i) => i * 30)
                 .attr("width", 15)
                 .attr("height", 15)
+                .attr("rx", 2)
                 .attr("fill", d => d.color);
 
             legend.selectAll("text")
                 .data(legendData)
                 .enter().append("text")
-                .attr("x", 20)
-                .attr("y", (d, i) => i * 20 + 12)
+                .attr("x", 22)
+                .attr("y", (d, i) => i * 30 + 12)
                 .text(d => d.label)
                 .style("font-size", "12px")
+                .style("font-weight", "500")
                 .attr("alignment-baseline", "middle");
         })
         .catch(error => console.error('Erreur lors de la récupération des données:', error));

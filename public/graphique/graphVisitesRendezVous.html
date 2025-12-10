@@ -74,16 +74,28 @@
         <svg id="stacked-bar-chart"></svg>
     </div>
 
+    <!-- Graphique : Répartition des rendez-vous (Donut Chart) -->
+    <div class="chart-container">
+        <div class="chart-title">État des rendez-vous</div>
+        <div class="chart-description">
+            Ce graphique en anneau présente la répartition des rendez-vous selon leur statut (confirmés, annulés, en attente),
+            permettant de suivre le taux d'annulation et la fiabilité de la planification.
+        </div>
+        <svg id="appointment-status-chart"></svg>
+    </div>
+
     <!-- Scripts -->
     <script type="module" src="../clinic/stats.js"></script>
     <script type="module" src="../clinic/visitsRevenue.js"></script>
     <script type="module" src="../clinic/rendezvous.js"></script>
+    <script type="module" src="../clinic/appointmentStatus.js"></script>
     <script type="module" src="../utilities/utils.js"></script>
     <script type="module">
         import { checkAuth, getLastMonthDateRange, getSelectedDateRange } from "../utilities/utils.js";
         import { loadStats } from '../clinic/stats.js';
         import { loadVisitsRevenue } from '../clinic/visitsRevenue.js';
         import { loadStackedBarData } from '../clinic/rendezvous.js';
+        import { loadAppointmentStatus } from '../clinic/appointmentStatus.js';
 
         // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
@@ -99,6 +111,7 @@
             loadStats('2023-01-01', endDate);
             loadVisitsRevenue('2023-01-01', endDate);
             loadStackedBarData('2023-01-01', endDate);
+            loadAppointmentStatus('2023-01-01', endDate);
 
             // Ajouter un écouteur pour le bouton "Appliquer"
             document.getElementById('apply-period').addEventListener('click', function () {
@@ -108,6 +121,7 @@
                     loadStats(startDate, endDate);
                     loadVisitsRevenue(startDate, endDate);
                     loadStackedBarData(startDate, endDate);
+                    loadAppointmentStatus(startDate, endDate);
                 } else {
                     alert('Veuillez sélectionner les deux dates.');
                 }
