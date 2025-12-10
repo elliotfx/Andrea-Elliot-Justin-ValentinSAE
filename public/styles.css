@@ -233,6 +233,16 @@ body.with-sidebar {
     border-bottom: 2px solid #2196F3;
 }
 
+.column-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.column-title a:hover {
+    color: #667eea;
+}
+
 .stats-card {
     background-color: #fff;
     border: 1px solid #ddd;
