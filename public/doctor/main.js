@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const { startDate, endDate } = getLastMonthDateRange();
 
     // Initialiser les champs de date avec les valeurs du mois précédent
-    document.getElementById('start-date').value = startDate;
+    document.getElementById('start-date').value = '2023-01-01';
     document.getElementById('end-date').value = endDate;
     populateDoctorDropdown(); // Call the function to populate the doctor dropdown
     setupEventListeners(); // Setup the other event listeners
