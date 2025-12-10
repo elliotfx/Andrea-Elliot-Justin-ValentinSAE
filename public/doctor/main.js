@@ -1,7 +1,7 @@
 // main.js
 
 import { setupEventListeners } from './eventHandlers.js';
-import {checkAuth,getLastMonthDateRange} from '../utilities/utils.js'
+import { checkAuth, getDataDateRange } from '../utilities/utils.js'
 
 // Function to populate the doctor dropdown
 function populateDoctorDropdown() {
@@ -21,26 +21,34 @@ function populateDoctorDropdown() {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => response.json())
-    .then(doctors => {
-        const select = document.getElementById('doctor-select');
-        doctors.forEach(doctor => {
-            const option = document.createElement('option');
-            option.value = doctor.id;
-            option.textContent = `${doctor.firstName} ${doctor.lastName}`;
-            select.appendChild(option);
-        });
-    })
-    .catch(error => console.error('Erreur lors de la récupération des médecins:', error));
+        .then(response => response.json())
+        .then(doctors => {
+            const select = document.getElementById('doctor-select');
+            doctors.forEach(doctor => {
+                const option = document.createElement('option');
+                option.value = doctor.id;
+                option.textContent = `${doctor.firstName} ${doctor.lastName}`;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des médecins:', error));
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     checkAuth();
-    const { startDate, endDate } = getLastMonthDateRange();
+    const { startDate, endDate } = await getDataDateRange();
 
-    // Initialiser les champs de date avec les valeurs du mois précédent
+    console.log('Dates récupérées:', { startDate, endDate });
+
+    // Initialiser les champs de date avec les valeurs réelles
     document.getElementById('start-date').value = startDate;
     document.getElementById('end-date').value = endDate;
+
+    console.log('Valeurs assignées:', {
+        start: document.getElementById('start-date').value,
+        end: document.getElementById('end-date').value
+    });
+
     populateDoctorDropdown(); // Call the function to populate the doctor dropdown
     setupEventListeners(); // Setup the other event listeners
 });
