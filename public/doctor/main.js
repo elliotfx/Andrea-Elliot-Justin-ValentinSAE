@@ -1,10 +1,10 @@
 // main.js
 
-import { setupEventListeners } from './eventHandlers.js';
+import { setupEventListeners, loadDashboardData } from './eventHandlers.js';
 import { checkAuth, getDataDateRange } from '../utilities/utils.js'
 
 // Function to populate the doctor dropdown
-function populateDoctorDropdown() {
+async function populateDoctorDropdown() {
     const token = localStorage.getItem('token'); // Get JWT token from localStorage
 
     if (!token) {
@@ -14,7 +14,7 @@ function populateDoctorDropdown() {
     }
 
     // API call to get the list of doctors
-    fetch('/api/doctors', {
+    return fetch('/api/doctors', {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`, // Add JWT token to Authorization header
@@ -30,6 +30,7 @@ function populateDoctorDropdown() {
                 option.textContent = `${doctor.firstName} ${doctor.lastName}`;
                 select.appendChild(option);
             });
+            console.log('Médecins chargés:', doctors.length);
         })
         .catch(error => console.error('Erreur lors de la récupération des médecins:', error));
 }
@@ -49,6 +50,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         end: document.getElementById('end-date').value
     });
 
-    populateDoctorDropdown(); // Call the function to populate the doctor dropdown
+    // Wait for doctors to be loaded before loading dashboard data
+    await populateDoctorDropdown(); // Wait for doctor dropdown to populate
     setupEventListeners(); // Setup the other event listeners
+
+    // Load dashboard data automatically on page load AFTER doctors are loaded
+    console.log('Chargement automatique des données...');
+    await loadDashboardData();
 });
