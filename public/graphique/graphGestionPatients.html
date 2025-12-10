@@ -56,46 +56,24 @@
         </div>
     </div>
 
-    <!-- Graphique : Évolution des patients -->
+    <!-- Graphique : Analyse complète de la gestion des patients -->
     <div class="chart-container">
-        <div class="chart-title">Évolution mensuelle des différentes catégories de patients</div>
+        <div class="chart-title">Analyse complète de l'évolution des patients</div>
         <div class="chart-description">
-            Ce graphique présente l'évolution des nouveaux patients, des patients retenus et des patients n'étant jamais revenus, 
-            ainsi que leurs cumuls respectifs au fil des mois.
+            Ce graphique présente l'évolution des différentes catégories de patients (nouveaux, fidèles, n'étant jamais revenus) 
+            avec leurs cumuls respectifs au fil des mois.
         </div>
-        <svg id="patient-visits-chart"></svg>
-    </div>
-
-    <!-- Heatmap : Patients uniques par créneau horaire -->
-    <div class="chart-container">
-        <div class="chart-title">Nombre de patients uniques par créneau horaire et par mois</div>
-        <div class="chart-description">
-            Cette carte thermique montre le nombre de patients uniques ayant visité la clinique pour chaque créneau horaire au cours des différents mois.
-            Les couleurs plus foncées indiquent une plus forte affluence.
-        </div>
-        <svg id="unique-patients-heatmap"></svg>
-    </div>
-
-    <!-- Heatmap : Visites successives -->
-    <div class="chart-container">
-        <div class="chart-title">Visites successives après la première visite par créneau horaire</div>
-        <div class="chart-description">
-            Ce graphique illustre le nombre de visites supplémentaires effectuées par les patients après leur première visite, 
-            réparties par tranche horaire et par mois. Cela permet d'identifier les créneaux favorisant la fidélisation.
-        </div>
-        <svg id="subsequent-visits-heatmap"></svg>
+        <svg id="patient-evolution-chart"></svg>
     </div>
 
     <!-- Scripts -->
     <script type="module" src="../clinic/stats.js"></script>
-    <script type="module" src="../clinic/patientVisits.js"></script>
-    <script type="module" src="../clinic/heatmap.js"></script>
+    <script type="module" src="../clinic/patientEvolution.js"></script>
     <script type="module" src="../utilities/utils.js"></script>
     <script type="module">
         import { checkAuth, getLastMonthDateRange, getSelectedDateRange } from "../utilities/utils.js";
         import { loadStats } from '../clinic/stats.js';
-        import { loadChartData } from '../clinic/patientVisits.js';
-        import { loadPatientsHeatmap } from '../clinic/heatmap.js';
+        import { loadPatientEvolutionChart } from '../clinic/patientEvolution.js';
 
         // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
@@ -109,8 +87,7 @@
             
             // Charger les données initiales
             loadStats('2023-01-01', endDate);
-            loadChartData('2023-01-01', endDate);
-            loadPatientsHeatmap('2023-01-01', endDate);
+            loadPatientEvolutionChart('2023-01-01', endDate);
 
             // Ajouter un écouteur pour le bouton "Appliquer"
             document.getElementById('apply-period').addEventListener('click', function () {
@@ -118,8 +95,7 @@
 
                 if (startDate && endDate) {
                     loadStats(startDate, endDate);
-                    loadChartData(startDate, endDate);
-                    loadPatientsHeatmap(startDate, endDate);
+                    loadPatientEvolutionChart(startDate, endDate);
                 } else {
                     alert('Veuillez sélectionner les deux dates.');
                 }

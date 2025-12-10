@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financier - Tableau de bord</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <!-- Bouton retour -->
+    <a href="../index.html" class="back-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Retour aux indicateurs
+    </a>
+
+    <!-- Titre de la page -->
+    <div class="page-header">
+        <h1>Financier</h1>
+        <p>Analyse détaillée de la performance financière</p>
+    </div>
+
+    <!-- Sélecteur de période -->
+    <div class="period-selector">
+        <label for="start-date">Début :</label>
+        <input type="date" id="start-date" name="start-date">
+    
+        <label for="end-date">Fin :</label>
+        <input type="date" id="end-date" name="end-date">
+    
+        <button id="apply-period">Appliquer</button>
+    </div>
+
+    <!-- Section des indicateurs clés -->
+    <div id="stats-card-container">
+        <div class="stats-card">
+            <div class="stats-title">Chiffre d'affaires</div>
+            <div class="stats-value" id="CA">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">CA par Heure</div>
+            <div class="stats-value" id="CA_Per_hour">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Revenu moyen par visite</div>
+            <div class="stats-value" id="avg-revenue-per-visit">Chargement...</div>
+        </div>
+    </div>
+
+    <!-- Graphique : Analyse complète financière -->
+    <div class="chart-container">
+        <div class="chart-title">Évolution des revenus par mois</div>
+        <div class="chart-description">
+            Ce graphique présente l'évolution du chiffre d'affaires et du revenu moyen par visite au fil des mois,
+            avec les données cumulatives pour identifier les tendances financières.
+        </div>
+        <svg id="financial-chart"></svg>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../clinic/stats.js"></script>
+    <script type="module" src="../clinic/financial.js"></script>
+    <script type="module" src="../utilities/utils.js"></script>
+    <script type="module">
+        import { checkAuth, getLastMonthDateRange, getSelectedDateRange } from "../utilities/utils.js";
+        import { loadStats } from '../clinic/stats.js';
+        import { loadFinancialChart } from '../clinic/financial.js';
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+
+            const { startDate, endDate } = getLastMonthDateRange();
+
+            // Initialiser les champs de date
+            document.getElementById('start-date').value = '2023-01-01';
+            document.getElementById('end-date').value = endDate;
+            
+            // Charger les données initiales
+            loadStats('2023-01-01', endDate);
+            loadFinancialChart('2023-01-01', endDate);
+
+            // Ajouter un écouteur pour le bouton "Appliquer"
+            document.getElementById('apply-period').addEventListener('click', function () {
+                const { startDate, endDate } = getSelectedDateRange();
+
+                if (startDate && endDate) {
+                    loadStats(startDate, endDate);
+                    loadFinancialChart(startDate, endDate);
+                } else {
+                    alert('Veuillez sélectionner les deux dates.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
