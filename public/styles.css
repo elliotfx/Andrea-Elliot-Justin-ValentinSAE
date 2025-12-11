@@ -10,6 +10,60 @@ body {
     background-color: #f4f4f4;
 }
 
+/* Page Header */
+.page-header {
+    position: relative;
+    text-align: center;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Back Button */
+.page-header .back-button {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.page-header .back-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) translateX(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.page-header .back-button svg {
+    width: 20px;
+    height: 20px;
+}
+
+.page-header h1 {
+    margin: 0 0 10px 0;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.page-header p {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.9;
+}
+
 /* Navbar Styles */
 .navbar {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -70,6 +124,7 @@ body {
 
 .nav-links li a.active::after {
     width: 80%;
+>>>>>>> origin/develop
 }
 
 /* Period Selector */
@@ -135,11 +190,54 @@ body {
 
 /* Stats Card Container */
 #stats-card-container {
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
     margin-bottom: 40px;
     padding: 0 20px;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Pour les pages avec moins de cartes, utiliser flex */
+.page-header ~ #stats-card-container {
+    display: flex;
+    justify-content: center;
     flex-wrap: wrap;
+    gap: 20px;
+}
+
+.page-header ~ #stats-card-container .stats-card {
+    flex: 1 1 calc(25% - 20px);
+    max-width: 280px;
+    min-width: 200px;
+}
+
+.indicator-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.column-title {
+    text-align: center;
+    margin-bottom: 15px;
+    margin-top: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2196F3;
+}
+
+.column-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.column-title a:hover {
+    color: #667eea;
 }
 
 .stats-card {
@@ -148,33 +246,39 @@ body {
     border-radius: 8px;
     padding: 20px;
     text-align: center;
-    width: 30%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease-in-out;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    flex: 1;
 }
 
 .stats-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .stats-title {
-    font-size: 16px;
+    font-size: 14px;
     margin-bottom: 10px;
     color: #666;
-    min-height: 60px; /* Ensure uniform height for the titles */
+    min-height: 40px;
     display: flex;
     justify-content: center;
-    align-items: center; /* Vertically align the text */
+    align-items: center;
+    font-weight: 600;
+    text-align: center;
 }
 
 .stats-value {
     font-size: 28px;
     font-weight: bold;
-    color: #333;
+    color: #2196F3;
     margin-top: 10px;
+    text-align: center;
 }
 
 /* Charts Container */
@@ -190,18 +294,30 @@ body {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 10px;
+    padding: 20px;
     text-align: center;
-    width: 65%;
+    width: 90%;
+    max-width: 1400px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+}
+
+.chart-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
     margin-bottom: 10px;
 }
 
 /* Ajustement de la marge pour réduire l'espace entre le graphique et le texte */
 .chart-description, .chart-interpretation {
     margin-top: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     line-height: 1.6;
+    color: #666;
+    font-size: 14px;
+    text-align: left;
+    padding: 0 20px;
 }
 
 /* SVG Chart Styles */
@@ -216,41 +332,73 @@ svg {
 .tooltip {
     position: absolute;
     text-align: center;
-    padding: 8px;
-    font: 12px sans-serif;
-    background: rgba(0, 0, 0, 0.75);
+    padding: 12px 16px;
+    font: 13px sans-serif;
+    background: rgba(0, 0, 0, 0.95);
     color: #fff;
     border: 0px;
     border-radius: 8px;
     pointer-events: none;
-    opacity: 0; /* Hidden by default */
+    opacity: 0;
     transition: opacity 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
 }
 
 /* Legend styling */
 .legend rect {
     stroke-width: 0;
+    rx: 3;
 }
 
 .legend text {
     font-size: 12px;
     fill: #333;
+    font-weight: 500;
 }
 
 /* Specific Styles for Visits and Revenue per Month Chart */
 #visits-revenue-chart .bar {
-    fill: steelblue;
+    fill: #5BA3F5;
+    stroke: none;
+    filter: drop-shadow(0 2px 4px rgba(91, 163, 245, 0.2));
+    transition: all 0.2s ease;
+}
+
+#visits-revenue-chart .bar:hover {
+    filter: drop-shadow(0 4px 8px rgba(91, 163, 245, 0.4));
+    opacity: 1;
 }
 
 #visits-revenue-chart .line {
     fill: none;
-    stroke: orange;
-    stroke-width: 2px;
+    stroke: #FF9500;
+    stroke-width: 3px;
+    filter: drop-shadow(0 2px 4px rgba(255, 149, 0, 0.2));
+}
+
+#visits-revenue-chart .dot {
+    fill: #FF9500;
+    stroke: #fff;
+    stroke-width: 2;
+    filter: drop-shadow(0 1px 3px rgba(255, 149, 0, 0.4));
+    transition: all 0.2s ease;
+}
+
+#visits-revenue-chart .dot:hover {
+    r: 7;
+    filter: drop-shadow(0 2px 6px rgba(255, 149, 0, 0.6));
 }
 
 #visits-revenue-chart .axis-label {
     font-size: 14px;
     font-weight: bold;
+}
+
+#visits-revenue-chart .grid {
+    stroke: #e0e0e0;
+    stroke-dasharray: 3,3;
+    opacity: 0.3;
 }
 
 /* Specific Styles for Consultations per Doctor Chart */
@@ -266,7 +414,7 @@ svg {
 
 #consultations-chart .line-returning-patients {
     fill: none;
-    stroke: green;
+    stroke: #2196F3;
     stroke-width: 2px;
 }
 
@@ -281,7 +429,7 @@ svg {
 }
 
 #patient-visits-chart .bar-two-visits {
-    fill: #32CD32; /* LimeGreen for two visits */
+    fill: #42A5F5; /* Bleu dentiste pour deux visites */
 }
 
 #patient-visits-chart .line-two-visits {
@@ -314,7 +462,7 @@ svg {
 
 #doctor-indicators-chart .line-returning-patients {
     fill: none;
-    stroke: green;
+    stroke: #2196F3;
     stroke-width: 2px;
 }
 
@@ -448,16 +596,56 @@ svg {
     }
 
     .chart-container {
-        width: 90%;
+        width: 95%;
     }
 
     #stats-card-container {
+        grid-template-columns: 1fr;
+        padding: 0 10px;
+    }
+
+    .page-header ~ #stats-card-container {
         flex-direction: column;
         align-items: center;
     }
 
+    .page-header ~ #stats-card-container .stats-card {
+        flex: 1 1 100%;
+        max-width: 100%;
+        width: 90%;
+    }
+
     .stats-card {
-        width: 80%;
+        width: 100%;
         margin-bottom: 20px;
+    }
+
+    .indicator-column {
+        width: 100%;
+    }
+
+    .period-selector {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .page-header .back-button {
+        position: static;
+        transform: none;
+        margin: 0 auto 15px auto;
+        display: flex;
+        width: fit-content;
+    }
+
+    .page-header .back-button:hover {
+        transform: translateX(-5px);
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .page-header p {
+        font-size: 14px;
     }
 }

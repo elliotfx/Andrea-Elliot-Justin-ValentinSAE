@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visites et Rendez-vous - Tableau de bord</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <!-- Titre de la page -->
+    <div class="page-header">
+        <a href="../index.html" class="back-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Retour aux indicateurs
+        </a>
+        <h1>Visites et Rendez-vous</h1>
+        <p>Analyse de l'activité et de la planification des consultations</p>
+    </div>
+
+    <!-- Sélecteur de période -->
+    <div class="period-selector">
+        <label for="start-date">Début :</label>
+        <input type="date" id="start-date" name="start-date">
+    
+        <label for="end-date">Fin :</label>
+        <input type="date" id="end-date" name="end-date">
+    
+        <button id="apply-period">Appliquer</button>
+    </div>
+
+    <!-- Section des indicateurs clés -->
+    <div id="stats-card-container">
+        <div class="stats-card">
+            <div class="stats-title">Nombre de visites</div>
+            <div class="stats-value" id="total-visits">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Rendez-vous planifiés</div>
+            <div class="stats-value" id="total_rendez_vous">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Durée moyenne des visites</div>
+            <div class="stats-value" id="avg-visit-duration">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Visite moyenne par patient</div>
+            <div class="stats-value" id="avg-visits-per-patient">Chargement...</div>
+        </div>
+    </div>
+
+    <!-- Graphique : Visites et revenus par mois -->
+    <div class="chart-container">
+        <div class="chart-title">Relation entre le nombre de visites et les revenus mensuels</div>
+        <div class="chart-description">
+            Ce graphique combine le nombre de visites (barres) avec les revenus générés (ligne) pour chaque mois,
+            permettant d'identifier les corrélations entre l'activité et la performance financière.
+        </div>
+        <svg id="visits-revenue-chart"></svg>
+    </div>
+
+    <!-- Graphique : Analyse des rendez-vous -->
+    <div class="chart-container">
+        <div class="chart-title">Répartition des rendez-vous par période de prise</div>
+        <div class="chart-description">
+            Ce graphique empilé montre la distribution des rendez-vous pris pour le mois en cours versus ceux planifiés pour les mois suivants,
+            permettant d'analyser les habitudes de planification des patients.
+        </div>
+        <svg id="stacked-bar-chart"></svg>
+    </div>
+
+    <!-- Graphique : Répartition des rendez-vous (Donut Chart) -->
+    <div class="chart-container">
+        <div class="chart-title">État des rendez-vous</div>
+        <div class="chart-description">
+            Ce graphique en anneau présente la répartition des rendez-vous selon leur statut (confirmés, annulés, en attente),
+            permettant de suivre le taux d'annulation et la fiabilité de la planification.
+        </div>
+        <svg id="appointment-status-chart"></svg>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../clinic/stats.js"></script>
+    <script type="module" src="../clinic/visitsRevenue.js"></script>
+    <script type="module" src="../clinic/rendezvous.js"></script>
+    <script type="module" src="../clinic/appointmentStatus.js"></script>
+    <script type="module" src="../utilities/utils.js"></script>
+    <script type="module">
+        import { checkAuth, getLastMonthDateRange, getSelectedDateRange } from "../utilities/utils.js";
+        import { loadStats } from '../clinic/stats.js';
+        import { loadVisitsRevenue } from '../clinic/visitsRevenue.js';
+        import { loadStackedBarData } from '../clinic/rendezvous.js';
+        import { loadAppointmentStatus } from '../clinic/appointmentStatus.js';
+
+        // Initialisation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+
+            const { startDate, endDate } = getLastMonthDateRange();
+
+            // Initialiser les champs de date
+            document.getElementById('start-date').value = '2023-01-01';
+            document.getElementById('end-date').value = endDate;
+            
+            // Charger les données initiales
+            loadStats('2023-01-01', endDate);
+            loadVisitsRevenue('2023-01-01', endDate);
+            loadStackedBarData('2023-01-01', endDate);
+            loadAppointmentStatus('2023-01-01', endDate);
+
+            // Ajouter un écouteur pour le bouton "Appliquer"
+            document.getElementById('apply-period').addEventListener('click', function () {
+                const { startDate, endDate } = getSelectedDateRange();
+
+                if (startDate && endDate) {
+                    loadStats(startDate, endDate);
+                    loadVisitsRevenue(startDate, endDate);
+                    loadStackedBarData(startDate, endDate);
+                    loadAppointmentStatus(startDate, endDate);
+                } else {
+                    alert('Veuillez sélectionner les deux dates.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

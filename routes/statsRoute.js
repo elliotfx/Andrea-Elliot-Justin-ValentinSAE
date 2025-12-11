@@ -108,9 +108,9 @@ module.exports = (connection) => {
       const avgWaitingTime = new Promise((resolve, reject) => {
         const query = `
           SELECT 
-              ROUND(AVG(TIMESTAMPDIFF(MINUTE, v.arrivalDate, v.endDate))) AS avg_waiting_time
+              ROUND(AVG(TIMESTAMPDIFF(MINUTE, v.arrivalDate, v.startDate))) AS avg_waiting_time
           FROM visit v
-          WHERE v.endDate IS NOT NULL AND v.currentLocalTimeAssignment BETWEEN ? AND ?;
+          WHERE v.arrivalDate IS NOT NULL AND v.startDate IS NOT NULL AND v.currentLocalTimeAssignment BETWEEN ? AND ?;
         `;
         connection.query(query, [startDate, endDate], (error, results) => {
           if (error) return reject(error);
@@ -132,6 +132,57 @@ module.exports = (connection) => {
         });
       });
 
+      // Requête 10 : Revenu moyen par visite (hors pourcentage)
+      const avgRevenuePerVisit = new Promise((resolve, reject) => {
+        const query = `
+          SELECT 
+              ROUND(
+                  (SELECT COALESCE(SUM(amount), 0) FROM payment WHERE payment.date BETWEEN ? AND ?) /
+                  NULLIF((SELECT COUNT(DISTINCT v.id) FROM visit v WHERE v.currentLocalTimeAssignment BETWEEN ? AND ?), 0),
+                  2
+              ) AS avg_revenue_per_visit;
+        `;
+        connection.query(query, [startDate, endDate, startDate, endDate], (error, results) => {
+          if (error) return reject(error);
+          resolve(results[0]);
+        });
+      });
+
+      // Requête 11 : Durée moyenne des visites (en minutes)
+      const avgVisitDuration = new Promise((resolve, reject) => {
+        const query = `
+          SELECT 
+              ROUND(
+                  AVG(TIMESTAMPDIFF(MINUTE, v.startdate, v.enddate)),
+                  2
+              ) AS avg_visit_duration
+          FROM visit v
+          WHERE v.startdate IS NOT NULL 
+              AND v.enddate IS NOT NULL 
+              AND v.currentLocalTimeAssignment BETWEEN ? AND ?;
+        `;
+        connection.query(query, [startDate, endDate], (error, results) => {
+          if (error) return reject(error);
+          resolve(results[0]);
+        });
+      });
+
+      // Requête 12 : Visite moyenne par patient
+      const avgVisitsPerPatient = new Promise((resolve, reject) => {
+        const query = `
+          SELECT 
+              ROUND(
+                  (SELECT COUNT(DISTINCT v.id) FROM visit v WHERE v.currentLocalTimeAssignment BETWEEN ? AND ?) /
+                  NULLIF((SELECT COUNT(DISTINCT v.patient_id) FROM visit v WHERE v.currentLocalTimeAssignment BETWEEN ? AND ?), 0),
+                  2
+              ) AS avg_visits_per_patient;
+        `;
+        connection.query(query, [startDate, endDate, startDate, endDate], (error, results) => {
+          if (error) return reject(error);
+          resolve(results[0]);
+        });
+      });
+
       // Exécution de toutes les requêtes en parallèle
       const results = await Promise.all([
         totalVisitsAndPatients,
@@ -140,7 +191,10 @@ module.exports = (connection) => {
         newPatientsContinued,
         caAndCaPerHour,
         avgWaitingTime,
-        takedVisits
+        takedVisits,
+        avgRevenuePerVisit,
+        avgVisitDuration,
+        avgVisitsPerPatient
       ]);
 
       // Envoi des résultats en réponse
@@ -153,7 +207,10 @@ module.exports = (connection) => {
         CA: results[4].CA,
         CA_Per_hour: results[4].CA_Per_hour,
         avg_waiting_time: results[5].avg_waiting_time,
-        taked_visits: results[6].taked_visits
+        taked_visits: results[6].taked_visits,
+        avg_revenue_per_visit: results[7].avg_revenue_per_visit || 0,
+        avg_visit_duration: results[8].avg_visit_duration || 0,
+        avg_visits_per_patient: results[9].avg_visits_per_patient || 0
       });
 
     } catch (error) {
