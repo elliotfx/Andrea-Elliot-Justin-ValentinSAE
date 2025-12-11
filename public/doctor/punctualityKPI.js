@@ -137,12 +137,6 @@ function updatePunctualityDisplay(data, doctorId) {
         onTimeCard.textContent = `${overallStats.on_time_appointments} / ${overallStats.total_appointments}`;
     }
 
-    // Update average delay
-    const avgDelayCard = document.getElementById('avg-delay');
-    if (avgDelayCard) {
-        avgDelayCard.textContent = `${overallStats.avg_delay_minutes} min`;
-    }
-
     // Update doctor-specific punctuality if a doctor is selected
     if (doctorId && doctorId !== 'all') {
         const doctorStats = data.punctuality_by_doctor.find(d => d.doctor_id == doctorId);
