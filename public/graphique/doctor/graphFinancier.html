@@ -114,53 +114,57 @@
             doctorSelect.addEventListener('change', loadData);
         });
 
-        async function loadData() {
+        function loadData() {
             const doctorId = document.getElementById('doctor-select').value;
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
             const token = localStorage.getItem('token');
 
-            // Fetch performance data
-            const perfResponse = await fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+            // Fetch performance data and update KPIs + table
+            fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const perfData = await perfResponse.json();
+            })
+            .then(response => response.json())
+            .then(perfData => {
+                // Update KPIs
+                document.getElementById('total-revenue-consultations').textContent = `${parseFloat(perfData.stats.totalPaidForConsultations || 0).toFixed(2)} €`;
+                document.getElementById('revenue-per-hour').textContent = `${perfData.stats.revenuePerHour || '0'} €/heure`;
 
-            // Update KPIs
-            document.getElementById('total-revenue-consultations').textContent = `${parseFloat(perfData.stats.totalPaidForConsultations || 0).toFixed(2)} €`;
-            document.getElementById('revenue-per-hour').textContent = `${perfData.stats.revenuePerHour || '0'} €/heure`;
+                // Update actes table
+                const tableBody = document.getElementById('actes-table').querySelector('tbody');
+                tableBody.innerHTML = '';
+                
+                if (perfData.actes && perfData.actes.length > 0) {
+                    perfData.actes.forEach(acte => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${acte.description1}</td>
+                            <td>${acte.patient_count}</td>
+                            <td>${acte.acte_count}</td>
+                            <td>${acte.total_price} €</td>
+                            <td>${acte.total_hours ? acte.total_hours.toFixed(2) : 'N/A'}</td>
+                            <td>${acte.avg_cost_per_hour ? acte.avg_cost_per_hour.toFixed(2) : 'N/A'} €</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            })
+            .catch(error => console.error('Erreur lors du chargement des données de performance:', error));
 
-            // Update actes table
-            const tableBody = document.getElementById('actes-table').querySelector('tbody');
-            tableBody.innerHTML = '';
-            
-            if (perfData.actes && perfData.actes.length > 0) {
-                perfData.actes.forEach(acte => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${acte.description1}</td>
-                        <td>${acte.patient_count}</td>
-                        <td>${acte.acte_count}</td>
-                        <td>${acte.total_price} €</td>
-                        <td>${acte.total_hours ? acte.total_hours.toFixed(2) : 'N/A'}</td>
-                        <td>${acte.avg_cost_per_hour ? acte.avg_cost_per_hour.toFixed(2) : 'N/A'} €</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            }
-
-            // Fetch visit revenue data for chart
-            const revenueResponse = await fetch(`/api/visits-revenue?doctorId=${doctorId}&start-date=${startDate}&end-date=${endDate}`, {
+            // Fetch visit revenue data for chart in parallel
+            fetch(`/api/visits-revenue?doctorId=${doctorId}&start-date=${startDate}&end-date=${endDate}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const revenueData = await revenueResponse.json();
-            
-            if (revenueData && revenueData.length > 0) {
-                loadVisitsRevenue(revenueData);
-            } else {
-                console.warn('Pas de données de revenus disponibles pour le graphique');
-                d3.select("#visits-revenue-chart").selectAll("*").remove();
-            }
+            })
+            .then(response => response.json())
+            .then(revenueData => {
+                if (revenueData && revenueData.length > 0) {
+                    loadVisitsRevenue(revenueData);
+                } else {
+                    console.warn('Pas de données de revenus disponibles pour le graphique');
+                    d3.select("#visits-revenue-chart").selectAll("*").remove();
+                }
+            })
+            .catch(error => console.error('Erreur lors du chargement du graphique des revenus:', error));
         }
     </script>
 </body>
