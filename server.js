@@ -104,6 +104,7 @@ app.use('/api/waiting-times', authenticateToken,require('./routes/waitingTimeRou
 app.use('/api/waiting-times-heatmap', authenticateToken, require('./routes/waitingTimeHeatmapRoute')(connection));
 app.use('/api/waiting-times-heatmap-doctor', authenticateToken,require('./routes/waitingTimeHeatmapDoctorRoute')(connection));
 app.use('/api/rendezvous', authenticateToken,require('./routes/rendezvousRoute')(connection));
+app.use('/api/patient-satisfaction', authenticateToken, require('./routes/patientSatisfactionRoute'));
 
 
 // Nouvelle route pour l'analyse des performances des médecins (protégée)
