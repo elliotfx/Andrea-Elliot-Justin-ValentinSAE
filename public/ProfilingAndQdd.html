@@ -6,6 +6,35 @@
     <title>Profiling et Qualité des Données</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .chart-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            padding: 20px;
+        }
+        
+        .chart-wrapper {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -21,9 +50,19 @@
     <!-- Section Profiling Patients -->
     <section style="margin: 40px auto; max-width: 90%; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
         <h1 class="title">Profiling Patients</h1>
-        <div style="padding: 20px;">
-            <!-- Contenu du profiling à venir -->
-            <p style="text-align: center; color: #666;">Contenu à venir...</p>
+        
+        <div class="chart-container">
+            <!-- Graphique de répartition par genre -->
+            <div class="chart-wrapper">
+                <div class="chart-title">Répartition par Genre</div>
+                <div id="gender-chart"></div>
+            </div>
+            
+            <!-- Graphique de répartition par tranche d'âge -->
+            <div class="chart-wrapper">
+                <div class="chart-title">Répartition par Tranche d'Âge</div>
+                <div id="age-groups-chart"></div>
+            </div>
         </div>
     </section>
 
@@ -36,5 +75,6 @@
         </div>
     </section>
 
+    <script src="profiling/profiling.js"></script>
 </body>
 </html>

@@ -106,6 +106,7 @@ app.use('/api/waiting-times-heatmap-doctor', authenticateToken, require('./route
 app.use('/api/rendezvous', authenticateToken, require('./routes/rendezvousRoute')(connection));
 app.use('/api/punctuality', authenticateToken, require('./routes/punctualityRoute')(connection));
 app.use('/api/date-range', authenticateToken, require('./routes/dateRangeRoute')(connection));
+app.use('/api/profiling', authenticateToken, require('./routes/profilingRoute')(connection));
 
 
 
