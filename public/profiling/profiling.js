@@ -139,7 +139,7 @@ async function createAgeGroupsChart() {
         }
         
         // Dimensions du graphique
-        const margin = { top: 20, right: 20, bottom: 60, left: 50 };
+        const margin = { top: 20, right: 20, bottom: 60, left: 70 };
         const width = 450 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
         
@@ -237,9 +237,9 @@ async function createAgeGroupsChart() {
         // Label de l'axe Y
         svg.append('text')
             .attr('transform', 'rotate(-90)')
-            .attr('y', 0 - margin.left)
+            .attr('y', 0 - margin.left + 10)
             .attr('x', 0 - (height / 2))
-            .attr('dy', '1em')
+            .attr('dy', '0em')
             .style('text-anchor', 'middle')
             .style('font-size', '14px')
             .style('fill', '#666')
