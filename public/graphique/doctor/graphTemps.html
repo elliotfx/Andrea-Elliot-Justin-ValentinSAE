@@ -125,45 +125,57 @@
             const endDate = document.getElementById('end-date').value;
             const token = localStorage.getItem('token');
 
-            // Fetch performance data
-            const perfResponse = await fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const perfData = await perfResponse.json();
-
-            // Update KPIs
-            document.getElementById('total-hours-worked').textContent = `${perfData.stats.total_hours || '0'} heures`;
-            document.getElementById('hours-worked').textContent = `${perfData.stats.hoursWorked || '0'} minutes`;
-            document.getElementById('avg-waiting-time').textContent = `${perfData.stats.avgWaitingTime || '0'} min`;
-
-            // Fetch time data for evolution chart
-            const timeResponse = await fetch(`/api/doctor-time-analysis?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const timeData = await timeResponse.json();
+            console.time('Total Load Time');
             
-            updateTimeAnalysisChart(timeData);
-
-            // Fetch monthly stats for working time chart
-            const statsResponse = await fetch(`/api/doctor/monthly-stats?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+            // Lancer toutes les requêtes en parallèle
+            console.time('Performance Data Load');
+            const perfPromise = fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const monthlyStats = await statsResponse.json();
-            
-            if (monthlyStats && Object.keys(monthlyStats).length > 0) {
-                updateDoctorWorkTimeAnalysisChart(monthlyStats);
-            } else {
-                console.warn('Pas de données mensuelles disponibles pour le graphique du temps de travail');
-                d3.select("#working-time-chart").selectAll("*").remove();
-            }
+            }).then(r => r.json());
 
-            // Fetch heatmap data
-            const heatmapResponse = await fetch(`/api/waiting-times-heatmap-doctor?doctorId=${doctorId}&start=${startDate}&end=${endDate}`, {
+            console.time('Time Analysis Load');
+            const timePromise = fetch(`/api/doctor-time-analysis?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const heatmapData = await heatmapResponse.json();
-            
-            loadWaitingTimeHeatmap(heatmapData);
+            }).then(r => r.json());
+
+            console.time('Monthly Stats Load');
+            const statsPromise = fetch(`/api/doctor/monthly-stats?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
+
+            console.time('Heatmap Load');
+            const heatmapPromise = fetch(`/api/waiting-times-heatmap-doctor?doctorId=${doctorId}&start=${startDate}&end=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
+
+            // Attendre les résultats et les traiter au fur et à mesure
+            perfPromise.then(perfData => {
+                console.timeEnd('Performance Data Load');
+                document.getElementById('total-hours-worked').textContent = `${perfData.stats.total_hours || '0'} heures`;
+                document.getElementById('hours-worked').textContent = `${perfData.stats.hoursWorked || '0'} minutes`;
+                document.getElementById('avg-waiting-time').textContent = `${perfData.stats.avgWaitingTime || '0'} min`;
+            }).catch(error => console.error('Erreur performance:', error));
+
+            timePromise.then(timeData => {
+                console.timeEnd('Time Analysis Load');
+                updateTimeAnalysisChart(timeData);
+            }).catch(error => console.error('Erreur time analysis:', error));
+
+            statsPromise.then(monthlyStats => {
+                console.timeEnd('Monthly Stats Load');
+                if (monthlyStats && Object.keys(monthlyStats).length > 0) {
+                    updateDoctorWorkTimeAnalysisChart(monthlyStats);
+                } else {
+                    console.warn('Pas de données mensuelles disponibles pour le graphique du temps de travail');
+                    d3.select("#working-time-chart").selectAll("*").remove();
+                }
+            }).catch(error => console.error('Erreur stats:', error));
+
+            heatmapPromise.then(heatmapData => {
+                console.timeEnd('Heatmap Load');
+                loadWaitingTimeHeatmap(heatmapData);
+                console.timeEnd('Total Load Time');
+            }).catch(error => console.error('Erreur heatmap:', error));
         }
     </script>
 </body>

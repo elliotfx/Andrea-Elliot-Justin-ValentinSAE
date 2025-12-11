@@ -152,25 +152,33 @@
             const endDate = document.getElementById('end-date').value;
             const token = localStorage.getItem('token');
 
-            // Fetch performance data
-            const perfResponse = await fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const perfData = await perfResponse.json();
-
-            // Update KPIs
-            document.getElementById('unique-patients').textContent = perfData.stats.uniquePatients || '0';
-            document.getElementById('new-patients').textContent = perfData.stats.newPatients || '0';
-            document.getElementById('loyal-patients').textContent = perfData.stats.loyalPatients || '0';
-            document.getElementById('patients-premiere-visite-pas-retour').textContent = perfData.stats.patients_premiere_visite_pas_retour || '0';
-
-            // Fetch monthly stats for chart
-            const statsResponse = await fetch(`/api/doctor/monthly-stats?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const monthlyStats = await statsResponse.json();
+            console.time('Total Load Time');
             
-            updatePatientAnalysisChart(monthlyStats);
+            // Lancer toutes les requêtes en parallèle
+            console.time('Performance Data Load');
+            const perfPromise = fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
+
+            console.time('Monthly Stats Load');
+            const statsPromise = fetch(`/api/doctor/monthly-stats?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
+
+            // Traiter les résultats au fur et à mesure
+            perfPromise.then(perfData => {
+                console.timeEnd('Performance Data Load');
+                document.getElementById('unique-patients').textContent = perfData.stats.uniquePatients || '0';
+                document.getElementById('new-patients').textContent = perfData.stats.newPatients || '0';
+                document.getElementById('loyal-patients').textContent = perfData.stats.loyalPatients || '0';
+                document.getElementById('patients-premiere-visite-pas-retour').textContent = perfData.stats.patients_premiere_visite_pas_retour || '0';
+            }).catch(error => console.error('Erreur performance:', error));
+
+            statsPromise.then(monthlyStats => {
+                console.timeEnd('Monthly Stats Load');
+                updatePatientAnalysisChart(monthlyStats);
+                console.timeEnd('Total Load Time');
+            }).catch(error => console.error('Erreur stats:', error));
         }
     </script>
 </body>
