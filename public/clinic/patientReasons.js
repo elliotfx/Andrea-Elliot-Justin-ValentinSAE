@@ -52,8 +52,8 @@ function drawPatientReasonsChart(reasonsData) {
         .style("fill", "#6B7280")
         .text("Top 10 - Nombre de patients et temps d'attente moyen");
 
-    const x = d3.scaleLinear()
-        .domain([0, d3.max(topReasons, d => d.count) * 1.15])
+    const x = d3.scaleLog()
+        .domain([1, d3.max(topReasons, d => d.count) * 1.15])
         .range([0, width]);
 
     const y = d3.scaleBand()

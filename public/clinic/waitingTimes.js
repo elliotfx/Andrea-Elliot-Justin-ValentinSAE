@@ -178,7 +178,7 @@ function drawMonthlyWaitingTimeChart(monthlyData) {
 
 // Graphique des médecins avec barres verticales améliorées
 function drawDoctorWaitingTimeChart(doctorsData) {
-    const margin = { top: 20, right: 20, bottom: 70, left: 60 }; // Marges
+    const margin = { top: 50, right: 20, bottom: 70, left: 60 }; // Marges
     const width = 900 - margin.left - margin.right; // Largeur du graphique
     const height = 450 - margin.top - margin.bottom; // Hauteur du graphique
 
@@ -189,6 +189,16 @@ function drawDoctorWaitingTimeChart(doctorsData) {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     svg.selectAll("*").remove(); // Supprimer l'ancien graphique
+
+    // Titre
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", -25)
+        .attr("text-anchor", "middle")
+        .style("font-size", "18px")
+        .style("font-weight", "600")
+        .style("fill", "#1F2937")
+        .text("Temps d'Attente Moyen par Docteur");
 
     const xScale = d3.scaleBand().range([0, width]).padding(0.4);
     const yScale = d3.scaleLinear().range([height, 0]);
