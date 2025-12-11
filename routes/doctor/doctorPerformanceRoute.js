@@ -197,19 +197,23 @@ module.exports = (connection) => {
             const patientsPasRetourParams = isAllDoctors ? [startDate, endDate, endDate] : [doctorId, startDate, endDate, endDate];
             const totalHoursParams = isAllDoctors ? [startDate, endDate] : [doctorId, startDate, endDate];
 
-            // Execute the queries
-            const uniquePatients = await query(uniquePatientsQuery, uniquePatientsParams);
-            const totalVisits = await query(totalVisitsQuery, totalVisitsParams);
-            const newPatients = await query(newPatientsQuery, newPatientsParams);
-            const loyalPatients = await query(loyalPatientsQuery, loyalPatientsParams);
-            const hoursWorked = await query(hoursWorkedQuery, hoursWorkedParams);
-            const total_hours = await query(total_hoursQuery, totalHoursParams);
-            const totalRevenue = await query(totalRevenueQuery, totalRevenueParams);
-            const avgWaitingTime = await query(avgWaitingTimeQuery, avgWaitingParams);
-            const actes = await query(actesQuery, actesParams);
-            const newPatientsClinic = await query(newPatientsClinicQuery, newPatientsClinicParams);
-            const VisitsBynewPatientsClinic = await query(VisitsBynewPatientsClinicQuery, visitsByNewPatientsParams);
-            const patientsPasRetour = await query(patientsPasRetourQuery, patientsPasRetourParams);
+            // Execute all queries in parallel for better performance
+            const results = await Promise.all([
+                query(uniquePatientsQuery, uniquePatientsParams),
+                query(totalVisitsQuery, totalVisitsParams),
+                query(newPatientsQuery, newPatientsParams),
+                query(loyalPatientsQuery, loyalPatientsParams),
+                query(hoursWorkedQuery, hoursWorkedParams),
+                query(total_hoursQuery, totalHoursParams),
+                query(totalRevenueQuery, totalRevenueParams),
+                query(avgWaitingTimeQuery, avgWaitingParams),
+                query(actesQuery, actesParams),
+                query(newPatientsClinicQuery, newPatientsClinicParams),
+                query(VisitsBynewPatientsClinicQuery, visitsByNewPatientsParams),
+                query(patientsPasRetourQuery, patientsPasRetourParams)
+            ]);
+
+            const [uniquePatients, totalVisits, newPatients, loyalPatients, hoursWorked, total_hours, totalRevenue, avgWaitingTime, actes, newPatientsClinic, VisitsBynewPatientsClinic, patientsPasRetour] = results;
 
 
             const hoursWorkedTotal = (hoursWorked[0].hoursWorked * totalVisits[0]?.totalVisits) / 60;

@@ -121,7 +121,7 @@ function populateYearSelector(periodData) {
     }
 }
 
-function updatePunctualityDisplay(data, doctorId) {
+export function updatePunctualityDisplay(data, doctorId) {
     const overallStats = data.overall_stats;
 
     // Update the main punctuality KPI card
