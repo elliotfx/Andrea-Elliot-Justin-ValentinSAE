@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur de Rentabilité</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="simulator.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="index.html">Clinique</a></li>
+            <li><a href="doctorPerformance.html">Médecin</a></li>
+            <li><a href="simulator.html">Rentabilité</a></li>
+        </ul>
+    </nav>
+
+    <div class="simulator-container">
+        <h1>Simulateur de Rentabilité</h1>
+        
+        <!-- Section des dropdowns -->
+        <div class="section">
+            <h2>Sélection</h2>
+            <div class="dropdown-container">
+                <div class="dropdown-box">
+                    <label for="acte-select">Choisir un acte :</label>
+                    <select id="acte-select">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+                <div class="dropdown-box">
+                    <label for="doctor-select">Choisir un médecin :</label>
+                    <select id="doctor-select">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="center-btn">
+                <button id="validate-selection" class="btn-validate">Valider la sélection</button>
+            </div>
+        </div>
+
+        <!-- Section des pourcentages -->
+        <div class="section section-hidden" id="percentage-section">
+            <h2>📊 Saisir le Prix de l'Acte</h2>
+            <div class="dropdown-container">
+                <div class="dropdown-box">
+                    <label for="acte-price">Prix de l'acte (€) :</label>
+                    <input type="number" id="acte-price" min="0" step="0.01" placeholder="Ex: 100.00">
+                    <div id="average-price-info">
+                        <strong>💡 Suggestion :</strong> <span id="average-price-text">Chargement...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section personnalisation des pourcentages -->
+            <div class="percentage-custom-section">
+                <h3>⚙️ Personnaliser les pourcentages (optionnel)</h3>
+                <p>
+                    Par défaut, le tableau affiche les % de 20 à 60% pour médecins et 10 à 50% pour centre. Vous pouvez ajouter vos propres valeurs.
+                </p>
+                <div class="percentage-grid">
+                    <div>
+                        <label for="custom-doctor-pct">% Médecin personnalisé :</label>
+                        <input type="number" id="custom-doctor-pct" min="0" max="100" step="5" placeholder="Ex: 35">
+                    </div>
+                    <div>
+                        <label for="custom-center-pct">% Centre personnalisé :</label>
+                        <input type="number" id="custom-center-pct" min="0" max="100" step="5" placeholder="Ex: 25">
+                    </div>
+                </div>
+                <div class="percentage-note">
+                    💡 Les valeurs personnalisées seront ajoutées au tableau en plus des valeurs par défaut
+                </div>
+            </div>
+            
+            <div class="center-btn">
+                <button id="calculate-btn" class="btn-validate">Générer le tableau de rentabilité</button>
+            </div>
+        </div>
+
+        <!-- Section du tableau de rentabilité -->
+        <div class="section section-hidden" id="chart-section">
+            <h2>📊 Tableau de Rentabilité</h2>
+            <p class="chart-description">
+                Rentabilité selon les différentes combinaisons de pourcentages médecin/centre
+            </p>
+            <div class="table-overflow">
+                <div class="cell-tooltip" id="cell-tooltip"></div>
+                <table id="profitability-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                % Médecin \ % Centre
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="profitability-tbody">
+                        <!-- Généré dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="legend-section">
+                <p><strong>💡 Légende des couleurs :</strong></p>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color excellent"></div>
+                        <span>≥ 40% - Excellent</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color very-good"></div>
+                        <span>30-39% - Très bon</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color good"></div>
+                        <span>20-29% - Bon</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color acceptable"></div>
+                        <span>10-19% - Acceptable</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color low"></div>
+                        <span>5-9% - Faible</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color very-low"></div>
+                        <span>&lt; 5% - Très faible</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color impossible"></div>
+                        <span>Impossible (&gt;100%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { 
+            populateActesDropdown, 
+            populateDoctorsDropdown,
+            handleValidateSelection,
+            handleCalculateProfitability
+        } from './simulator/simulator.js';
+        
+        // Fonctions pour le tooltip
+        window.showTooltip = function(event) {
+            const cell = event.currentTarget;
+            const tooltip = document.getElementById('cell-tooltip');
+            
+            if (!tooltip || !cell.dataset.doctorPct) return;
+            
+            const doctorPct = cell.dataset.doctorPct;
+            const centerPct = cell.dataset.centerPct;
+            const profitMargin = cell.dataset.profitMargin;
+            const profit = cell.dataset.profit;
+            const doctorCost = cell.dataset.doctorCost;
+            const centerCost = cell.dataset.centerCost;
+            const actePrice = cell.dataset.actePrice;
+            
+            tooltip.innerHTML = `
+                <div style="font-size: 14px; font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #4fc3f7; padding-bottom: 5px;">
+                    📊 Détails de la rentabilité
+                </div>
+                <div><strong>Prix de l'acte :</strong> ${actePrice} €</div>
+                <div style="margin-top: 8px; color: #ffab91;">
+                    <strong>💰 Coût médecin (${doctorPct}%) :</strong> ${doctorCost} €
+                </div>
+                <div style="color: #90caf9;">
+                    <strong>🏥 Coût centre (${centerPct}%) :</strong> ${centerCost} €
+                </div>
+                <div style="margin-top: 8px; border-top: 1px solid #555; padding-top: 8px;">
+                    <strong>Total des coûts :</strong> ${(parseFloat(doctorCost) + parseFloat(centerCost)).toFixed(2)} €
+                </div>
+                <div style="font-size: 15px; font-weight: bold; color: #81c784; margin-top: 8px;">
+                    <strong>✅ Marge nette :</strong> ${profit} € (${profitMargin}%)
+                </div>
+            `;
+            
+            tooltip.classList.add('show');
+            moveTooltip(event);
+        };
+        
+        window.moveTooltip = function(event) {
+            const tooltip = document.getElementById('cell-tooltip');
+            if (!tooltip) return;
+            
+            const offsetX = 15;
+            const offsetY = 15;
+            
+            tooltip.style.left = (event.pageX + offsetX) + 'px';
+            tooltip.style.top = (event.pageY + offsetY) + 'px';
+        };
+        
+        window.hideTooltip = function() {
+            const tooltip = document.getElementById('cell-tooltip');
+            if (tooltip) {
+                tooltip.classList.remove('show');
+            }
+        };
+        
+        // Au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page simulateur chargée');
+            
+            // Charger les dropdowns
+            populateActesDropdown('acte-select');
+            populateDoctorsDropdown('doctor-select');
+            
+            // Initialiser les gestionnaires d'événements
+            handleValidateSelection();
+            handleCalculateProfitability();
+        });
+    </script>
+</body>
+</html>

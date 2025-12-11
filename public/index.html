@@ -9,38 +9,24 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <!-- Bouton pour ouvrir/fermer le menu -->
-    <div id="menu-toggle" class="menu-icon">
-        &#9776; <!-- Icône hamburger -->
-    </div>
 
-    <!-- Menu latéral -->
-    <nav id="sidebar" class="sidebar">
-        <ul>
-            <li><a href="#stats-card-container">Indicateurs</a></li>
-            <li><a href="#visits-revenue-chart">Visites et Revenus</a></li>
-            <li><a href="#patient-visits-chart">Évolution des Patients</a></li>
-            <li><a href="#hourly-revenue-heatmap">Revenus Horaires</a></li>
-            <li><a href="#actes-table">Tableau des Actes</a></li>
-            <li><a href="#medecins-table">Performance des Médecins</a></li>
-            <li><a href="#tarif-heure-chart">Tarif et Temps Travaillé</a></li>
-            <li><a href="#waiting-time-monthly-chart">Temps d'Attente Clinique</a></li>
-            <li><a href="#waiting-time-doctors-chart">Temps d'Attente Médecin</a></li>
-            <li><a href="#stacked-bar-chart">Rendez-vous</a></li>
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="index.html">Clinique</a></li>
+            <li><a href="doctorPerformance.html">Médecin</a></li>
+            <li><a href="simulator.html">Rentabilité</a></li>
         </ul>
     </nav>
 
-    <!-- Contenu principal -->
-    <div class="title">Tableau de bord des performances de la clinique
-        <div class="period-selector">
-            <label for="start-date">Début :</label>
-            <input type="date" id="start-date" name="start-date">
-        
-            <label for="end-date">Fin :</label>
-            <input type="date" id="end-date" name="end-date">
-        
-            <button id="apply-period">Appliquer</button>
-        </div>
+    <!-- Sélecteur de période -->
+    <div class="period-selector">
+        <label for="start-date">Début :</label>
+        <input type="date" id="start-date" name="start-date">
+    
+        <label for="end-date">Fin :</label>
+        <input type="date" id="end-date" name="end-date">
+    
+        <button id="apply-period">Appliquer</button>
     </div>
 
     <!-- Section des indicateurs -->
