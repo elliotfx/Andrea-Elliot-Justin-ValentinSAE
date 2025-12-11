@@ -39,6 +39,85 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* Styles pour les indicateurs de qualité */
+        .quality-indicators-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .quality-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e0e0e0;
+            color: #333;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .quality-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .quality-card.quality-good {
+            background: white;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .quality-card.quality-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+        }
+        
+        .quality-card.quality-bad {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            border: none;
+        }
+        
+        .quality-card-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: inherit;
+        }
+        
+        .quality-card-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: inherit;
+        }
+        
+        .quality-card-percentage {
+            font-size: 16px;
+            font-weight: 500;
+            color: inherit;
+        }
+        
+        .quality-card.quality-good .quality-card-title,
+        .quality-card.quality-good .quality-card-value,
+        .quality-card.quality-good .quality-card-percentage {
+            color: #333;
+        }
+        
+        .quality-summary {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .quality-summary strong {
+            color: #333;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -74,12 +153,57 @@
     <!-- Section Qualité des Données -->
     <section style="margin: 40px auto; max-width: 90%; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
         <h1 class="title">Qualité des Données</h1>
-        <div style="padding: 20px;">
-            <!-- Contenu de la qualité des données à venir -->
-            <p style="text-align: center; color: #666;">Contenu à venir...</p>
+        
+        <div class="quality-summary">
+            Total de patients : <strong id="total-patients-quality">-</strong>
+        </div>
+        
+        <div id="quality-indicators" class="quality-indicators-container">
+            <!-- Indicateur lastName NULL -->
+            <div class="quality-card" id="lastName-null">
+                <div class="quality-card-title">Nom de famille manquant</div>
+                <div class="quality-card-value" id="lastName-null-count">-</div>
+                <div class="quality-card-percentage" id="lastName-null-percentage">-</div>
+            </div>
+            
+            <!-- Indicateur firstName NULL -->
+            <div class="quality-card" id="firstName-null">
+                <div class="quality-card-title">Prénom manquant</div>
+                <div class="quality-card-value" id="firstName-null-count">-</div>
+                <div class="quality-card-percentage" id="firstName-null-percentage">-</div>
+            </div>
+            
+            <!-- Indicateur birthDate invalide -->
+            <div class="quality-card" id="birthDate-invalid">
+                <div class="quality-card-title">Date de naissance invalide</div>
+                <div class="quality-card-value" id="birthDate-invalid-count">-</div>
+                <div class="quality-card-percentage" id="birthDate-invalid-percentage">-</div>
+            </div>
+            
+            <!-- Indicateur address NULL -->
+            <div class="quality-card" id="address-null">
+                <div class="quality-card-title">Adresse manquante</div>
+                <div class="quality-card-value" id="address-null-count">-</div>
+                <div class="quality-card-percentage" id="address-null-percentage">-</div>
+            </div>
+            
+            <!-- Indicateur phone NULL -->
+            <div class="quality-card" id="phone-null">
+                <div class="quality-card-title">Téléphone manquant</div>
+                <div class="quality-card-value" id="phone-null-count">-</div>
+                <div class="quality-card-percentage" id="phone-null-percentage">-</div>
+            </div>
+            
+            <!-- Indicateur gender NULL -->
+            <div class="quality-card" id="gender-null">
+                <div class="quality-card-title">Sexe manquant</div>
+                <div class="quality-card-value" id="gender-null-count">-</div>
+                <div class="quality-card-percentage" id="gender-null-percentage">-</div>
+            </div>
         </div>
     </section>
 
     <script src="profiling/profiling.js"></script>
+    <script src="quality/dataQuality.js"></script>
 </body>
 </html>
