@@ -36,81 +36,99 @@
         <button id="apply-period">Appliquer</button>
     </div>
 
-    <!-- Section for displaying the performance indicators -->
+    <!-- Section des indicateurs -->
+    <div class="title">Indicateurs de performance</div>
+    
     <div id="stats-card-container">
-        <!-- Existing Indicators -->
-        <div class="stats-card">
-            <div class="stats-title">Patients uniques</div>
-            <div class="stats-value" id="unique-patients">Chargement...</div>
+        <!-- Colonne 1 : Patients -->
+        <div class="indicator-column">
+            <h3 class="column-title">Patients</h3>
+            <div class="stats-card">
+                <div class="stats-title">Nombre de patients</div>
+                <div class="stats-value" id="unique-patients">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Nouveaux patients</div>
+                <div class="stats-value" id="new-patients">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Visites générées par les nouveaux patients</div>
+                <div class="stats-value" id="visits-generated-by-new-patients">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Patients fidèles</div>
+                <div class="stats-value" id="loyal-patients">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Visites de suivi des patients fidèles</div>
+                <div class="stats-value" id="follow-up-visits">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Patients (pas de retour)</div>
+                <div class="stats-value" id="patients-premiere-visite-pas-retour">Chargement...</div>
+            </div>
         </div>
 
-        <div class="stats-card">
-            <div class="stats-title">Visites</div>
-            <div class="stats-value" id="total-visits">Chargement...</div>
-        </div>
-        <div class="stats-card">
-            <div class="stats-title">Patients (pas de retour)</div>
-            <div class="stats-value" id="patients-premiere-visite-pas-retour">Chargement...</div>
+        <!-- Colonne 2 : Visites et Rendez-vous -->
+        <div class="indicator-column">
+            <h3 class="column-title">Visites et Rendez-vous</h3>
+            <div class="stats-card">
+                <div class="stats-title">Visites</div>
+                <div class="stats-value" id="total-visits">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Taux de ponctualité du médecin</div>
+                <div class="stats-value" id="punctuality-rate">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">RDV à l'heure</div>
+                <div class="stats-value" id="on-time-appointments">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Retard moyen</div>
+                <div class="stats-value" id="avg-delay">Chargement...</div>
+            </div>
         </div>
 
-        <div class="stats-card">
-            <div class="stats-title">Nouveaux patients</div>
-            <div class="stats-value" id="new-patients">Chargement...</div>
+        <!-- Colonne 3 : Financier -->
+        <div class="indicator-column">
+            <h3 class="column-title">Financier</h3>
+            <div class="stats-card">
+                <div class="stats-title">Total des revenus</div>
+                <div class="stats-value" id="total-revenue-consultations">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">CA par heure</div>
+                <div class="stats-value" id="revenue-per-hour">Chargement...</div>
+            </div>
         </div>
 
-        <div class="stats-card">
-            <div class="stats-title">Visites générées par les nouveaux patients</div>
-            <div class="stats-value" id="visits-generated-by-new-patients">Chargement...</div>
-        </div>
+        <!-- Colonne 4 : Temps -->
+        <div class="indicator-column">
+            <h3 class="column-title">Temps</h3>
+            <div class="stats-card">
+                <div class="stats-title">Temps total devant les patients</div>
+                <div class="stats-value" id="total-hours-worked">Chargement...</div>
+            </div>
 
+            <div class="stats-card">
+                <div class="stats-title">Temps rendez-vous moyen</div>
+                <div class="stats-value" id="hours-worked">Chargement...</div>
+            </div>
 
-        <div class="stats-card">
-            <div class="stats-title">Patients fidèles</div>
-            <div class="stats-value" id="loyal-patients">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">Visites de suivi des patients fidèles</div>
-            <div class="stats-value" id="follow-up-visits">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">Total des revenus</div>
-            <div class="stats-value" id="total-revenue-consultations">Chargement...</div>
-        </div>
-        <div class="stats-card">
-            <div class="stats-title">Heures patient</div>
-            <div class="stats-value" id="total-hours-worked">Chargement...</div>
-        </div>
-        <div class="stats-card">
-            <div class="stats-title">CA par heure</div>
-            <div class="stats-value" id="revenue-per-hour">Chargement...</div>
-        </div>
-        <div class="stats-card">
-            <div class="stats-title">Temps Patient moyen</div>
-            <div class="stats-value" id="hours-worked">Chargement...</div>
-        </div>
-
-        <!-- New card for average waiting time -->
-        <div class="stats-card">
-            <div class="stats-title">Temps d'attente moyen</div>
-            <div class="stats-value" id="avg-waiting-time">Chargement...</div>
-        </div>
-
-        <!-- Punctuality KPIs -->
-        <div class="stats-card">
-            <div class="stats-title">Taux de ponctualité</div>
-            <div class="stats-value" id="punctuality-rate">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">RDV à l'heure</div>
-            <div class="stats-value" id="on-time-appointments">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">Retard moyen</div>
-            <div class="stats-value" id="avg-delay">Chargement...</div>
+            <div class="stats-card">
+                <div class="stats-title">Temps d'attente moyen</div>
+                <div class="stats-value" id="avg-waiting-time">Chargement...</div>
+            </div>
         </div>
     </div>
     <div class="chart-container">
