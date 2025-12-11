@@ -9,6 +9,7 @@ import { updateAppointmentsAnalysisChart } from './appointmentsChart.js'
 import { updateDoctorWorkTimeAnalysisChart } from './workingTimeChart.js'
 import { updateYearlyVisitsChart } from './yearlyVisitsChart.js'
 import { loadPunctualityData } from './punctualityKPI.js';
+import { updateActesDonutChart } from './actesDonutChart.js';
 
 // Function to load all dashboard data
 export async function loadDashboardData() {
@@ -19,6 +20,7 @@ export async function loadDashboardData() {
     const performanceData = await fetchDoctorPerformance(doctorId, startDate, endDate);
     updateStats(performanceData.stats);
     updateTable(performanceData.actes);
+    updateActesDonutChart(performanceData.actes); // Nouveau graphique Donut
 
     const timeData = await fetchTimeData(doctorId, startDate, endDate);
     updateTimeAnalysisChart(timeData);
