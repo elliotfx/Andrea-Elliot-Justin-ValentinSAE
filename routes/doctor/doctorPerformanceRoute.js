@@ -23,32 +23,37 @@ module.exports = (connection) => {
         try {
             console.log(`Fetching performance for doctorId: ${doctorId}, between ${startDate} and ${endDate}`);
 
+            // Determine if we're fetching data for all doctors or a specific one
+            const isAllDoctors = doctorId === 'all';
+            const doctorCondition = isAllDoctors ? '' : 'user_activated_id = ? AND';
+            const doctorParams = isAllDoctors ? [] : [doctorId];
+
             // 1. Unique Patients
             const uniquePatientsQuery = `
                 SELECT COUNT(DISTINCT patient_id) AS uniquePatients 
                 FROM visit 
-                WHERE user_activated_id = ? 
-                AND currentLocalTimeAssignment BETWEEN ? AND ?`;
+                WHERE ${isAllDoctors ? '' : 'user_activated_id = ? AND '}
+                currentLocalTimeAssignment BETWEEN ? AND ?`;
 
             // 2. Total Visits
             const totalVisitsQuery = `
                 SELECT COUNT(*) AS totalVisits 
                 FROM visit 
-                WHERE user_activated_id = ? 
-                AND currentLocalTimeAssignment BETWEEN ? AND ?`;
+                WHERE ${isAllDoctors ? '' : 'user_activated_id = ? AND '}
+                currentLocalTimeAssignment BETWEEN ? AND ?`;
 
             // 3. New Patients
             const newPatientsQuery = `
                 WITH new_patients AS (
                     SELECT DISTINCT v1.patient_id
                     FROM visit AS v1
-                    WHERE v1.user_activated_id = ? 
-                    AND v1.currentLocalTimeAssignment BETWEEN ? AND ?
+                    WHERE ${isAllDoctors ? '' : 'v1.user_activated_id = ? AND '}
+                    v1.currentLocalTimeAssignment BETWEEN ? AND ?
                     AND NOT EXISTS (
                         SELECT 1
                         FROM visit AS v2
                         WHERE v2.patient_id = v1.patient_id
-                        AND v2.user_activated_id = v1.user_activated_id
+                        ${isAllDoctors ? '' : 'AND v2.user_activated_id = v1.user_activated_id'}
                         AND v2.currentLocalTimeAssignment < ?
                     )
                 )
@@ -59,20 +64,20 @@ module.exports = (connection) => {
                 WITH new_patients AS (
                     SELECT DISTINCT v1.patient_id
                     FROM visit AS v1
-                    WHERE v1.user_activated_id = ? 
-                    AND v1.currentLocalTimeAssignment BETWEEN ? AND ?
+                    WHERE ${isAllDoctors ? '' : 'v1.user_activated_id = ? AND '}
+                    v1.currentLocalTimeAssignment BETWEEN ? AND ?
                     AND NOT EXISTS (
                         SELECT 1
                         FROM visit AS v2
                         WHERE v2.patient_id = v1.patient_id
-                        AND v2.user_activated_id = v1.user_activated_id
+                        ${isAllDoctors ? '' : 'AND v2.user_activated_id = v1.user_activated_id'}
                         AND v2.currentLocalTimeAssignment < ?
                     )
                 )
                 SELECT COUNT(*) AS total_visits 
                 FROM visit 
                 WHERE patient_id IN (SELECT patient_id FROM new_patients)
-                AND user_activated_id = ?
+                ${isAllDoctors ? '' : 'AND user_activated_id = ?'}
                 AND currentLocalTimeAssignment BETWEEN ? AND ?
                 `;
 
@@ -81,14 +86,14 @@ module.exports = (connection) => {
                 WITH previous_visits AS (
                     SELECT DISTINCT v1.patient_id
                     FROM visit AS v1
-                    WHERE v1.user_activated_id = ? 
-                    AND v1.currentLocalTimeAssignment < ?
+                    WHERE ${isAllDoctors ? '' : 'v1.user_activated_id = ? AND '}
+                    v1.currentLocalTimeAssignment < ?
                 ),
                 current_period_visits AS (
                     SELECT DISTINCT v2.patient_id
                     FROM visit AS v2
-                    WHERE v2.user_activated_id = ? 
-                    AND v2.currentLocalTimeAssignment BETWEEN ? AND ?
+                    WHERE ${isAllDoctors ? '' : 'v2.user_activated_id = ? AND '}
+                    v2.currentLocalTimeAssignment BETWEEN ? AND ?
                 )
                 SELECT COUNT(DISTINCT v.patient_id) AS loyal_patients
                 FROM current_period_visits AS v
@@ -99,42 +104,42 @@ module.exports = (connection) => {
                 WITH previous_visits AS (
                     SELECT DISTINCT v1.patient_id
                     FROM visit AS v1
-                    WHERE v1.user_activated_id = ? 
-                    AND v1.currentLocalTimeAssignment < ?
+                    WHERE ${isAllDoctors ? '' : 'v1.user_activated_id = ? AND '}
+                    v1.currentLocalTimeAssignment < ?
                 ),
                 first_visit_in_period AS (
                     SELECT DISTINCT v2.patient_id, MIN(v2.currentLocalTimeAssignment) AS first_visit_date
                     FROM visit AS v2
-                    WHERE v2.user_activated_id = ? 
-                    AND v2.currentLocalTimeAssignment BETWEEN ? AND ?
+                    WHERE ${isAllDoctors ? '' : 'v2.user_activated_id = ? AND '}
+                    v2.currentLocalTimeAssignment BETWEEN ? AND ?
                     AND v2.patient_id IN (SELECT patient_id FROM previous_visits)
                     GROUP BY v2.patient_id
                 )
                 SELECT COUNT(*) AS total_followup_visits
                 FROM visit
-                WHERE user_activated_id = ? 
-                AND currentLocalTimeAssignment > (SELECT first_visit_date FROM first_visit_in_period WHERE patient_id = visit.patient_id)
+                WHERE ${isAllDoctors ? '' : 'user_activated_id = ? AND '}
+                currentLocalTimeAssignment > (SELECT first_visit_date FROM first_visit_in_period WHERE patient_id = visit.patient_id)
                 AND patient_id IN (SELECT patient_id FROM first_visit_in_period)`;
 
             // 7. Hours Worked
             const hoursWorkedQuery = `
                 SELECT ROUND(AVG(TIMESTAMPDIFF(MINUTE, visit.startDate, visit.endDate)),2) AS hoursWorked 
                 FROM visit 
-                WHERE user_activated_id = ? 
-                AND currentLocalTimeAssignment BETWEEN ? AND ?`;
+                WHERE ${isAllDoctors ? '' : 'user_activated_id = ? AND '}
+                currentLocalTimeAssignment BETWEEN ? AND ?`;
 
             // 8. Total Revenue for Acts and Consultations
             const totalRevenueQuery = `
                 select sum(payment.amount) as total_paid
                 from payment join visit on visit.id=payment.consultation_id 
-                where user_activated_id = ?
-                and visit.currentLocalTimeAssignment BETWEEN ? AND ?;`;
+                where ${isAllDoctors ? '' : 'user_activated_id = ? AND '}
+                visit.currentLocalTimeAssignment BETWEEN ? AND ?;`;
             // 9. Average Waiting Time
             const avgWaitingTimeQuery = `
                 SELECT ROUND(AVG(TIMESTAMPDIFF(MINUTE, visit.arrivalDate, visit.startDate)),2) AS avgWaitingTime 
                 FROM visit 
-                WHERE user_activated_id = ? 
-                AND currentLocalTimeAssignment BETWEEN ? AND ?`;
+                WHERE ${isAllDoctors ? '' : 'user_activated_id = ? AND '}
+                currentLocalTimeAssignment BETWEEN ? AND ?`;
 
             // 10. actes 
             const actesQuery = `
@@ -147,8 +152,8 @@ module.exports = (connection) => {
                     JOIN dental_diagram ON dental_diagram.id = dental_diagram_udc.dental_diagram_id
                     JOIN udc ON udc.id = dental_diagram_udc.udc_id
                     JOIN visit ON visit.id = dental_diagram.consultation_id
-                    WHERE user_activated_id = ?
-                    AND visit.currentLocalTimeAssignment BETWEEN ? AND ?
+                    WHERE ${isAllDoctors ? '' : 'user_activated_id = ? AND '}
+                    visit.currentLocalTimeAssignment BETWEEN ? AND ?
                     GROUP BY description1
                 ),
                 paiements AS (
@@ -159,8 +164,8 @@ module.exports = (connection) => {
                     JOIN udc ON udc.id = dental_diagram_udc.udc_id
                     JOIN visit ON visit.id = dental_diagram.consultation_id
                     LEFT JOIN payment ON payment.consultation_id = visit.id
-                    WHERE user_activated_id = ?
-                    AND visit.currentLocalTimeAssignment BETWEEN ? AND ?
+                    WHERE ${isAllDoctors ? '' : 'user_activated_id = ? AND '}
+                    visit.currentLocalTimeAssignment BETWEEN ? AND ?
                     GROUP BY description1
                 )
                 SELECT v.acte as acte, 
@@ -176,8 +181,8 @@ module.exports = (connection) => {
             // 11. new Patients clinic (1st visit with this doctor)
             const newPatientsClinicQuery = `SELECT COUNT(DISTINCT v1.patient_id) AS uniquePatients
                                         FROM visit AS v1
-                                        WHERE v1.user_activated_id = ?
-                                        AND v1.currentLocalTimeAssignment BETWEEN ? AND ?
+                                        WHERE ${isAllDoctors ? '' : 'v1.user_activated_id = ? AND '}
+                                        v1.currentLocalTimeAssignment BETWEEN ? AND ?
                                         AND NOT EXISTS (
                                             SELECT 1
                                             FROM visit AS v2
@@ -191,8 +196,8 @@ module.exports = (connection) => {
                                             WHERE v1.patient_id IN (
                                                 SELECT v2.patient_id
                                                 FROM visit AS v2
-                                                WHERE v2.user_activated_id = ?
-                                                AND v2.currentLocalTimeAssignment BETWEEN ? AND ?
+                                                WHERE ${isAllDoctors ? '' : 'v2.user_activated_id = ? AND '}
+                                                v2.currentLocalTimeAssignment BETWEEN ? AND ?
                                                 AND NOT EXISTS (
                                                     SELECT 1
                                                     FROM visit AS v3
@@ -204,36 +209,53 @@ module.exports = (connection) => {
             // 
             const patientsPasRetourQuery = `SELECT COUNT(DISTINCT v1.patient_id) AS patients_never_returned
                                     FROM visit AS v1
-                                    WHERE v1.user_activated_id = ?  -- ID du médecin spécifique
-                                    AND v1.currentLocalTimeAssignment BETWEEN ? AND ?  -- Intervalle de temps pour la visite avec le médecin
+                                    WHERE ${isAllDoctors ? '' : 'v1.user_activated_id = ? AND '}
+                                    v1.currentLocalTimeAssignment BETWEEN ? AND ?
                                     AND NOT EXISTS (
                                         SELECT 1
                                         FROM visit AS v2
                                         WHERE v2.patient_id = v1.patient_id
-                                        AND v2.currentLocalTimeAssignment > ?  -- Pas de visites après l'intervalle
+                                        AND v2.currentLocalTimeAssignment > ?
                                     );`;
-            const total_hoursQuery = `SELECT  user_activated_id,ROUND(SUM(TIMESTAMPDIFF(MINUTE, visit.startDate, visit.endDate))/60,2) AS hoursWorked 
+            const total_hoursQuery = `SELECT  ${isAllDoctors ? '' : 'user_activated_id,'}ROUND(SUM(TIMESTAMPDIFF(MINUTE, visit.startDate, visit.endDate))/60,2) AS hoursWorked 
                                         FROM dental_diagram_udc 
                                         JOIN dental_diagram ON dental_diagram.id = dental_diagram_udc.dental_diagram_id
                                         JOIN udc ON udc.id = dental_diagram_udc.udc_id
                                         JOIN visit ON visit.id = dental_diagram.consultation_id
-                                        where user_activated_id = ?
-                                        and visit.currentLocalTimeAssignment BETWEEN ? AND ?;`;
+                                        where ${isAllDoctors ? '' : 'user_activated_id = ? AND '}
+                                        visit.currentLocalTimeAssignment BETWEEN ? AND ?;`;
+
+            // Build parameter arrays based on whether we're filtering by doctor
+            const uniquePatientsParams = isAllDoctors ? [startDate, endDate] : [doctorId, startDate, endDate];
+            const totalVisitsParams = isAllDoctors ? [startDate, endDate] : [doctorId, startDate, endDate];
+            const newPatientsParams = isAllDoctors ? [startDate, endDate, startDate] : [doctorId, startDate, endDate, startDate];
+            const visitsGenParams = isAllDoctors ? [startDate, endDate, startDate, startDate, endDate] : [doctorId, startDate, endDate, startDate, doctorId, startDate, endDate];
+            const loyalPatientsParams = isAllDoctors ? [startDate, startDate, endDate] : [doctorId, startDate, doctorId, startDate, endDate];
+            const followUpParams = isAllDoctors ? [startDate, startDate, endDate] : [doctorId, startDate, doctorId, startDate, endDate, doctorId];
+            const hoursWorkedParams = isAllDoctors ? [startDate, endDate] : [doctorId, startDate, endDate];
+            const totalRevenueParams = isAllDoctors ? [startDate, endDate] : [doctorId, startDate, endDate];
+            const avgWaitingParams = isAllDoctors ? [startDate, endDate] : [doctorId, startDate, endDate];
+            const actesParams = isAllDoctors ? [startDate, endDate, startDate, endDate] : [doctorId, startDate, endDate, doctorId, startDate, endDate];
+            const newPatientsClinicParams = isAllDoctors ? [startDate, endDate, startDate] : [doctorId, startDate, endDate, startDate];
+            const visitsByNewPatientsParams = isAllDoctors ? [startDate, endDate, startDate] : [doctorId, startDate, endDate, startDate];
+            const patientsPasRetourParams = isAllDoctors ? [startDate, endDate, endDate] : [doctorId, startDate, endDate, endDate];
+            const totalHoursParams = isAllDoctors ? [startDate, endDate] : [doctorId, startDate, endDate];
+
             // Execute the queries
-            const uniquePatients = await query(uniquePatientsQuery, [doctorId, startDate, endDate]);
-            const totalVisits = await query(totalVisitsQuery, [doctorId, startDate, endDate]);
-            const newPatients = await query(newPatientsQuery, [doctorId, startDate, endDate, startDate]);
-            const visitsGeneratedByNewPatients = await query(visitsGeneratedByNewPatientsQuery, [doctorId, startDate, endDate, startDate, doctorId, startDate, endDate]);
-            const loyalPatients = await query(loyalPatientsQuery, [doctorId, startDate, doctorId, startDate, endDate]);
-            const followUpVisits = await query(followUpVisitsQuery, [doctorId, startDate, doctorId, startDate, endDate, doctorId]);
-            const hoursWorked = await query(hoursWorkedQuery, [doctorId, startDate, endDate]);
-            const total_hours = await query(total_hoursQuery, [doctorId, startDate, endDate]);
-            const totalRevenue = await query(totalRevenueQuery, [doctorId, startDate, endDate]);
-            const avgWaitingTime = await query(avgWaitingTimeQuery, [doctorId, startDate, endDate]);
-            const actes = await query(actesQuery, [doctorId, startDate, endDate, doctorId, startDate, endDate]);
-            const newPatientsClinic = await query(newPatientsClinicQuery, [doctorId, startDate, endDate, startDate]);
-            const VisitsBynewPatientsClinic = await query(VisitsBynewPatientsClinicQuery, [doctorId, startDate, endDate, startDate]);
-            const patientsPasRetour = await query(patientsPasRetourQuery, [doctorId, startDate, endDate, endDate]);
+            const uniquePatients = await query(uniquePatientsQuery, uniquePatientsParams);
+            const totalVisits = await query(totalVisitsQuery, totalVisitsParams);
+            const newPatients = await query(newPatientsQuery, newPatientsParams);
+            const visitsGeneratedByNewPatients = await query(visitsGeneratedByNewPatientsQuery, visitsGenParams);
+            const loyalPatients = await query(loyalPatientsQuery, loyalPatientsParams);
+            const followUpVisits = await query(followUpVisitsQuery, followUpParams);
+            const hoursWorked = await query(hoursWorkedQuery, hoursWorkedParams);
+            const total_hours = await query(total_hoursQuery, totalHoursParams);
+            const totalRevenue = await query(totalRevenueQuery, totalRevenueParams);
+            const avgWaitingTime = await query(avgWaitingTimeQuery, avgWaitingParams);
+            const actes = await query(actesQuery, actesParams);
+            const newPatientsClinic = await query(newPatientsClinicQuery, newPatientsClinicParams);
+            const VisitsBynewPatientsClinic = await query(VisitsBynewPatientsClinicQuery, visitsByNewPatientsParams);
+            const patientsPasRetour = await query(patientsPasRetourQuery, patientsPasRetourParams);
 
 
             const hoursWorkedTotal = (hoursWorked[0].hoursWorked * totalVisits[0]?.totalVisits) / 60;
@@ -296,6 +318,8 @@ module.exports = (connection) => {
                 return res.status(400).json({ error: 'Doctor ID is required' });
             }
 
+            const isAllDoctors = doctorId === 'all';
+
             // Query to get visits grouped by day of year and year
             const visitsByDayQuery = `
                 SELECT 
@@ -303,13 +327,13 @@ module.exports = (connection) => {
                     DAYOFYEAR(currentLocalTimeAssignment) as day_of_year,
                     COUNT(*) as visit_count
                 FROM visit
-                WHERE user_activated_id = ?
+                ${isAllDoctors ? '' : 'WHERE user_activated_id = ?'}
                 GROUP BY YEAR(currentLocalTimeAssignment), DAYOFYEAR(currentLocalTimeAssignment)
                 ORDER BY year, day_of_year
             `;
 
-            const results = await query(visitsByDayQuery, [doctorId]);
-            
+            const results = await query(visitsByDayQuery, isAllDoctors ? [] : [doctorId]);
+
             // Transform data into format suitable for D3.js multi-line chart
             const dataByYear = {};
             results.forEach(row => {

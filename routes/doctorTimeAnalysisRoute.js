@@ -4,15 +4,15 @@ const router = express.Router();
 module.exports = (connection) => {
     // Convertir connection.query en fonction basée sur une promesse avec journalisation
     const query = (sql, params) => new Promise((resolve, reject) => {
-        console.log('Exécution de la requête SQL :', sql);  
+        console.log('Exécution de la requête SQL :', sql);
         console.log('Avec les paramètres :', params);
 
         connection.query(sql, params, (err, results) => {
             if (err) {
-                console.error('Erreur lors de l\'exécution de la requête :', err);  
+                console.error('Erreur lors de l\'exécution de la requête :', err);
                 return reject(err);
             }
-            resolve(results);  
+            resolve(results);
         });
     });
 
@@ -20,6 +20,8 @@ module.exports = (connection) => {
     // Ajout du middleware d'authentification ici
     router.get('/', async (req, res) => {
         const { doctorId, startDate, endDate } = req.query;
+
+        const isAllDoctors = doctorId === 'all';
 
         // Requête SQL pour analyser le temps d'attente et le temps patient par semaine
         const queryStr = `
@@ -31,8 +33,8 @@ module.exports = (connection) => {
             FROM 
                 visit v
             WHERE 
-                v.user_activated_id = ?
-                AND v.currentLocalTimeAssignment BETWEEN ? AND ?
+                ${isAllDoctors ? '' : 'v.user_activated_id = ? AND '}
+                v.currentLocalTimeAssignment BETWEEN ? AND ?
             GROUP BY 
                 YEAR(v.currentLocalTimeAssignment), WEEK(v.currentLocalTimeAssignment, 1)
             ORDER BY 
@@ -41,7 +43,8 @@ module.exports = (connection) => {
 
         try {
             // Utilisation de la méthode query basée sur des promesses
-            const result = await query(queryStr, [doctorId, startDate, endDate]);
+            const params = isAllDoctors ? [startDate, endDate] : [doctorId, startDate, endDate];
+            const result = await query(queryStr, params);
             res.json(result);
         } catch (error) {
             console.error('Erreur lors de la récupération des données hebdomadaires :', error);
