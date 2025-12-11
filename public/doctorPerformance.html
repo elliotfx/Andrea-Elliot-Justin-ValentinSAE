@@ -36,226 +36,85 @@
         <button id="apply-period">Appliquer</button>
     </div>
 
-    <!-- Section for displaying the performance indicators -->
+    <!-- Section des indicateurs -->
+    <div class="title">Indicateurs de performance</div>
+    
     <div id="stats-card-container">
-        <!-- Existing Indicators -->
-        <div class="stats-card">
-            <div class="stats-title">Patients uniques</div>
-            <div class="stats-value" id="unique-patients">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">Visites</div>
-            <div class="stats-value" id="total-visits">Chargement...</div>
-        </div>
-        <div class="stats-card">
-            <div class="stats-title">Patients (pas de retour)</div>
-            <div class="stats-value" id="patients-premiere-visite-pas-retour">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">Nouveaux patients</div>
-            <div class="stats-value" id="new-patients">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">Visites générées par les nouveaux patients</div>
-            <div class="stats-value" id="visits-generated-by-new-patients">Chargement...</div>
-        </div>
-
-
-        <div class="stats-card">
-            <div class="stats-title">Patients fidèles</div>
-            <div class="stats-value" id="loyal-patients">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">Visites de suivi des patients fidèles</div>
-            <div class="stats-value" id="follow-up-visits">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">Total des revenus</div>
-            <div class="stats-value" id="total-revenue-consultations">Chargement...</div>
-        </div>
-        <div class="stats-card">
-            <div class="stats-title">Heures patient</div>
-            <div class="stats-value" id="total-hours-worked">Chargement...</div>
-        </div>
-        <div class="stats-card">
-            <div class="stats-title">CA par heure</div>
-            <div class="stats-value" id="revenue-per-hour">Chargement...</div>
-        </div>
-        <div class="stats-card">
-            <div class="stats-title">Temps Patient moyen</div>
-            <div class="stats-value" id="hours-worked">Chargement...</div>
-        </div>
-
-        <!-- New card for average waiting time -->
-        <div class="stats-card">
-            <div class="stats-title">Temps d'attente moyen</div>
-            <div class="stats-value" id="avg-waiting-time">Chargement...</div>
-        </div>
-
-        <!-- Punctuality KPIs -->
-        <div class="stats-card">
-            <div class="stats-title">Taux de ponctualité</div>
-            <div class="stats-value" id="punctuality-rate">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">RDV à l'heure</div>
-            <div class="stats-value" id="on-time-appointments">Chargement...</div>
-        </div>
-
-        <div class="stats-card">
-            <div class="stats-title">Retard moyen</div>
-            <div class="stats-value" id="avg-delay">Chargement...</div>
-        </div>
-    </div>
-    <div class="chart-container">
-        <div class="chart-title">Analyse de la relation entre le nombre de visites et les revenus par mois</div>
-        <svg id="visits-revenue-chart"></svg>
-    </div>
-
-    <!-- Punctuality Chart -->
-    <div class="chart-container">
-        <div class="chart-title">Évolution de la ponctualité par mois</div>
-        <div style="margin-bottom: 15px; display: flex; gap: 20px; align-items: center;">
-            <div>
-                <label for="punctuality-period-select">Période : </label>
-                <select id="punctuality-period-select">
-                    <option value="month" selected>Par Mois</option>
-                    <option value="year">Par Année</option>
-                </select>
+        <!-- Colonne 1 : Patients -->
+        <div class="indicator-column">
+            <h3 class="column-title"><a href="./graphique/doctor/graphPatients.html">Patients</a></h3>
+            <div class="stats-card">
+                <div class="stats-title">Nombre de patients</div>
+                <div class="stats-value" id="unique-patients">Chargement...</div>
             </div>
-            <div id="punctuality-year-selector-container" style="display: none;">
-                <label for="punctuality-year-select">Année : </label>
-                <select id="punctuality-year-select">
-                    <!-- Options will be populated dynamically -->
-                </select>
+
+            <div class="stats-card">
+                <div class="stats-title">Nouveaux patients</div>
+                <div class="stats-value" id="new-patients">Chargement...</div>
             </div>
-        </div>
-        <svg id="punctuality-chart"></svg>
-    </div>
 
+            <div class="stats-card">
+                <div class="stats-title">Patients fidèles</div>
+                <div class="stats-value" id="loyal-patients">Chargement...</div>
+            </div>
 
-    <!-- Table for showing the number of acts -->
-    <div class="table-container">
-        <h2>Nombre d'actes effectués</h2>
-        <table id="actes-table">
-            <thead>
-                <tr>
-                    <th>Acte</th>
-                    <th>Nombre de patients</th>
-                    <th>Nombre d'actes</th>
-                    <th>Total des revenus (DA)</th>
-                    <th>Total Heures</th>
-                    <th>Coût Moyen par Heure (DA)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Dynamic rows will be appended here -->
-            </tbody>
-        </table>
-    </div>
-
-    <div class="chart-container">
-        <div class="chart-title">Analyse de la fidélité des patients</div>
-
-        <!-- KPI Evolution Section -->
-        <div id="patients-kpi-section"
-            style="display: none; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-            <h3 style="margin: 0 0 15px 0; font-size: 16px;">Évolution Année N vs N-1</h3>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                <div class="kpi-card"
-                    style="flex: 1; min-width: 200px; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #4A90E2;">
-                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Nouveaux Patients</div>
-                    <div id="kpi-nouveaux" style="font-size: 24px; font-weight: bold; color: #4A90E2;">-</div>
-                    <div id="kpi-nouveaux-change" style="font-size: 14px; margin-top: 5px;">-</div>
-                </div>
-                <div class="kpi-card"
-                    style="flex: 1; min-width: 200px; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #50C878;">
-                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Patients Fidèles</div>
-                    <div id="kpi-fideles" style="font-size: 24px; font-weight: bold; color: #50C878;">-</div>
-                    <div id="kpi-fideles-change" style="font-size: 14px; margin-top: 5px;">-</div>
-                </div>
-                <div class="kpi-card"
-                    style="flex: 1; min-width: 200px; padding: 15px; background: white; border-radius: 6px; border-left: 4px solid #FF6B6B;">
-                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Patients Sans Retour</div>
-                    <div id="kpi-pasretour" style="font-size: 24px; font-weight: bold; color: #FF6B6B;">-</div>
-                    <div id="kpi-pasretour-change" style="font-size: 14px; margin-top: 5px;">-</div>
-                </div>
+            <div class="stats-card">
+                <div class="stats-title">Patients (pas de retour)</div>
+                <div class="stats-value" id="patients-premiere-visite-pas-retour">Chargement...</div>
             </div>
         </div>
 
-        <div style="margin-bottom: 15px; display: flex; gap: 20px; align-items: center;">
-            <div>
-                <label for="patients-period-select">Période : </label>
-                <select id="patients-period-select">
-                    <option value="year" selected>Par Année</option>
-                    <option value="month">Par Mois</option>
-                </select>
+        <!-- Colonne 2 : Visites et Rendez-vous -->
+        <div class="indicator-column">
+            <h3 class="column-title"><a href="./graphique/doctor/graphVisitesRendezVous.html">Visites et Rendez-vous</a></h3>
+            <div class="stats-card">
+                <div class="stats-title">Visites</div>
+                <div class="stats-value" id="total-visits">Chargement...</div>
             </div>
-            <div id="year-selector-container" style="display: none;">
-                <label for="patients-year-select">Année : </label>
-                <select id="patients-year-select">
-                    <!-- Options will be populated dynamically -->
-                </select>
+
+            <div class="stats-card">
+                <div class="stats-title">Taux de ponctualité du médecin</div>
+                <div class="stats-value" id="punctuality-rate">Chargement...</div>
             </div>
-        </div>
-        <svg id="patients-chart"></svg> <!-- Correction de l'ID et structure -->
-    </div>
 
-    <!-- Section for charts (e.g., performance evolution over time) -->
-    <div class="chart-container">
-        <div class="chart-title">Évolution du Temps</div>
-        <svg id="performance-chart"></svg> <!-- Updated title for time analysis -->
-    </div>
-
-
-
-    <div class="chart-container">
-        <h2>Temps d'Attente Moyen par Plage Horaire et par Mois (en minutes)</h2>
-        <div style="overflow-x: auto; overflow-y: hidden; width: 100%;">
-            <div style="min-width: 1400px;">
-                <svg id="waiting-time-heatmap"></svg>
+            <div class="stats-card">
+                <div class="stats-title">RDV à l'heure</div>
+                <div class="stats-value" id="on-time-appointments">Chargement...</div>
             </div>
         </div>
-    </div>
 
-    <!-- Yearly Visits Comparison Chart -->
-    <div class="chart-container">
-        <h2>Comparaison des Visites par Année</h2>
-        <div style="margin-bottom: 15px; display: flex; gap: 20px; align-items: center;">
-            <div>
-                <label for="granularity-select">Granularité : </label>
-                <select id="granularity-select">
-                    <option value="month" selected>Mois</option>
-                    <option value="week">Semaine</option>
-                    <option value="day">Jour</option>
-                </select>
+        <!-- Colonne 3 : Financier -->
+        <div class="indicator-column">
+            <h3 class="column-title"><a href="./graphique/doctor/graphFinancier.html">Financier</a></h3>
+            <div class="stats-card">
+                <div class="stats-title">CA global</div>
+                <div class="stats-value" id="total-revenue-consultations">Chargement...</div>
             </div>
-            <div>
-                <label for="month-filter-select">Filtrer par mois : </label>
-                <select id="month-filter-select">
-                    <option value="all" selected>Tous les mois</option>
-                    <option value="1">Janvier</option>
-                    <option value="2">Février</option>
-                    <option value="3">Mars</option>
-                    <option value="4">Avril</option>
-                    <option value="5">Mai</option>
-                    <option value="6">Juin</option>
-                    <option value="7">Juillet</option>
-                    <option value="8">Août</option>
-                    <option value="9">Septembre</option>
-                    <option value="10">Octobre</option>
-                    <option value="11">Novembre</option>
-                    <option value="12">Décembre</option>
-                </select>
+
+            <div class="stats-card">
+                <div class="stats-title">CA par heure</div>
+                <div class="stats-value" id="revenue-per-hour">Chargement...</div>
             </div>
         </div>
-        <svg id="yearly-visits-chart"></svg>
+
+        <!-- Colonne 4 : Temps -->
+        <div class="indicator-column">
+            <h3 class="column-title"><a href="./graphique/doctor/graphTemps.html">Temps</a></h3>
+            <div class="stats-card">
+                <div class="stats-title">Temps total devant les patients</div>
+                <div class="stats-value" id="total-hours-worked">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Temps rendez-vous moyen</div>
+                <div class="stats-value" id="hours-worked">Chargement...</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Temps d'attente moyen</div>
+                <div class="stats-value" id="avg-waiting-time">Chargement...</div>
+            </div>
+        </div>
     </div>
 
     <!-- Include your JavaScript file -->

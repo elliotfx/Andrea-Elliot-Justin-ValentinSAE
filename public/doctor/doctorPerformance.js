@@ -30,9 +30,7 @@ document.getElementById('apply-period').addEventListener('click', function() {
         document.getElementById('unique-patients').textContent = data.uniquePatients;
         document.getElementById('total-visits').textContent = data.totalVisits;
         document.getElementById('new-patients').textContent = data.newPatients;
-        document.getElementById('visits-generated-by-new-patients').textContent = data.visitsGeneratedByNewPatients;
         document.getElementById('loyal-patients').textContent = data.loyalPatients;
-        document.getElementById('follow-up-visits').textContent = data.followUpVisits;
         document.getElementById('total-revenue-actes').textContent = data.totalPaidForActes + ' €';
         document.getElementById('total-visits-with-actes').textContent = data.totalVisitsWithActes;
         document.getElementById('total-revenue-consultations').textContent = data.totalPaidForConsultations + ' €';
