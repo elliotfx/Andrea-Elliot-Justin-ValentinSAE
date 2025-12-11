@@ -38,12 +38,17 @@ module.exports = (connection) => {
                 current = current.plus({ months: 1 });
             }
 
-            const result = {};
+            console.time('Monthly Stats Total Time');
 
-            for (const month of months) {
-                // Définit les dates de début et de fin pour le mois
-                const startDateMonth = DateTime.fromFormat(month, 'yyyy-MM').startOf('month').toISODate();
-                const endDateMonth = DateTime.fromFormat(month, 'yyyy-MM').endOf('month').toISODate();
+            // Traiter les mois par lots de 3 pour éviter de surcharger la DB
+            const batchSize = 3;
+            const allResults = [];
+            
+            for (let i = 0; i < months.length; i += batchSize) {
+                const batch = months.slice(i, i + batchSize);
+                const batchPromises = batch.map(async (month) => {
+                    const startDateMonth = DateTime.fromFormat(month, 'yyyy-MM').startOf('month').toISODate();
+                    const endDateMonth = DateTime.fromFormat(month, 'yyyy-MM').endOf('month').toISODate();
 
                 // Ajuste les requêtes pour le mois en utilisant vos requêtes originales avec les paramètres de date ajustés
 
@@ -263,25 +268,40 @@ module.exports = (connection) => {
                     ? (totalRevenueValue / hoursWorkedTotal).toFixed(2)
                     : '0.00';
 
-                // Stocke les résultats pour le mois
-                result[month] = {
-                    stats: {
-                        uniquePatients: uniquePatients[0]?.uniquePatients || 0,
-                        totalVisits: totalVisitsCount,
-                        newPatients: newPatients[0]?.new_patients || 0,
-                        loyalPatients: loyalPatients[0]?.loyal_patients || 0,
-                        visitDuration: hoursWorkedValue,
-                        totalPaidForConsultations: totalRevenueValue,
-                        revenuePerHour: revenuePerHour,
-                        avgWaitingTime: avgWaitingTime[0]?.avgWaitingTime || 0,
-                        patientsPremiereVisite: newPatientsClinic[0]?.uniquePatients || 0,
-                        VisitsByNewPatientsClinic: visitsByNewPatientsClinic[0]?.total_visits || 0,
-                        total_hours: totalHours[0]?.hoursWorked || 0,
-                        patientsPasRetour: patientsPasRetour[0]?.patients_never_returned || 0
-                    },
-                    actes: actes,
+                // Retourner les résultats pour ce mois
+                return {
+                    month,
+                    data: {
+                        stats: {
+                            uniquePatients: uniquePatients[0]?.uniquePatients || 0,
+                            totalVisits: totalVisitsCount,
+                            newPatients: newPatients[0]?.new_patients || 0,
+                            loyalPatients: loyalPatients[0]?.loyal_patients || 0,
+                            visitDuration: hoursWorkedValue,
+                            totalPaidForConsultations: totalRevenueValue,
+                            revenuePerHour: revenuePerHour,
+                            avgWaitingTime: avgWaitingTime[0]?.avgWaitingTime || 0,
+                            patientsPremiereVisite: newPatientsClinic[0]?.uniquePatients || 0,
+                            VisitsByNewPatientsClinic: visitsByNewPatientsClinic[0]?.total_visits || 0,
+                            total_hours: totalHours[0]?.hoursWorked || 0,
+                            patientsPasRetour: patientsPasRetour[0]?.patients_never_returned || 0
+                        },
+                        actes: actes,
+                    }
                 };
-            }
+            });
+
+            const batchResults = await Promise.all(batchPromises);
+            allResults.push(...batchResults);
+        }
+
+            // Convertir en objet avec les mois comme clés
+            const result = {};
+            allResults.forEach(({ month, data }) => {
+                result[month] = data;
+            });
+
+            console.timeEnd('Monthly Stats Total Time');
 
             // Envoie le résultat combiné au client
             res.json(result);
