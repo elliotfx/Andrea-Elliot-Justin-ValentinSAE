@@ -13,12 +13,15 @@ module.exports = (connection) => {
       return res.status(400).json({ message: 'Les dates de début et de fin sont requises.' });
     }
 
-    // Construire la requête SQL
+    // Vérifier si on doit filtrer par docteur (pas "all")
+    const isAllDoctors = !doctorId || doctorId === 'all';
+
+    // Construire la requête SQL avec arrondi des revenus à 2 décimales
     let query = `
       SELECT 
           DATE_FORMAT(currentLocalTimeAssignment, '%Y-%m') AS month,
           COUNT(DISTINCT visit.id) AS visit_count,
-          SUM(payment.amount) AS revenue
+          ROUND(SUM(payment.amount), 2) AS revenue
       FROM 
           visit
       JOIN
@@ -29,9 +32,9 @@ module.exports = (connection) => {
           currentLocalTimeAssignment BETWEEN ? AND ?
     `;
 
-    // Si l'ID du docteur est fourni, ajouter une condition pour filtrer par docteur
+    // Si l'ID du docteur est fourni et n'est pas "all", ajouter une condition pour filtrer par docteur
     const queryParams = [startDate, endDate];
-    if (doctorId) {
+    if (!isAllDoctors) {
       query += ` AND visit.user_activated_id = ?`;
       queryParams.push(doctorId); // Ajouter l'ID du docteur aux paramètres de la requête
     }

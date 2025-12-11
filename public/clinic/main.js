@@ -26,11 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const { startDate, endDate } = getLastMonthDateRange();
 
-    // Initialiser les champs de date avec les valeurs du mois précédent
+    // Initialiser les champs de date avec les valeurs personnalisées
     document.getElementById('start-date').value = '2023-01-01';
     document.getElementById('end-date').value = endDate;
     
-    // Charger les données pour le mois précédent
+    // Charger les données à partir du 01/01/2023
     loadStats('2023-01-01', endDate);
     loadMedecinsData('2023-01-01', endDate);
     loadVisitsRevenue('2023-01-01', endDate);
@@ -60,15 +60,5 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             alert('Veuillez sélectionner les deux dates.');
         }
-    });
-
-    // Gestion du menu latéral
-    const menuToggle = document.getElementById("menu-toggle");
-    const sidebar = document.getElementById("sidebar");
-    
-    menuToggle.addEventListener("click", function() {
-        sidebar.style.width = sidebar.style.width === '250px' ? '0' : '250px';
-        document.body.classList.toggle("with-sidebar");
-        this.classList.toggle("open"); // Change l'icône de menu
     });
 });

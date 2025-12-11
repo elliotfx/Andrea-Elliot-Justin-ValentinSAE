@@ -1,0 +1,337 @@
+/* Simulator Specific Styles */
+
+.simulator-container {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.simulator-container h1 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+.section {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.section-hidden {
+    display: none;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table th {
+    background-color: #3498db;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.text-right {
+    text-align: right;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.dropdown-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.dropdown-container:has(#acte-price) {
+    grid-template-columns: 1fr;
+}
+
+.dropdown-container:has(#acte-price) .dropdown-box:first-child {
+    grid-column: 1 / -1;
+}
+
+.dropdown-box {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.dropdown-box label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.btn-validate {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-validate:hover {
+    background-color: #2980b9;
+}
+
+.btn-validate:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+.center-btn {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.result-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px solid #ecf0f1;
+}
+
+.result-card.highlight {
+    background: #e8f5e9;
+    border-color: #4caf50;
+}
+
+.result-card.negative {
+    background: #ffebee;
+    border-color: #f44336;
+}
+
+.result-label {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.result-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.result-card.highlight .result-value {
+    color: #2e7d32;
+}
+
+.result-card.negative .result-value {
+    color: #c62828;
+}
+
+.result-subtitle {
+    font-size: 12px;
+    color: #95a5a6;
+    margin-bottom: 8px;
+}
+
+.cell-tooltip {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 13px;
+    z-index: 10000;
+    pointer-events: none;
+    max-width: 300px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: none;
+}
+
+.cell-tooltip.show {
+    display: block;
+}
+
+.cell-tooltip div {
+    margin: 5px 0;
+}
+
+.cell-tooltip strong {
+    color: #4fc3f7;
+}
+
+#profitability-table td {
+    position: relative;
+    cursor: pointer;
+}
+
+#profitability-table th {
+    background-color: #2c3e50;
+    color: white;
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+#average-price-info {
+    margin-top: 10px;
+    padding: 10px;
+    background: #e3f2fd;
+    border-radius: 4px;
+    font-size: 14px;
+    display: none;
+}
+
+.percentage-custom-section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.percentage-custom-section h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+.percentage-custom-section p {
+    color: #7f8c8d;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.percentage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.percentage-grid label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #34495e;
+}
+
+.percentage-note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #95a5a6;
+}
+
+.chart-description {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+.table-overflow {
+    overflow-x: auto;
+    position: relative;
+}
+
+.legend-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e3f2fd;
+    border-radius: 6px;
+}
+
+.legend-section p {
+    margin: 5px 0;
+}
+
+.legend-items {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+}
+
+.legend-color.excellent {
+    background-color: #1b5e20;
+}
+
+.legend-color.very-good {
+    background-color: #2e7d32;
+}
+
+.legend-color.good {
+    background-color: #66bb6a;
+}
+
+.legend-color.acceptable {
+    background-color: #fdd835;
+}
+
+.legend-color.low {
+    background-color: #ff9800;
+}
+
+.legend-color.very-low {
+    background-color: #e53935;
+}
+
+.legend-color.impossible {
+    background-color: #cfd8dc;
+}

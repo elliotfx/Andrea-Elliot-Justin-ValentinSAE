@@ -11,6 +11,8 @@ module.exports = (connection) => {
       return;
     }
 
+    const isAllDoctors = doctorId === 'all';
+
     // Requête SQL pour analyser le temps d'attente moyen par plage horaire et par mois pour un médecin spécifique
     const query = `
       WITH hourly_wait_times AS (
@@ -49,7 +51,7 @@ module.exports = (connection) => {
             v.arrivalDate BETWEEN ? AND ? -- Filtre par les dates de début et de fin
             AND v.arrivalDate IS NOT NULL 
             AND v.startDate IS NOT NULL
-            AND v.user_activated_id = ? -- Filtre par médecin
+            ${isAllDoctors ? '' : 'AND v.user_activated_id = ?'}
         GROUP BY 
             visit_month, hour_range
       )
@@ -64,7 +66,8 @@ module.exports = (connection) => {
     `;
 
     // Exécuter la requête SQL
-    connection.query(query, [start, end, doctorId], (error, results) => {
+    const params = isAllDoctors ? [start, end] : [start, end, doctorId];
+    connection.query(query, params, (error, results) => {
       if (error) {
         console.error('Error executing the query:', error);
         res.status(500).json({ error: 'Internal Server Error' });
