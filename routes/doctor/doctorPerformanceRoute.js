@@ -4,15 +4,15 @@ const router = express.Router();
 module.exports = (connection) => {
     // Convert connection.query to a Promise-based function with logging
     const query = (sql, params) => new Promise((resolve, reject) => {
-        console.log('Executing SQL:', sql);  
+        console.log('Executing SQL:', sql);
         console.log('With parameters:', params);
 
         connection.query(sql, params, (err, results) => {
             if (err) {
-                console.error('Error executing query:', err);  
+                console.error('Error executing query:', err);
                 return reject(err);
             }
-            resolve(results);  
+            resolve(results);
         });
     });
 
@@ -72,6 +72,8 @@ module.exports = (connection) => {
                 SELECT COUNT(*) AS total_visits 
                 FROM visit 
                 WHERE patient_id IN (SELECT patient_id FROM new_patients)
+                AND user_activated_id = ?
+                AND currentLocalTimeAssignment BETWEEN ? AND ?
                 `;
 
             // 5. Loyal Patients
@@ -127,7 +129,7 @@ module.exports = (connection) => {
                 from payment join visit on visit.id=payment.consultation_id 
                 where user_activated_id = ?
                 and visit.currentLocalTimeAssignment BETWEEN ? AND ?;`;
-                // 9. Average Waiting Time
+            // 9. Average Waiting Time
             const avgWaitingTimeQuery = `
                 SELECT ROUND(AVG(TIMESTAMPDIFF(MINUTE, visit.arrivalDate, visit.startDate)),2) AS avgWaitingTime 
                 FROM visit 
@@ -182,9 +184,9 @@ module.exports = (connection) => {
                                             WHERE v2.patient_id = v1.patient_id
                                             AND v2.currentLocalTimeAssignment < ?
                                         );`;
-    
+
             // 12. nombre de visite généré par les patients ayant fait leur premiere viste avec ce medecin
-            const VisitsBynewPatientsClinicQuery=`SELECT COUNT(*) AS total_visits
+            const VisitsBynewPatientsClinicQuery = `SELECT COUNT(*) AS total_visits
                                             FROM visit AS v1
                                             WHERE v1.patient_id IN (
                                                 SELECT v2.patient_id
@@ -198,9 +200,9 @@ module.exports = (connection) => {
                                                     AND v3.currentLocalTimeAssignment < ?
                                                 )
                                             );`;
-         
-         // 
-         const patientsPasRetourQuery =`SELECT COUNT(DISTINCT v1.patient_id) AS patients_never_returned
+
+            // 
+            const patientsPasRetourQuery = `SELECT COUNT(DISTINCT v1.patient_id) AS patients_never_returned
                                     FROM visit AS v1
                                     WHERE v1.user_activated_id = ?  -- ID du médecin spécifique
                                     AND v1.currentLocalTimeAssignment BETWEEN ? AND ?  -- Intervalle de temps pour la visite avec le médecin
@@ -221,45 +223,45 @@ module.exports = (connection) => {
             const uniquePatients = await query(uniquePatientsQuery, [doctorId, startDate, endDate]);
             const totalVisits = await query(totalVisitsQuery, [doctorId, startDate, endDate]);
             const newPatients = await query(newPatientsQuery, [doctorId, startDate, endDate, startDate]);
-            const visitsGeneratedByNewPatients = await query(visitsGeneratedByNewPatientsQuery, [doctorId, startDate, endDate, startDate]);
+            const visitsGeneratedByNewPatients = await query(visitsGeneratedByNewPatientsQuery, [doctorId, startDate, endDate, startDate, doctorId, startDate, endDate]);
             const loyalPatients = await query(loyalPatientsQuery, [doctorId, startDate, doctorId, startDate, endDate]);
             const followUpVisits = await query(followUpVisitsQuery, [doctorId, startDate, doctorId, startDate, endDate, doctorId]);
             const hoursWorked = await query(hoursWorkedQuery, [doctorId, startDate, endDate]);
             const total_hours = await query(total_hoursQuery, [doctorId, startDate, endDate]);
             const totalRevenue = await query(totalRevenueQuery, [doctorId, startDate, endDate]);
             const avgWaitingTime = await query(avgWaitingTimeQuery, [doctorId, startDate, endDate]);
-            const actes = await query(actesQuery, [doctorId, startDate, endDate,doctorId, startDate, endDate]);
-            const newPatientsClinic=await query(newPatientsClinicQuery, [doctorId, startDate, endDate, startDate]);
-            const VisitsBynewPatientsClinic=await query(VisitsBynewPatientsClinicQuery, [doctorId, startDate, endDate, startDate]);
-            const patientsPasRetour=await query(patientsPasRetourQuery, [doctorId, startDate, endDate, endDate]);
-            
-           
-            const hoursWorkedTotal=(hoursWorked[0].hoursWorked * totalVisits[0]?.totalVisits) / 60;
+            const actes = await query(actesQuery, [doctorId, startDate, endDate, doctorId, startDate, endDate]);
+            const newPatientsClinic = await query(newPatientsClinicQuery, [doctorId, startDate, endDate, startDate]);
+            const VisitsBynewPatientsClinic = await query(VisitsBynewPatientsClinicQuery, [doctorId, startDate, endDate, startDate]);
+            const patientsPasRetour = await query(patientsPasRetourQuery, [doctorId, startDate, endDate, endDate]);
+
+
+            const hoursWorkedTotal = (hoursWorked[0].hoursWorked * totalVisits[0]?.totalVisits) / 60;
             // Handle potential division by zero for revenue per hour
-            const revenuePerHour = hoursWorked[0].hoursWorked 
+            const revenuePerHour = hoursWorked[0].hoursWorked
                 ? (totalRevenue[0].total_paid / (hoursWorkedTotal)).toFixed(2)
                 : 0;
 
             // Send the result back to the client
             res.json({
                 stats: {
-                uniquePatients: uniquePatients[0]?.uniquePatients || 0,
-                totalVisits: totalVisits[0]?.totalVisits || 0,
-                newPatients: newPatients[0]?.new_patients || 0,
-                visitsGeneratedByNewPatients: visitsGeneratedByNewPatients[0]?.total_visits || 0,
-                loyalPatients: loyalPatients[0]?.loyal_patients || 0,
-                followUpVisits: followUpVisits[0]?.total_followup_visits || 0,
-                hoursWorked: hoursWorked[0]?.hoursWorked || 0,
-                totalPaidForConsultations: totalRevenue[0]?.total_paid || 0,
-                revenuePerHour: revenuePerHour,
-                avgWaitingTime: avgWaitingTime[0]?.avgWaitingTime || 0,
-                patientsPremiereVisite: newPatientsClinic[0]?.uniquePatients || 0,
-                VisitsBynewPatientsClinic:VisitsBynewPatientsClinic[0]?.total_visits || 0,
-                total_hours:total_hours[0]?.hoursWorked ||0,
-                patientsPasRetour: patientsPasRetour[0]?.patients_never_returned || 0
+                    uniquePatients: uniquePatients[0]?.uniquePatients || 0,
+                    totalVisits: totalVisits[0]?.totalVisits || 0,
+                    newPatients: newPatients[0]?.new_patients || 0,
+                    visitsGeneratedByNewPatients: visitsGeneratedByNewPatients[0]?.total_visits || 0,
+                    loyalPatients: loyalPatients[0]?.loyal_patients || 0,
+                    followUpVisits: followUpVisits[0]?.total_followup_visits || 0,
+                    hoursWorked: hoursWorked[0]?.hoursWorked || 0,
+                    totalPaidForConsultations: totalRevenue[0]?.total_paid || 0,
+                    revenuePerHour: revenuePerHour,
+                    avgWaitingTime: avgWaitingTime[0]?.avgWaitingTime || 0,
+                    patientsPremiereVisite: newPatientsClinic[0]?.uniquePatients || 0,
+                    VisitsBynewPatientsClinic: VisitsBynewPatientsClinic[0]?.total_visits || 0,
+                    total_hours: total_hours[0]?.hoursWorked || 0,
+                    patientsPasRetour: patientsPasRetour[0]?.patients_never_returned || 0
                 },
                 actes: actes,
-                
+
             });
         } catch (error) {
             console.error('Erreur lors de la récupération des données du médecin:', error);
@@ -285,5 +287,51 @@ module.exports = (connection) => {
         }
     });
 
+    // Route to fetch visits by day of year for yearly comparison chart
+    router.get('/visits-by-day-of-year', async (req, res) => {
+        try {
+            const { doctorId } = req.query;
+
+            if (!doctorId) {
+                return res.status(400).json({ error: 'Doctor ID is required' });
+            }
+
+            // Query to get visits grouped by day of year and year
+            const visitsByDayQuery = `
+                SELECT 
+                    YEAR(currentLocalTimeAssignment) as year,
+                    DAYOFYEAR(currentLocalTimeAssignment) as day_of_year,
+                    COUNT(*) as visit_count
+                FROM visit
+                WHERE user_activated_id = ?
+                GROUP BY YEAR(currentLocalTimeAssignment), DAYOFYEAR(currentLocalTimeAssignment)
+                ORDER BY year, day_of_year
+            `;
+
+            const results = await query(visitsByDayQuery, [doctorId]);
+            
+            // Transform data into format suitable for D3.js multi-line chart
+            const dataByYear = {};
+            results.forEach(row => {
+                if (!dataByYear[row.year]) {
+                    dataByYear[row.year] = [];
+                }
+                dataByYear[row.year].push({
+                    dayOfYear: row.day_of_year,
+                    visitCount: row.visit_count
+                });
+            });
+
+            res.json(dataByYear);
+        } catch (error) {
+            console.error('Erreur lors de la récupération des visites par jour:', error);
+            res.status(500).json({
+                error: 'An error occurred while fetching visits by day of year.',
+                details: error.message
+            });
+        }
+    });
+
     return router;
 };
+

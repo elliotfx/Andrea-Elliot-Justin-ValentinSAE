@@ -7,15 +7,15 @@ export function loadWaitingTimeHeatmap(data) {
         d.avg_waiting_time = +d.avg_waiting_time;  // Conversion explicite en nombre
     });
 
-    // Plages horaires de la journée
+    // Plages horaires de la journée (limitées à 20h)
     const hourRanges = [
         '08:00-09:00', '09:00-10:00', '10:00-11:00', '11:00-12:00', '12:00-13:00',
         '13:00-14:00', '14:00-15:00', '15:00-16:00', '16:00-17:00',
-        '17:00-18:00', '18:00-19:00', '19:00-20:00', '20:00-21:00',
-        '21:00-22:00', '22:00-23:00', '23:00-00:00', '00:00-01:00',
-        '01:00-02:00', '02:00-03:00', '03:00-04:00', '04:00-05:00',
-        '05:00-06:00', '06:00-07:00', '07:00-08:00'
+        '17:00-18:00', '18:00-19:00', '19:00-20:00'
     ];
+    
+    // Filtrer les données pour ne garder que les plages horaires jusqu'à 20h
+    data = data.filter(d => hourRanges.includes(d.hour_range));
 
     // Trier les mois dans l'ordre chronologique
     const months = [...new Set(data.map(d => d.month))].sort((a, b) => new Date(a + '-01') - new Date(b + '-01'));
@@ -32,9 +32,14 @@ export function loadWaitingTimeHeatmap(data) {
     // Sélectionner le conteneur du heatmap
     d3.select("#waiting-time-heatmap").selectAll("*").remove();
 
-    const margin = { top: 30, right: 50, bottom: 50, left: 90 };
-    const width = 1200 - margin.left - margin.right;
-    const height = 600 - margin.top - margin.bottom;
+    const margin = { top: 30, right: 50, bottom: 150, left: 90 };
+    
+    // Obtenir la largeur du conteneur parent
+    const containerWidth = document.getElementById('waiting-time-heatmap').parentElement.offsetWidth;
+    const width = Math.max(containerWidth - margin.left - margin.right, 1000);
+    
+    // Calculer la hauteur en fonction du nombre de plages horaires (environ 40px par plage)
+    const height = hourRanges.length * 40;
 
     const svg = d3.select("#waiting-time-heatmap")
         .attr("width", width + margin.left + margin.right)
@@ -96,6 +101,9 @@ export function loadWaitingTimeHeatmap(data) {
         .call(d3.axisBottom(x).tickSize(0))
         .selectAll("text")
         .style("text-anchor", "end")
+        .style("font-size", "11px")
+        .attr("dx", "-0.5em")
+        .attr("dy", "0.5em")
         .attr("transform", "rotate(-45)");
 
     // Ajouter l'axe Y (plages horaires)

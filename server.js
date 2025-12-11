@@ -93,23 +93,26 @@ app.use('/api/stats', authenticateToken, require('./routes/statsRoute')(connecti
 app.use('/api/doctors', authenticateToken, require('./routes/doctorsRoute')(connection));
 app.use('/api/doctor-indicators', authenticateToken, require('./routes/doctorIndicatorsRoute')(connection));
 app.use('/api/doctor-comparison', authenticateToken, require('./routes/doctorComparisonRoute')(connection));
-app.use('/api/visits-revenue', authenticateToken,require('./routes/visitsRevenueRoute')(connection));
+app.use('/api/visits-revenue', authenticateToken, require('./routes/visitsRevenueRoute')(connection));
 app.use('/api/patient-visits', authenticateToken, require('./routes/patientVisitsRoute')(connection));
 app.use('/api/consultations', authenticateToken, require('./routes/consultationsRoute')(connection));
 app.use('/api/heatmap-data', authenticateToken, require('./routes/heatmapRoute')(connection)); // Ensure this line is correct
-app.use('/api/hourly-revenue',authenticateToken, require('./routes/hourlyRevenueRoute')(connection));
+app.use('/api/hourly-revenue', authenticateToken, require('./routes/hourlyRevenueRoute')(connection));
 app.use('/api/medecins', authenticateToken, require('./routes/medecinsRoute')(connection));
-app.use('/api/doctor-time-analysis', authenticateToken,require('./routes/doctorTimeAnalysisRoute')(connection));
-app.use('/api/waiting-times', authenticateToken,require('./routes/waitingTimeRoute')(connection));
+app.use('/api/doctor-time-analysis', authenticateToken, require('./routes/doctorTimeAnalysisRoute')(connection));
+app.use('/api/waiting-times', authenticateToken, require('./routes/waitingTimeRoute')(connection));
 app.use('/api/waiting-times-heatmap', authenticateToken, require('./routes/waitingTimeHeatmapRoute')(connection));
-app.use('/api/waiting-times-heatmap-doctor', authenticateToken,require('./routes/waitingTimeHeatmapDoctorRoute')(connection));
-app.use('/api/rendezvous', authenticateToken,require('./routes/rendezvousRoute')(connection));
+app.use('/api/waiting-times-heatmap-doctor', authenticateToken, require('./routes/waitingTimeHeatmapDoctorRoute')(connection));
+app.use('/api/rendezvous', authenticateToken, require('./routes/rendezvousRoute')(connection));
+app.use('/api/punctuality', authenticateToken, require('./routes/punctualityRoute')(connection));
+app.use('/api/date-range', authenticateToken, require('./routes/dateRangeRoute')(connection));
+
 
 
 // Nouvelle route pour l'analyse des performances des médecins (protégée)
-app.use('/api/doctor-performance', authenticateToken,require('./routes/doctor/doctorPerformanceRoute')(connection));
-app.use('/api/doctor/patient-evolution',authenticateToken, require('./routes/doctor/patientEvolutionRoute')(connection));
-app.use('/api/doctor/monthly-stats', authenticateToken,require('./routes/doctor/monthlyStatsRoute')(connection));
+app.use('/api/doctor-performance', authenticateToken, require('./routes/doctor/doctorPerformanceRoute')(connection));
+app.use('/api/doctor/patient-evolution', authenticateToken, require('./routes/doctor/patientEvolutionRoute')(connection));
+app.use('/api/doctor/monthly-stats', authenticateToken, require('./routes/doctor/monthlyStatsRoute')(connection));
 
 
 

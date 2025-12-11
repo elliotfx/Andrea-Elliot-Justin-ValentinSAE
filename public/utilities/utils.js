@@ -2,7 +2,7 @@
 // Vérification de l'authentification
 export function checkAuth() {
     const token = localStorage.getItem('token');
-    
+
     if (!token) {
         window.location.href = 'login.html';
     } else {
@@ -10,7 +10,7 @@ export function checkAuth() {
             const payload = JSON.parse(atob(token.split('.')[1]));
             const exp = payload.exp;
             const currentTime = Math.floor(Date.now() / 1000);
-            
+
             if (exp < currentTime) {
                 localStorage.removeItem('token');
                 window.location.href = 'login.html';
@@ -45,6 +45,29 @@ export function getLastMonthDateRange() {
     return { startDate, endDate };
 }
 
+// Fonction pour obtenir la plage de dates réelle depuis la base de données
+export async function getDataDateRange() {
+    const token = getAuthToken();
+    if (!token) return getLastMonthDateRange(); // Fallback si pas de token
+
+    try {
+        const response = await fetch('/api/date-range', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        // Extraire uniquement la partie date (YYYY-MM-DD) du format ISO
+        const startDate = data.minDate ? data.minDate.split('T')[0] : '';
+        const endDate = data.maxDate ? data.maxDate.split('T')[0] : '';
+
+        return { startDate, endDate };
+    } catch (error) {
+        console.error('Erreur récupération plage dates:', error);
+        return getLastMonthDateRange(); // Fallback en cas d'erreur
+    }
+}
+
+
 // Fonction pour calculer le nombre de mois dans la période sélectionnée
 export function calculatePeriodMonths(startDate, endDate) {
     const start = new Date(startDate);
@@ -75,7 +98,7 @@ export function getAuthToken() {
 // Fonction pour formater les nombres avec une précision décimale
 export function formatWaitingTime(value) {
     // Vérifier si la valeur est un nombre valide et supérieure à 0
-    return typeof value === 'number' && value > 0 ? value.toFixed(1) + ' min' : '0 min';  // Afficher '0 min' si la valeur est 0 ou invalide
+    return typeof value === 'number' && value > 0 ? value.toFixed(1) : '0';  // Afficher '0' si la valeur est 0 ou invalide
 }
 
 // Fonction pour formater les nombres en milliers (k) ou millions (m)
