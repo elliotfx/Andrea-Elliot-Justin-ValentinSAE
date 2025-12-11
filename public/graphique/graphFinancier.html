@@ -49,84 +49,38 @@
         </div>
     </div>
 
-    <!-- Graphique : Visites et revenus par mois -->
+    <!-- Graphique 1: Évolution du CA mensuel -->
     <div class="chart-container">
-        <div class="chart-title">Évolution du chiffre d'affaires et des visites</div>
-        <div class="chart-description">
-            Visualisation de la corrélation entre le nombre de visites (barres) et les revenus générés (ligne) pour identifier les tendances financières.
-        </div>
-        <svg id="visits-revenue-chart"></svg>
+        <svg id="revenue-evolution-chart"></svg>
     </div>
 
-    <!-- Heatmap : Revenus horaires -->
+    <!-- Graphique 2: Top 5 actes rentables -->
     <div class="chart-container">
-        <div class="chart-title">Analyse des revenus par créneau horaire et par mois</div>
-        <div class="chart-description">
-            Cette carte thermique présente les revenus générés pour chaque créneau horaire au cours des différents mois.
-            Les zones plus foncées indiquent les créneaux les plus rentables.
-        </div>
-        <svg id="hourly-revenue-heatmap"></svg>
+        <svg id="top-actes-chart"></svg>
     </div>
 
-    <!-- Tableau des Actes Dentaires -->
-    <div class="table-container">
-        <h2>Analyse Financière des Actes Dentaires</h2>
-        <table id="actes-table">
-            <thead>
-                <tr>
-                    <th>Acte</th>
-                    <th>Patients Uniques</th>
-                    <th>Total Visites</th>
-                    <th>Chiffre d'Affaires (DA)</th>
-                    <th>Total Heures</th>
-                    <th>Coût Moyen par Heure (DA)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Les données seront injectées ici -->
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Tableau : Performance par Médecin -->
-    <div class="table-container">
-        <h2>Performance Financière par Médecin</h2>
-        <table id="medecins-table">
-            <thead>
-                <tr>
-                    <th>Médecin</th>
-                    <th>Consultations</th>
-                    <th>Chiffre d'Affaires (DA)</th>
-                    <th>Coût par Consultation (DA)</th>
-                    <th>Total Heures</th>
-                    <th>Tarif par Heure (DA)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Les données seront injectées ici via JS -->
-            </tbody>
-        </table>
+    <!-- Graphique 3: Performance des médecins -->
+    <div class="chart-container">
+        <svg id="doctor-revenue-chart"></svg>
     </div>
 
     <!-- Scripts -->
     <script type="module" src="../clinic/stats.js"></script>
-    <script type="module" src="../clinic/visitsRevenue.js"></script>
-    <script type="module" src="../clinic/hourlyRevenueHeatmap.js"></script>
-    <script type="module" src="../clinic/actesTable.js"></script>
-    <script type="module" src="../clinic/medecinsPerformance.js"></script>
+    <script type="module" src="../clinic/revenueEvolution.js"></script>
+    <script type="module" src="../clinic/topActes.js"></script>
+    <script type="module" src="../clinic/doctorRevenue.js"></script>
     <script type="module" src="../utilities/utils.js"></script>
     <script type="module">
         import { checkAuth, getLastMonthDateRange, getSelectedDateRange } from "../utilities/utils.js";
         import { loadStats } from '../clinic/stats.js';
-        import { loadVisitsRevenue } from '../clinic/visitsRevenue.js';
-        import { loadHourlyRevenueHeatmap } from '../clinic/hourlyRevenueHeatmap.js';
-        import { loadActesData } from '../clinic/actesTable.js';
-        import { loadMedecinsData } from '../clinic/medecinsPerformance.js';
+        import { loadRevenueEvolution } from '../clinic/revenueEvolution.js';
+        import { loadTopActes } from '../clinic/topActes.js';
+        import { loadDoctorRevenue } from '../clinic/doctorRevenue.js';
 
         // Initialisation au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
             checkAuth();
-
+            
             const { startDate, endDate } = getLastMonthDateRange();
 
             // Initialiser les champs de date
@@ -135,10 +89,9 @@
             
             // Charger les données initiales
             loadStats('2023-01-01', endDate);
-            loadVisitsRevenue('2023-01-01', endDate);
-            loadHourlyRevenueHeatmap('2023-01-01', endDate);
-            loadActesData('2023-01-01', endDate);
-            loadMedecinsData('2023-01-01', endDate);
+            loadRevenueEvolution('2023-01-01', endDate);
+            loadTopActes('2023-01-01', endDate);
+            loadDoctorRevenue('2023-01-01', endDate);
 
             // Ajouter un écouteur pour le bouton "Appliquer"
             document.getElementById('apply-period').addEventListener('click', function () {
@@ -146,10 +99,9 @@
 
                 if (startDate && endDate) {
                     loadStats(startDate, endDate);
-                    loadVisitsRevenue(startDate, endDate);
-                    loadHourlyRevenueHeatmap(startDate, endDate);
-                    loadActesData(startDate, endDate);
-                    loadMedecinsData(startDate, endDate);
+                    loadRevenueEvolution(startDate, endDate);
+                    loadTopActes(startDate, endDate);
+                    loadDoctorRevenue(startDate, endDate);
                 } else {
                     alert('Veuillez sélectionner les deux dates.');
                 }
