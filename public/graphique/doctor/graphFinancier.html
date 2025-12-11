@@ -126,6 +126,9 @@
             })
             .then(response => response.json())
             .then(perfData => {
+                console.log('Performance Data:', perfData);
+                console.log('Actes:', perfData.actes);
+                
                 // Update KPIs
                 document.getElementById('total-revenue-consultations').textContent = `${parseFloat(perfData.stats.totalPaidForConsultations || 0).toFixed(2)} €`;
                 document.getElementById('revenue-per-hour').textContent = `${perfData.stats.revenuePerHour || '0'} €/heure`;
@@ -138,12 +141,12 @@
                     perfData.actes.forEach(acte => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${acte.description1}</td>
-                            <td>${acte.patient_count}</td>
-                            <td>${acte.acte_count}</td>
-                            <td>${acte.total_price} €</td>
-                            <td>${acte.total_hours ? acte.total_hours.toFixed(2) : 'N/A'}</td>
-                            <td>${acte.avg_cost_per_hour ? acte.avg_cost_per_hour.toFixed(2) : 'N/A'} €</td>
+                            <td>${acte.acte}</td>
+                            <td>${acte.uniquePatients}</td>
+                            <td>${acte.totalActs}</td>
+                            <td>${parseFloat(acte.totalRevenue || 0).toFixed(2)} €</td>
+                            <td>${acte.total_hours || 'N/A'}</td>
+                            <td>${acte.avg_cost_per_hour || 'N/A'} €</td>
                         `;
                         tableBody.appendChild(row);
                     });
