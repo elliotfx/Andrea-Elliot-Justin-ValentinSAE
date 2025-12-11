@@ -64,9 +64,9 @@
                     <th>Acte</th>
                     <th>Nombre de patients</th>
                     <th>Nombre d'actes</th>
-                    <th>Total des revenus (DA)</th>
+                    <th>Total des revenus (€)</th>
                     <th>Total Heures</th>
-                    <th>Coût Moyen par Heure (DA)</th>
+                    <th>Coût Moyen par Heure (€)</th>
                 </tr>
             </thead>
             <tbody>
@@ -127,8 +127,8 @@
             const perfData = await perfResponse.json();
 
             // Update KPIs
-            document.getElementById('total-revenue-consultations').textContent = `${parseFloat(perfData.stats.totalPaidForConsultations || 0).toFixed(2)} DA`;
-            document.getElementById('revenue-per-hour').textContent = `${perfData.stats.revenuePerHour || '0'} DA/heure`;
+            document.getElementById('total-revenue-consultations').textContent = `${parseFloat(perfData.stats.totalPaidForConsultations || 0).toFixed(2)} €`;
+            document.getElementById('revenue-per-hour').textContent = `${perfData.stats.revenuePerHour || '0'} €/heure`;
 
             // Update actes table
             const tableBody = document.getElementById('actes-table').querySelector('tbody');
@@ -141,9 +141,9 @@
                         <td>${acte.description1}</td>
                         <td>${acte.patient_count}</td>
                         <td>${acte.acte_count}</td>
-                        <td>${acte.total_price} DA</td>
+                        <td>${acte.total_price} €</td>
                         <td>${acte.total_hours ? acte.total_hours.toFixed(2) : 'N/A'}</td>
-                        <td>${acte.avg_cost_per_hour ? acte.avg_cost_per_hour.toFixed(2) : 'N/A'} DA</td>
+                        <td>${acte.avg_cost_per_hour ? acte.avg_cost_per_hour.toFixed(2) : 'N/A'} €</td>
                     `;
                     tableBody.appendChild(row);
                 });
