@@ -20,8 +20,8 @@ export function updateStats(stats) {
     // Displaying follow-up visits with ratio
     document.getElementById('follow-up-visits').textContent = `${stats.followUpVisits} (${(stats.followUpVisits / stats.loyalPatients).toFixed(2)} v/p)`;
 
-    // Displaying total revenue with the € currency
-    document.getElementById('total-revenue-consultations').textContent = stats.totalPaidForConsultations + ' €';
+    // Displaying total revenue with the € currency and 2 decimal places
+    document.getElementById('total-revenue-consultations').textContent = parseFloat(stats.totalPaidForConsultations).toFixed(2) + ' €';
 
     // Displaying revenue per hour
     document.getElementById('revenue-per-hour').textContent = stats.revenuePerHour + ' €/heure';
@@ -51,7 +51,7 @@ export function updateTable(data) {
     tbody.innerHTML = '';
     data.forEach(row => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${row.acte}</td><td>${row.uniquePatients}</td><td>${row.totalActs}</td><td>${row.totalRevenue} €</td><td>${row.total_hours} heures</td><td>${row.avg_cost_per_hour} €</td>`;
+        tr.innerHTML = `<td>${row.acte}</td><td>${row.uniquePatients}</td><td>${row.totalActs}</td><td>${parseFloat(row.totalRevenue || 0).toFixed(2)} €</td><td>${row.total_hours} heures</td><td>${row.avg_cost_per_hour} €</td>`;
         tbody.appendChild(tr);
     });
 }
