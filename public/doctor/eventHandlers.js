@@ -10,6 +10,7 @@ import { updateDoctorWorkTimeAnalysisChart } from './workingTimeChart.js'
 import { updateYearlyVisitsChart } from './yearlyVisitsChart.js'
 import { loadPunctualityData } from './punctualityKPI.js';
 import { updateActesDonutChart } from './actesDonutChart.js';
+import { loadBenchmarkChart } from './benchmarkRadarChart.js';
 
 // Function to load all dashboard data
 export async function loadDashboardData() {
@@ -42,6 +43,9 @@ export async function loadDashboardData() {
 
     // Update punctuality KPI
     await loadPunctualityData();
+
+    // Update benchmark radar chart
+    await loadBenchmarkChart();
 }
 
 export function setupEventListeners() {
