@@ -1,6 +1,6 @@
 export function updateDoctorWorkTimeAnalysisChart(stats) {
     // Supprimer les anciens éléments du graphique
-    d3.select("#work-time-chart").selectAll("*").remove();
+    d3.select("#working-time-chart").selectAll("*").remove();
 
     // Définir les marges et dimensions du graphique
     const margin = { top: 30, right: 100, bottom: 50, left: 70 };
@@ -8,7 +8,7 @@ export function updateDoctorWorkTimeAnalysisChart(stats) {
     const height = 500 - margin.top - margin.bottom;
 
     // Sélectionner ou créer le conteneur SVG
-    const svg = d3.select("#work-time-chart")
+    const svg = d3.select("#working-time-chart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")

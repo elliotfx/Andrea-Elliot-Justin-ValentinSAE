@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visites et Rendez-vous - Tableau de bord Médecin</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <!-- Titre de la page -->
+    <div class="page-header">
+        <a href="../../doctorPerformance.html" class="back-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Retour aux indicateurs
+        </a>
+        <h1>Visites et Rendez-vous</h1>
+        <p>Analyse détaillée des visites, de la ponctualité et de l'activité par médecin</p>
+    </div>
+
+    <!-- Sélecteur de médecin et période -->
+    <div class="period-selector">
+        <label for="doctor-select">Médecin :</label>
+        <select id="doctor-select">
+            <!-- Dynamic doctor options will be loaded here -->
+        </select>
+
+        <label for="start-date">Début :</label>
+        <input type="date" id="start-date" name="start-date">
+    
+        <label for="end-date">Fin :</label>
+        <input type="date" id="end-date" name="end-date">
+    
+        <button id="apply-period">Appliquer</button>
+    </div>
+
+    <!-- Section des indicateurs clés -->
+    <div id="stats-card-container">
+        <div class="stats-card">
+            <div class="stats-title">Visites</div>
+            <div class="stats-value" id="total-visits">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Taux de ponctualité du médecin</div>
+            <div class="stats-value" id="punctuality-rate">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">RDV à l'heure</div>
+            <div class="stats-value" id="on-time-appointments">Chargement...</div>
+        </div>
+    </div>
+
+    <!-- Graphique : Évolution de la ponctualité -->
+    <div class="chart-container">
+        <div class="chart-title">Évolution de la ponctualité par mois</div>
+        <div style="margin-bottom: 15px; display: flex; gap: 20px; align-items: center;">
+            <div>
+                <label for="punctuality-period-select">Période : </label>
+                <select id="punctuality-period-select">
+                    <option value="month" selected>Par Mois</option>
+                    <option value="year">Par Année</option>
+                </select>
+            </div>
+            <div id="punctuality-year-selector-container" style="display: none;">
+                <label for="punctuality-year-select">Année : </label>
+                <select id="punctuality-year-select">
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+        </div>
+        <svg id="punctuality-chart"></svg>
+    </div>
+
+    <!-- Graphique : Rendez-vous -->
+    <div class="chart-container">
+        <div class="chart-title">Analyse des rendez-vous par mois</div>
+        <svg id="appointments-chart"></svg>
+    </div>
+
+    <!-- Graphique : Comparaison des visites par année -->
+    <div class="chart-container">
+        <h2>Comparaison des Visites par Année</h2>
+        <div style="margin-bottom: 15px; display: flex; gap: 20px; align-items: center;">
+            <div>
+                <label for="granularity-select">Granularité : </label>
+                <select id="granularity-select">
+                    <option value="month" selected>Mois</option>
+                    <option value="week">Semaine</option>
+                    <option value="day">Jour</option>
+                </select>
+            </div>
+            <div>
+                <label for="month-filter-select">Filtrer par mois : </label>
+                <select id="month-filter-select">
+                    <option value="all" selected>Tous les mois</option>
+                    <option value="1">Janvier</option>
+                    <option value="2">Février</option>
+                    <option value="3">Mars</option>
+                    <option value="4">Avril</option>
+                    <option value="5">Mai</option>
+                    <option value="6">Juin</option>
+                    <option value="7">Juillet</option>
+                    <option value="8">Août</option>
+                    <option value="9">Septembre</option>
+                    <option value="10">Octobre</option>
+                    <option value="11">Novembre</option>
+                    <option value="12">Décembre</option>
+                </select>
+            </div>
+        </div>
+        <svg id="yearly-visits-chart"></svg>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../../doctor/punctualityKPI.js"></script>
+    <script type="module" src="../../doctor/appointmentsChart.js"></script>
+    <script type="module" src="../../doctor/yearlyVisitsChart.js"></script>
+    <script type="module" src="../../utilities/utils.js"></script>
+    <script type="module">
+        import { checkAuth, getLastMonthDateRange } from '../../utilities/utils.js';
+        import { updatePunctualityDisplay, drawPunctualityChart, populateYearSelector, initPunctualityKPI } from '../../doctor/punctualityKPI.js';
+        import { updateAppointmentsAnalysisChart } from '../../doctor/appointmentsChart.js';
+        import { updateYearlyVisitsChart } from '../../doctor/yearlyVisitsChart.js';
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            checkAuth();
+            initPunctualityKPI();
+
+            // Load doctors list
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/doctors', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const doctors = await response.json();
+            
+            const doctorSelect = document.getElementById('doctor-select');
+            doctorSelect.innerHTML = '<option value="all">Tous les médecins</option>';
+            doctors.forEach(doctor => {
+                const option = document.createElement('option');
+                option.value = doctor.id;
+                option.textContent = `${doctor.firstName} ${doctor.lastName}`;
+                doctorSelect.appendChild(option);
+            });
+
+            // Initialize dates
+            const { startDate, endDate } = getLastMonthDateRange();
+            document.getElementById('start-date').value = '2023-01-01';
+            document.getElementById('end-date').value = endDate;
+
+            // Load initial data
+            loadData();
+
+            // Apply button
+            document.getElementById('apply-period').addEventListener('click', loadData);
+            doctorSelect.addEventListener('change', loadData);
+        });
+
+        async function loadData() {
+            const doctorId = document.getElementById('doctor-select').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const token = localStorage.getItem('token');
+            const period = document.getElementById('punctuality-period-select')?.value || 'month';
+
+            // Fetch performance data
+            const perfResponse = await fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const perfData = await perfResponse.json();
+
+            // Update KPIs
+            document.getElementById('total-visits').textContent = perfData.stats.totalVisits || '0';
+
+            // Fetch punctuality data
+            let url = `/api/punctuality?start-date=${startDate}&end-date=${endDate}&period=${period}`;
+            if (doctorId && doctorId !== 'all') {
+                url += `&doctor-id=${doctorId}`;
+            }
+
+            const punctualityResponse = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const punctualityData = await punctualityResponse.json();
+            
+            updatePunctualityDisplay(punctualityData, doctorId);
+            
+            // Draw punctuality chart
+            if (punctualityData.punctuality_by_period) {
+                if (period === 'month') {
+                    populateYearSelector(punctualityData.punctuality_by_period);
+                    const yearSelect = document.getElementById('punctuality-year-select');
+                    const selectedYear = yearSelect?.value;
+                    const filteredData = selectedYear
+                        ? punctualityData.punctuality_by_period.filter(d => d.period.startsWith(selectedYear))
+                        : punctualityData.punctuality_by_period;
+                    drawPunctualityChart(filteredData, period);
+                } else {
+                    drawPunctualityChart(punctualityData.punctuality_by_period, period);
+                }
+            }
+
+            // Fetch monthly stats for appointments chart
+            const statsResponse = await fetch(`/api/doctor/monthly-stats?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const monthlyStats = await statsResponse.json();
+            
+            if (monthlyStats && Object.keys(monthlyStats).length > 0) {
+                updateAppointmentsAnalysisChart(monthlyStats);
+            } else {
+                console.warn('Pas de données mensuelles disponibles pour le graphique des rendez-vous');
+                d3.select("#appointments-chart").selectAll("*").remove();
+            }
+
+            // Update yearly visits chart
+            updateYearlyVisitsChart(doctorId);
+        }
+    </script>
+</body>
+</html>

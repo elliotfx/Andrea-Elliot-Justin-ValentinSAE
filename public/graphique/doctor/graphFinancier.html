@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financier - Tableau de bord Médecin</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <!-- Titre de la page -->
+    <div class="page-header">
+        <a href="../../doctorPerformance.html" class="back-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Retour aux indicateurs
+        </a>
+        <h1>Analyse Financière</h1>
+        <p>Analyse détaillée des revenus et de la rentabilité par médecin</p>
+    </div>
+
+    <!-- Sélecteur de médecin et période -->
+    <div class="period-selector">
+        <label for="doctor-select">Médecin :</label>
+        <select id="doctor-select">
+            <!-- Dynamic doctor options will be loaded here -->
+        </select>
+
+        <label for="start-date">Début :</label>
+        <input type="date" id="start-date" name="start-date">
+    
+        <label for="end-date">Fin :</label>
+        <input type="date" id="end-date" name="end-date">
+    
+        <button id="apply-period">Appliquer</button>
+    </div>
+
+    <!-- Section des indicateurs clés -->
+    <div id="stats-card-container">
+        <div class="stats-card">
+            <div class="stats-title">CA global</div>
+            <div class="stats-value" id="total-revenue-consultations">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">CA par heure</div>
+            <div class="stats-value" id="revenue-per-hour">Chargement...</div>
+        </div>
+    </div>
+
+    <!-- Graphique : Relation visites et revenus -->
+    <div class="chart-container">
+        <div class="chart-title">Analyse de la relation entre le nombre de visites et les revenus par mois</div>
+        <svg id="visits-revenue-chart"></svg>
+    </div>
+
+    <!-- Table : Actes effectués -->
+    <div class="table-container">
+        <h2>Nombre d'actes effectués</h2>
+        <table id="actes-table">
+            <thead>
+                <tr>
+                    <th>Acte</th>
+                    <th>Nombre de patients</th>
+                    <th>Nombre d'actes</th>
+                    <th>Total des revenus (DA)</th>
+                    <th>Total Heures</th>
+                    <th>Coût Moyen par Heure (DA)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic rows will be appended here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../../doctor/visitsRevenue.js"></script>
+    <script type="module" src="../../utilities/utils.js"></script>
+    <script type="module">
+        import { checkAuth, getLastMonthDateRange } from '../../utilities/utils.js';
+        import { loadVisitsRevenue } from '../../doctor/visitsRevenue.js';
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            checkAuth();
+
+            // Load doctors list
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/doctors', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const doctors = await response.json();
+            
+            const doctorSelect = document.getElementById('doctor-select');
+            doctorSelect.innerHTML = '<option value="all">Tous les médecins</option>';
+            doctors.forEach(doctor => {
+                const option = document.createElement('option');
+                option.value = doctor.id;
+                option.textContent = `${doctor.firstName} ${doctor.lastName}`;
+                doctorSelect.appendChild(option);
+            });
+
+            // Initialize dates
+            const { startDate, endDate } = getLastMonthDateRange();
+            document.getElementById('start-date').value = '2023-01-01';
+            document.getElementById('end-date').value = endDate;
+
+            // Load initial data
+            loadData();
+
+            // Apply button
+            document.getElementById('apply-period').addEventListener('click', loadData);
+            doctorSelect.addEventListener('change', loadData);
+        });
+
+        async function loadData() {
+            const doctorId = document.getElementById('doctor-select').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const token = localStorage.getItem('token');
+
+            // Fetch performance data
+            const perfResponse = await fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const perfData = await perfResponse.json();
+
+            // Update KPIs
+            document.getElementById('total-revenue-consultations').textContent = `${parseFloat(perfData.stats.totalPaidForConsultations || 0).toFixed(2)} DA`;
+            document.getElementById('revenue-per-hour').textContent = `${perfData.stats.revenuePerHour || '0'} DA/heure`;
+
+            // Update actes table
+            const tableBody = document.getElementById('actes-table').querySelector('tbody');
+            tableBody.innerHTML = '';
+            
+            if (perfData.actes && perfData.actes.length > 0) {
+                perfData.actes.forEach(acte => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${acte.description1}</td>
+                        <td>${acte.patient_count}</td>
+                        <td>${acte.acte_count}</td>
+                        <td>${acte.total_price} DA</td>
+                        <td>${acte.total_hours ? acte.total_hours.toFixed(2) : 'N/A'}</td>
+                        <td>${acte.avg_cost_per_hour ? acte.avg_cost_per_hour.toFixed(2) : 'N/A'} DA</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Fetch visit revenue data for chart
+            const revenueResponse = await fetch(`/api/visits-revenue?doctorId=${doctorId}&start-date=${startDate}&end-date=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const revenueData = await revenueResponse.json();
+            
+            if (revenueData && revenueData.length > 0) {
+                loadVisitsRevenue(revenueData);
+            } else {
+                console.warn('Pas de données de revenus disponibles pour le graphique');
+                d3.select("#visits-revenue-chart").selectAll("*").remove();
+            }
+        }
+    </script>
+</body>
+</html>

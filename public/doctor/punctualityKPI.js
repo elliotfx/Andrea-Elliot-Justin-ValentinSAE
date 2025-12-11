@@ -90,7 +90,7 @@ export async function loadPunctualityData() {
     }
 }
 
-function populateYearSelector(periodData) {
+export function populateYearSelector(periodData) {
     if (!periodData || periodData.length === 0) return;
 
     const yearSelector = document.getElementById('punctuality-year-select');
@@ -149,7 +149,7 @@ export function updatePunctualityDisplay(data, doctorId) {
     }
 }
 
-function drawPunctualityChart(periodData, period = 'month') {
+export function drawPunctualityChart(periodData, period = 'month') {
     const svg = d3.select('#punctuality-chart');
     svg.selectAll('*').remove();
 
