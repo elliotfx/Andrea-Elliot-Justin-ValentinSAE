@@ -7,35 +7,58 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-        .chart-container {
+        /* Styles spécifiques à cette page - override des styles globaux */
+        .profiling-section {
+            margin: 40px auto;
+            max-width: 90%;
+            background-color: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .profiling-charts-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            width: 95%;
+            gap: 30px;
+            width: 100%;
             margin: 0 auto;
         }
         
-        .chart-wrapper {
-            background-color: #f9f9f9;
-            padding: 20px;
+        .profiling-chart-wrapper {
+            background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+            padding: 25px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             text-align: center;
-            max-height: 400px;
+            min-height: 400px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: flex-start;
+        }
+
+        .profiling-chart-wrapper svg {
+            max-width: 100%;
+            height: auto;
         }
         
-        .chart-title {
-            font-size: 16px;
-            font-weight: 600;
+        .profiling-chart-title {
+            font-size: 18px;
+            font-weight: 700;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            width: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
-        @media (max-width: 768px) {
-            .chart-container {
+        @media (max-width: 900px) {
+            .profiling-charts-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -132,26 +155,26 @@
     </nav>
 
     <!-- Section Profiling Patients -->
-    <section style="margin: 40px auto; max-width: 90%; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+    <section class="profiling-section">
         <h1 class="title">Profiling Patients</h1>
         
-        <div class="chart-container">
+        <div class="profiling-charts-grid">
             <!-- Graphique de répartition par genre -->
-            <div class="chart-wrapper">
-                <div class="chart-title">Répartition par Genre</div>
+            <div class="profiling-chart-wrapper">
+                <div class="profiling-chart-title">Répartition par Genre</div>
                 <div id="gender-chart"></div>
             </div>
             
             <!-- Graphique de répartition par tranche d'âge -->
-            <div class="chart-wrapper">
-                <div class="chart-title">Répartition par Tranche d'Âge</div>
+            <div class="profiling-chart-wrapper">
+                <div class="profiling-chart-title">Répartition par Tranche d'Âge</div>
                 <div id="age-groups-chart"></div>
             </div>
         </div>
     </section>
 
     <!-- Section Qualité des Données -->
-    <section style="margin: 40px auto; max-width: 90%; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+    <section class="profiling-section">
         <h1 class="title">Qualité des Données</h1>
         
         <div class="quality-summary">

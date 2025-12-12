@@ -7,6 +7,7 @@ import { updatePatientAnalysisChart } from './patientsChart.js';
 import { updateAppointmentsAnalysisChart } from './appointmentsChart.js';
 import { updateDoctorWorkTimeAnalysisChart } from './workingTimeChart.js';
 import { updatePunctualityDisplay } from './punctualityKPI.js';
+import { updateActesDonutChart } from './actesDonutChart.js';
 
 export function loadDoctorPerformance(doctorId, startDate, endDate) {
     const token = localStorage.getItem('token');
@@ -28,6 +29,7 @@ export function loadDoctorPerformance(doctorId, startDate, endDate) {
     .then(data => {
         updateStats(data.stats);
         updateTable(data.actes);
+        updateActesDonutChart(data.actes); // Mise à jour du graphique donut
     })
     .catch(error => console.error('Erreur lors de la récupération des performances:', error));
 }

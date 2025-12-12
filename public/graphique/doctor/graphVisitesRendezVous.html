@@ -81,6 +81,14 @@
         <svg id="appointments-chart"></svg>
     </div>
 
+    <!-- Graphique : Répartition des actes (Donut) -->
+    <div class="chart-container">
+        <div class="chart-title">Répartition des actes effectués</div>
+        <div class="chart-wrapper chart-wrapper-small" style="display: flex; justify-content: center;">
+            <svg id="actes-donut-chart"></svg>
+        </div>
+    </div>
+
     <!-- Graphique : Comparaison des visites par année -->
     <div class="chart-container">
         <h2>Comparaison des Visites par Année</h2>
@@ -119,12 +127,14 @@
     <script type="module" src="../../doctor/punctualityKPI.js"></script>
     <script type="module" src="../../doctor/appointmentsChart.js"></script>
     <script type="module" src="../../doctor/yearlyVisitsChart.js"></script>
+    <script type="module" src="../../doctor/actesDonutChart.js"></script>
     <script type="module" src="../../utilities/utils.js"></script>
     <script type="module">
         import { checkAuth, getLastMonthDateRange } from '../../utilities/utils.js';
         import { updatePunctualityDisplay, drawPunctualityChart, populateYearSelector, initPunctualityKPI } from '../../doctor/punctualityKPI.js';
         import { updateAppointmentsAnalysisChart } from '../../doctor/appointmentsChart.js';
         import { updateYearlyVisitsChart } from '../../doctor/yearlyVisitsChart.js';
+        import { updateActesDonutChart } from '../../doctor/actesDonutChart.js';
 
         document.addEventListener('DOMContentLoaded', async function() {
             checkAuth();
@@ -174,6 +184,9 @@
 
             // Update KPIs
             document.getElementById('total-visits').textContent = perfData.stats.totalVisits || '0';
+
+            // Update donut chart with actes data
+            updateActesDonutChart(perfData.actes);
 
             // Fetch punctuality data
             let url = `/api/punctuality?start-date=${startDate}&end-date=${endDate}&period=${period}`;
