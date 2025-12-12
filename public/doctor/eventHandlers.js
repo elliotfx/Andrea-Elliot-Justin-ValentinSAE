@@ -1,6 +1,7 @@
 // eventHandlers.js
 import { loadDoctorPerformance, loadTimeData, loadWaitingTimeHeatmapData, loadVisitRevenueData, loadMonthlyStats, loadPunctualityData } from './dataFetch.js';
 import { updateYearlyVisitsChart } from './yearlyVisitsChart.js';
+import { loadBenchmarkChart } from './benchmarkRadarChart.js';
 
 // Function to load all dashboard data
 export function loadDashboardData() {
@@ -16,6 +17,9 @@ export function loadDashboardData() {
     loadMonthlyStats(doctorId, startDate, endDate);
     loadPunctualityData(doctorId, startDate, endDate);
     updateYearlyVisitsChart(doctorId);
+    
+    // Nouveau graphique benchmark
+    loadBenchmarkChart();
 }
 
 export function setupEventListeners() {

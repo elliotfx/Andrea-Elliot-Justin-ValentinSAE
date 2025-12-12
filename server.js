@@ -115,6 +115,7 @@ app.use('/api/patient-satisfaction', authenticateToken, require('./routes/patien
 app.use('/api/doctor-performance', authenticateToken, require('./routes/doctor/doctorPerformanceRoute')(connection));
 app.use('/api/doctor/patient-evolution', authenticateToken, require('./routes/doctor/patientEvolutionRoute')(connection));
 app.use('/api/doctor/monthly-stats', authenticateToken, require('./routes/doctor/monthlyStatsRoute')(connection));
+app.use('/api/doctor/benchmark', authenticateToken, require('./routes/doctor/benchmarkRoute')(connection));
 
 
 

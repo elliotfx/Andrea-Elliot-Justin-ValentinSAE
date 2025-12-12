@@ -117,6 +117,26 @@
         </div>
     </div>
 
+    <!-- Donut Chart and Benchmark Radar Chart side by side -->
+    <div class="charts-grid charts-row">
+        <div class="chart-container chart-half">
+            <div class="chart-title">Répartition des actes effectués</div>
+            <div class="chart-wrapper chart-wrapper-small">
+                <svg id="actes-donut-chart"></svg>
+            </div>
+        </div>
+
+        <div class="chart-container chart-half">
+            <div class="chart-title">Benchmark vs autres médecins de la clinique</div>
+            <div id="benchmark-comparison-selector" class="chart-controls">
+                <!-- Selector will be populated dynamically -->
+            </div>
+            <div class="chart-wrapper chart-wrapper-small">
+                <svg id="benchmark-radar-chart"></svg>
+            </div>
+        </div>
+    </div>
+
     <!-- Include your JavaScript file -->
     <script type="module" src="./doctor/main.js"></script><!-- New JS file for doctor performance -->
     <script type="module" src="./utilities/utils.js"></script>
