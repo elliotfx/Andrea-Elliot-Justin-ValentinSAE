@@ -65,17 +65,17 @@ function renderRadarChart() {
     }
 
     // Configuration
-    const width = 700;
-    const height = 500;
-    const margin = { top: 50, right: 150, bottom: 50, left: 50 };
-    const radius = Math.min(width - margin.left - margin.right, height - margin.top - margin.bottom) / 2;
+    const width = 450;
+    const height = 320;
+    const margin = { top: 30, right: 100, bottom: 30, left: 30 };
+    const radius = Math.min(width - margin.left - margin.right - 50, height - margin.top - margin.bottom) / 2;
 
     svg.attr("width", width)
        .attr("height", height)
        .attr("viewBox", `0 0 ${width} ${height}`);
 
     const g = svg.append("g")
-        .attr("transform", `translate(${width / 2 - 50}, ${height / 2})`);
+        .attr("transform", `translate(${(width - margin.right) / 2}, ${height / 2})`);
 
     // Métriques à afficher (avec labels français)
     const metrics = [
@@ -95,7 +95,7 @@ function renderRadarChart() {
         .range([0, radius]);
 
     // Dessiner les cercles de fond
-    const levels = 5;
+    const levels = 4;
     for (let i = 1; i <= levels; i++) {
         g.append("circle")
             .attr("r", radius * i / levels)
@@ -105,11 +105,11 @@ function renderRadarChart() {
 
         // Labels de pourcentage
         g.append("text")
-            .attr("x", 5)
+            .attr("x", 3)
             .attr("y", -radius * i / levels)
-            .attr("font-size", "10px")
+            .attr("font-size", "8px")
             .attr("fill", "#999")
-            .text(`${i * 20}%`);
+            .text(`${i * 25}%`);
     }
 
     // Dessiner les axes
@@ -127,15 +127,15 @@ function renderRadarChart() {
             .attr("stroke-width", 1);
 
         // Labels des métriques
-        const labelX = (radius + 20) * Math.cos(angle);
-        const labelY = (radius + 20) * Math.sin(angle);
+        const labelX = (radius + 15) * Math.cos(angle);
+        const labelY = (radius + 15) * Math.sin(angle);
 
         g.append("text")
             .attr("x", labelX)
             .attr("y", labelY)
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "middle")
-            .attr("font-size", "12px")
+            .attr("font-size", "9px")
             .attr("font-weight", "500")
             .attr("fill", "#333")
             .text(metric.label);
@@ -278,24 +278,24 @@ function renderRadarChart() {
     // Légende
     const legend = svg.append("g")
         .attr("class", "legend")
-        .attr("transform", `translate(${width - 130}, 30)`);
+        .attr("transform", `translate(${width - 110}, 20)`);
 
     doctorsToCompare.forEach((doctor, i) => {
         const legendItem = legend.append("g")
-            .attr("transform", `translate(0, ${i * 25})`);
+            .attr("transform", `translate(0, ${i * 22})`);
 
         legendItem.append("rect")
-            .attr("width", 18)
-            .attr("height", 18)
+            .attr("width", 14)
+            .attr("height", 14)
             .attr("rx", 3)
             .attr("fill", doctor.color);
 
         legendItem.append("text")
-            .attr("x", 25)
-            .attr("y", 13)
-            .attr("font-size", "12px")
+            .attr("x", 20)
+            .attr("y", 11)
+            .attr("font-size", "11px")
             .attr("fill", "#333")
-            .text(doctor.name.length > 15 ? doctor.name.substring(0, 15) + "..." : doctor.name);
+            .text(doctor.name.length > 12 ? doctor.name.substring(0, 12) + "..." : doctor.name);
     });
 }
 

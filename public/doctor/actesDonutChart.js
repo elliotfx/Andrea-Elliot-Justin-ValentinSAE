@@ -15,10 +15,10 @@ export function updateActesDonutChart(actesData) {
     }
 
     // Configuration des dimensions
-    const width = 800;
-    const height = 500;
-    const margin = 40;
-    const radius = Math.min(width, height) / 2 - margin;
+    const width = 450;
+    const height = 320;
+    const margin = 20;
+    const radius = Math.min(width - 150, height) / 2 - margin; // Réduire pour laisser place à la légende
     const innerRadius = radius * 0.5; // Taille du trou central pour le donut
 
     // Configurer le SVG
@@ -27,7 +27,7 @@ export function updateActesDonutChart(actesData) {
        .attr("viewBox", `0 0 ${width} ${height}`);
 
     const g = svg.append("g")
-        .attr("transform", `translate(${width / 2 - 100}, ${height / 2})`);
+        .attr("transform", `translate(${(width - 150) / 2}, ${height / 2})`);
 
     // Préparer les données - utiliser le nombre d'actes (totalActs)
     const total = d3.sum(actesData, d => d.totalActs || 0);
@@ -127,15 +127,15 @@ export function updateActesDonutChart(actesData) {
     // Texte central avec le total
     g.append("text")
         .attr("text-anchor", "middle")
-        .attr("dy", "-0.5em")
-        .style("font-size", "16px")
+        .attr("dy", "-0.3em")
+        .style("font-size", "12px")
         .style("fill", "#666")
         .text("Total actes");
 
     g.append("text")
         .attr("text-anchor", "middle")
-        .attr("dy", "1em")
-        .style("font-size", "28px")
+        .attr("dy", "0.9em")
+        .style("font-size", "20px")
         .style("font-weight", "bold")
         .style("fill", "#333")
         .text(total.toLocaleString('fr-FR'));
@@ -143,28 +143,28 @@ export function updateActesDonutChart(actesData) {
     // Légende
     const legend = svg.append("g")
         .attr("class", "legend")
-        .attr("transform", `translate(${width - 200}, 30)`);
+        .attr("transform", `translate(${width - 145}, 15)`);
 
     const legendItems = legend.selectAll(".legend-item")
         .data(chartData)
         .enter()
         .append("g")
         .attr("class", "legend-item")
-        .attr("transform", (d, i) => `translate(0, ${i * 22})`);
+        .attr("transform", (d, i) => `translate(0, ${i * 18})`);
 
     legendItems.append("rect")
-        .attr("width", 16)
-        .attr("height", 16)
-        .attr("rx", 3)
+        .attr("width", 12)
+        .attr("height", 12)
+        .attr("rx", 2)
         .attr("fill", d => color(d.acte));
 
     legendItems.append("text")
-        .attr("x", 22)
-        .attr("y", 12)
-        .style("font-size", "12px")
+        .attr("x", 16)
+        .attr("y", 10)
+        .style("font-size", "10px")
         .style("fill", "#333")
         .text(d => {
-            const label = d.acte.length > 20 ? d.acte.substring(0, 20) + "..." : d.acte;
+            const label = d.acte.length > 15 ? d.acte.substring(0, 15) + "..." : d.acte;
             const percentage = ((d.value / total) * 100).toFixed(1);
             return `${label} (${percentage}%)`;
         });
