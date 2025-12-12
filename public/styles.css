@@ -15,7 +15,7 @@ body {
     position: relative;
     text-align: center;
     padding: 30px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #1976D2;
     color: white;
     margin-bottom: 30px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -66,7 +66,7 @@ body {
 
 /* Navbar Styles */
 .navbar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #1976D2;
     padding: 0;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: sticky;
@@ -156,11 +156,11 @@ body {
 
 .period-selector input[type="date"]:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #2196F3;
 }
 
 .period-selector button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #1976D2;
     color: white;
     border: none;
     padding: 10px 25px;
@@ -236,7 +236,7 @@ body {
 }
 
 .column-title a:hover {
-    color: #667eea;
+    color: #2196F3;
 }
 
 .stats-card {
@@ -408,31 +408,23 @@ body {
 .chart-title {
     font-size: 20px;
     font-weight: 700;
-    color: #333;
+    color: #000;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 3px solid #667eea;
+    border-bottom: 3px solid #2196F3;
     width: 100%;
     text-align: center;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 .chart-container h2 {
     font-size: 20px;
     font-weight: 700;
-    color: #333;
+    color: #000;
     margin: 0 0 20px 0;
     padding-bottom: 15px;
-    border-bottom: 3px solid #667eea;
+    border-bottom: 3px solid #2196F3;
     width: 100%;
     text-align: center;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 /* Contrôles des graphiques (selects) */
@@ -468,13 +460,13 @@ body {
 }
 
 .chart-controls select:hover {
-    border-color: #667eea;
+    border-color: #2196F3;
 }
 
 .chart-controls select:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    border-color: #2196F3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
 }
 
 /* Section KPI */
@@ -501,7 +493,7 @@ body {
     padding: 15px;
     background: white;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #2196F3;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
