@@ -42,9 +42,16 @@ export function updateStats(stats) {
 
 export function updateTable(data) {
     const table = document.getElementById('actes-table');
-    if (!table) return; // Element doesn't exist on this page
+    if (!table) {
+        console.log('Table actes-table non trouvée, skip updateTable');
+        return;
+    }
     
     const tbody = table.querySelector('tbody');
+    if (!tbody) {
+        console.log('tbody non trouvé dans actes-table');
+        return;
+    }
     tbody.innerHTML = '';
     data.forEach(row => {
         const tr = document.createElement('tr');

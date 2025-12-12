@@ -1,6 +1,12 @@
 import { formatWaitingTime} from "../utilities/utils.js";
 
 export function loadWaitingTimeHeatmap(data) {
+    // Vérifier si le conteneur existe
+    const container = document.getElementById('waiting-time-heatmap');
+    if (!container) {
+        console.log('Conteneur waiting-time-heatmap non trouvé, skip loadWaitingTimeHeatmap');
+        return;
+    }
 
     // Convertir les valeurs de avg_waiting_time en nombre (au cas où elles ne sont pas déjà des nombres)
     data.forEach(d => {

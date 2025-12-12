@@ -293,27 +293,31 @@ body {
 .charts-grid {
     display: flex;
     flex-direction: column;
-    gap: 25px;
-    padding: 20px 40px;
+    gap: 30px;
+    padding: 30px 60px;
     max-width: 1400px;
     margin: 0 auto;
 }
 
 .chart-container {
     background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 30px 40px;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    margin-bottom: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    margin: 0 auto 25px auto;
+    width: 100%;
+    max-width: 1200px;
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.3s ease;
+    align-items: center;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 .chart-container:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 /* Tailles des graphiques */
@@ -329,6 +333,7 @@ body {
     min-height: 380px;
     flex: 1;
     min-width: 0;
+    max-width: 580px;
 }
 
 .chart-full {
@@ -340,7 +345,9 @@ body {
 .charts-row {
     display: flex;
     flex-direction: row;
-    gap: 25px;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 /* Wrapper pour les graphiques SVG */
@@ -349,31 +356,37 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 450px;
-    overflow-x: auto;
-    overflow-y: visible;
-    padding: 10px 0 30px 0;
+    min-height: 400px;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+    border-radius: 12px;
+    margin-top: 10px;
 }
 
 /* Wrapper plus petit pour graphiques côte à côte */
 .chart-wrapper-small {
-    min-height: 280px;
-    padding: 5px 0 15px 0;
+    min-height: 320px;
+    padding: 20px;
+    background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+    border-radius: 12px;
+    margin-top: 10px;
 }
 
 .chart-wrapper-small svg {
     min-width: auto;
     min-height: auto;
-    width: 100%;
+    width: auto;
     height: auto;
-    max-width: 450px;
-    max-height: 320px;
+    max-width: 500px;
+    max-height: 350px;
 }
 
-/* S'assurer que les SVG dans les wrappers ont une taille minimale */
-.chart-wrapper svg {
-    min-width: 800px;
-    min-height: 400px;
+/* S'assurer que les SVG sont bien centrés */
+.chart-wrapper svg,
+.chart-container svg {
+    display: block;
+    margin: 0 auto;
 }
 
 /* Heatmap wrapper avec scroll horizontal */
@@ -381,7 +394,10 @@ body {
     overflow-x: auto;
     overflow-y: hidden;
     width: 100%;
-    padding-bottom: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+    border-radius: 12px;
+    margin-top: 10px;
 }
 
 .heatmap-wrapper svg {
@@ -390,54 +406,75 @@ body {
 
 /* Titre des graphiques */
 .chart-title {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
     color: #333;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #667eea;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #667eea;
+    width: 100%;
+    text-align: center;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .chart-container h2 {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
     color: #333;
-    margin: 0 0 15px 0;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #667eea;
+    margin: 0 0 20px 0;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #667eea;
+    width: 100%;
+    text-align: center;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* Contrôles des graphiques (selects) */
 .chart-controls {
     display: flex;
-    gap: 20px;
+    gap: 25px;
     align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 15px 25px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
     flex-wrap: wrap;
+    border: 1px solid #e0e0e0;
 }
 
 .chart-controls label {
-    font-weight: 500;
-    color: #555;
+    font-weight: 600;
+    color: #444;
+    font-size: 14px;
 }
 
 .chart-controls select {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    padding: 10px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
     font-size: 14px;
     background: white;
     cursor: pointer;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #333;
+}
+
+.chart-controls select:hover {
+    border-color: #667eea;
 }
 
 .chart-controls select:focus {
     outline: none;
     border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
 /* Section KPI */
@@ -807,15 +844,22 @@ svg {
 /* Responsive Design */
 @media (max-width: 1200px) {
     .charts-grid {
-        padding: 15px 20px;
+        padding: 20px 30px;
+    }
+
+    .chart-container {
+        padding: 25px 30px;
+        max-width: 100%;
     }
 
     .charts-row {
         flex-direction: column;
+        align-items: center;
     }
 
     .chart-half {
         width: 100%;
+        max-width: 100%;
     }
 
     .chart-large,
@@ -825,11 +869,8 @@ svg {
     }
     
     .chart-wrapper {
-        min-height: 400px;
-    }
-    
-    .chart-wrapper svg {
-        min-width: 700px;
+        min-height: 350px;
+        padding: 15px;
     }
 }
 
@@ -840,25 +881,32 @@ svg {
     }
 
     .charts-grid {
-        padding: 10px 15px;
+        padding: 15px;
     }
 
     .chart-container {
-        padding: 15px;
+        padding: 20px 15px;
         width: 95%;
+        border-radius: 12px;
     }
 
-    .chart-wrapper {
-        min-height: 350px;
+    .chart-title,
+    .chart-container h2 {
+        font-size: 16px;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
     }
-    
-    .chart-wrapper svg {
-        min-width: 600px;
+
+    .chart-wrapper,
+    .chart-wrapper-small {
+        min-height: 280px;
+        padding: 10px;
     }
 
     .chart-controls {
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
+        padding: 12px 15px;
     }
 
     #stats-card-container {

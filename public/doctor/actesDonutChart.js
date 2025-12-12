@@ -1,18 +1,28 @@
 // actesDonutChart.js - Graphique Donut pour la répartition des actes
 
 export function updateActesDonutChart(actesData) {
+    console.log("updateActesDonutChart appelé avec:", actesData);
+    
     // Effacer le graphique existant
     const svg = d3.select("#actes-donut-chart");
     svg.selectAll("*").remove();
 
     if (!actesData || actesData.length === 0) {
+        console.log("Pas de données pour le donut chart");
+        svg.attr("width", 450)
+           .attr("height", 320);
         svg.append("text")
-            .attr("x", "50%")
-            .attr("y", "50%")
+            .attr("x", 225)
+            .attr("y", 160)
             .attr("text-anchor", "middle")
+            .style("font-size", "14px")
+            .style("fill", "#666")
             .text("Aucune donnée disponible");
         return;
     }
+    
+    console.log("Nombre d'actes:", actesData.length);
+    console.log("Premier acte:", actesData[0]);
 
     // Configuration des dimensions
     const width = 450;
