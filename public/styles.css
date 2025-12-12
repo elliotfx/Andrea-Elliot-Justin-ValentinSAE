@@ -1310,13 +1310,14 @@ svg {
 }
 
 .custom-filter-btn-save {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #1976D2;
     border: none;
     color: white;
 }
 
 .custom-filter-btn-save:hover {
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    background: #42A5F5;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
     transform: translateY(-1px);
 }
 
