@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,13 @@
     <link rel="stylesheet" href="../../styles.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
+
 <body>
     <!-- Titre de la page -->
     <div class="page-header">
         <a href="../../doctorPerformance.html" class="back-button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             Retour aux indicateurs
         </a>
@@ -29,10 +31,10 @@
 
         <label for="start-date">Début :</label>
         <input type="date" id="start-date" name="start-date">
-    
+
         <label for="end-date">Fin :</label>
         <input type="date" id="end-date" name="end-date">
-    
+
         <button id="apply-period">Appliquer</button>
     </div>
 
@@ -53,10 +55,7 @@
             <div class="stats-value" id="loyal-patients">Chargement...</div>
         </div>
 
-        <div class="stats-card">
-            <div class="stats-title">Patients (pas de retour)</div>
-            <div class="stats-value" id="patients-premiere-visite-pas-retour">Chargement...</div>
-        </div>
+
     </div>
 
     <!-- Graphique : Analyse de la fidélité des patients -->
@@ -114,7 +113,7 @@
         import { checkAuth, getLastMonthDateRange } from '../../utilities/utils.js';
         import { updatePatientAnalysisChart } from '../../doctor/patientsChart.js';
 
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             checkAuth();
 
             // Load doctors list
@@ -123,7 +122,7 @@
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const doctors = await response.json();
-            
+
             const doctorSelect = document.getElementById('doctor-select');
             doctorSelect.innerHTML = '<option value="all">Tous les médecins</option>';
             doctors.forEach(doctor => {
@@ -153,7 +152,7 @@
             const token = localStorage.getItem('token');
 
             console.time('Total Load Time');
-            
+
             // Lancer toutes les requêtes en parallèle
             console.time('Performance Data Load');
             const perfPromise = fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
@@ -171,7 +170,6 @@
                 document.getElementById('unique-patients').textContent = perfData.stats.uniquePatients || '0';
                 document.getElementById('new-patients').textContent = perfData.stats.newPatients || '0';
                 document.getElementById('loyal-patients').textContent = perfData.stats.loyalPatients || '0';
-                document.getElementById('patients-premiere-visite-pas-retour').textContent = perfData.stats.patients_premiere_visite_pas_retour || '0';
             }).catch(error => console.error('Erreur performance:', error));
 
             statsPromise.then(monthlyStats => {
@@ -182,4 +180,5 @@
         }
     </script>
 </body>
+
 </html>
