@@ -35,8 +35,7 @@ export function updateStats(stats) {
     // Removed: visites-premiere-visite indicator
     // document.getElementById('visites-premiere-visite').textContent = `${stats.VisitsBynewPatientsClinic} (${(stats.VisitsBynewPatientsClinic / stats.patientsPremiereVisite).toFixed(2)} v/p)`;
 
-    // Displaying first-visit patients who didn't return as a percentage of unique patients
-    document.getElementById('patients-premiere-visite-pas-retour').textContent = `${stats.patientsPasRetour} (${((stats.patientsPasRetour / stats.uniquePatients) * 100).toFixed(2)}%)`;
+
 }
 
 
@@ -46,7 +45,7 @@ export function updateTable(data) {
         console.log('Table actes-table non trouvée, skip updateTable');
         return;
     }
-    
+
     const tbody = table.querySelector('tbody');
     if (!tbody) {
         console.log('tbody non trouvé dans actes-table');
