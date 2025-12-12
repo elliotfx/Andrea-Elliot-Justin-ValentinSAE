@@ -42,7 +42,7 @@
                 .attr("height", d => height - yLeft(d.visit_count))
                 .on("mouseover", function(event, d) {
                     tooltip.transition().duration(200).style("opacity", .9);
-                    tooltip.html(`Visits: ${d.visit_count}<br>Revenue: ${d.revenue} €`)
+                    tooltip.html(`Visits: ${d.visit_count}<br>Revenue: ${d.revenue} DA`)
                         .style("left", (event.pageX + 5) + "px")
                         .style("top", (event.pageY - 28) + "px");
                 })

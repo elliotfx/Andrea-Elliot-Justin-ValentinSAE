@@ -14,6 +14,14 @@ async function populateDoctorDropdown() {
         return;
     }
 
+    // Add "All Doctors" option first
+    const select = document.getElementById('doctor-select');
+    const allOption = document.createElement('option');
+    allOption.value = 'all';
+    allOption.textContent = 'Tous les médecins';
+    allOption.selected = true; // Set as default selected
+    select.appendChild(allOption);
+
     // API call to get the list of doctors
     return fetch('/api/doctors', {
         method: 'GET',
@@ -24,7 +32,6 @@ async function populateDoctorDropdown() {
     })
         .then(response => response.json())
         .then(doctors => {
-            const select = document.getElementById('doctor-select');
             doctors.forEach(doctor => {
                 const option = document.createElement('option');
                 option.value = doctor.id;
@@ -43,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dates récupérées:', { startDate, endDate });
 
     // Initialiser les champs de date avec les valeurs réelles
-    document.getElementById('start-date').value = startDate;
+    document.getElementById('start-date').value = "2023-01-01";
     document.getElementById('end-date').value = endDate;
 
     console.log('Valeurs assignées:', {

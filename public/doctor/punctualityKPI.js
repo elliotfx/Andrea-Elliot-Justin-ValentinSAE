@@ -90,7 +90,7 @@ export async function loadPunctualityData() {
     }
 }
 
-function populateYearSelector(periodData) {
+export function populateYearSelector(periodData) {
     if (!periodData || periodData.length === 0) return;
 
     const yearSelector = document.getElementById('punctuality-year-select');
@@ -121,7 +121,7 @@ function populateYearSelector(periodData) {
     }
 }
 
-function updatePunctualityDisplay(data, doctorId) {
+export function updatePunctualityDisplay(data, doctorId) {
     const overallStats = data.overall_stats;
 
     // Update the main punctuality KPI card
@@ -137,12 +137,6 @@ function updatePunctualityDisplay(data, doctorId) {
         onTimeCard.textContent = `${overallStats.on_time_appointments} / ${overallStats.total_appointments}`;
     }
 
-    // Update average delay
-    const avgDelayCard = document.getElementById('avg-delay');
-    if (avgDelayCard) {
-        avgDelayCard.textContent = `${overallStats.avg_delay_minutes} min`;
-    }
-
     // Update doctor-specific punctuality if a doctor is selected
     if (doctorId && doctorId !== 'all') {
         const doctorStats = data.punctuality_by_doctor.find(d => d.doctor_id == doctorId);
@@ -155,7 +149,7 @@ function updatePunctualityDisplay(data, doctorId) {
     }
 }
 
-function drawPunctualityChart(periodData, period = 'month') {
+export function drawPunctualityChart(periodData, period = 'month') {
     const svg = d3.select('#punctuality-chart');
     svg.selectAll('*').remove();
 

@@ -4,8 +4,9 @@ import { checkAuth } from "../utilities/utils.js";
    export function loadPatientsHeatmap(startDate, endDate) {
         checkAuth();
         const token = localStorage.getItem('token');
-        // Suppression du SVG précédent
-        d3.selectAll("svg > *").remove();
+        // Suppression des SVG précédents
+        d3.select("#unique-patients-heatmap").selectAll("*").remove();
+        d3.select("#subsequent-visits-heatmap").selectAll("*").remove();
 
         let url = `/api/heatmap-data?start=${startDate}&end=${endDate}`;
 

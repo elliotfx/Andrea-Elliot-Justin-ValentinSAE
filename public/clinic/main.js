@@ -1,5 +1,5 @@
 // clinic/main.js
-import { checkAuth,getLastMonthDateRange,getSelectedDateRange} from "../utilities/utils.js";
+import { checkAuth, getLastMonthDateRange, getSelectedDateRange, getDataDateRange } from "../utilities/utils.js";
 import {loadStats} from '../clinic/stats.js';
 import {loadMedecinsData} from '../clinic/medecinsPerformance.js';
 import {loadVisitsRevenue} from '../clinic/visitsRevenue.js';
@@ -21,10 +21,10 @@ import {loadStackedBarData} from '../clinic/rendezvous.js'
 
 
 // Initialisation au chargement de la page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     checkAuth();
 
-    const { startDate, endDate } = getLastMonthDateRange();
+    const { startDate, endDate } = await getDataDateRange();
 
     // Initialiser les champs de date avec les valeurs personnalisées
     document.getElementById('start-date').value = '2023-01-01';

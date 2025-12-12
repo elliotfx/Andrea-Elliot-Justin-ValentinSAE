@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temps - Tableau de bord Médecin</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <!-- Titre de la page -->
+    <div class="page-header">
+        <a href="../../doctorPerformance.html" class="back-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Retour aux indicateurs
+        </a>
+        <h1>Analyse du Temps</h1>
+        <p>Analyse détaillée du temps de travail et d'attente des patients par médecin</p>
+    </div>
+
+    <!-- Sélecteur de médecin et période -->
+    <div class="period-selector">
+        <label for="doctor-select">Médecin :</label>
+        <select id="doctor-select">
+            <!-- Dynamic doctor options will be loaded here -->
+        </select>
+
+        <label for="start-date">Début :</label>
+        <input type="date" id="start-date" name="start-date">
+    
+        <label for="end-date">Fin :</label>
+        <input type="date" id="end-date" name="end-date">
+    
+        <button id="apply-period">Appliquer</button>
+    </div>
+
+    <!-- Section des indicateurs clés -->
+    <div id="stats-card-container">
+        <div class="stats-card">
+            <div class="stats-title">Temps total devant les patients</div>
+            <div class="stats-value" id="total-hours-worked">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Temps rendez-vous moyen</div>
+            <div class="stats-value" id="hours-worked">Chargement...</div>
+        </div>
+
+        <div class="stats-card">
+            <div class="stats-title">Temps d'attente moyen</div>
+            <div class="stats-value" id="avg-waiting-time">Chargement...</div>
+        </div>
+    </div>
+
+    <!-- Graphique : Évolution du temps -->
+    <div class="chart-container">
+        <div class="chart-title">Évolution du Temps</div>
+        <svg id="performance-chart"></svg>
+    </div>
+
+    <!-- Graphique : Temps de travail -->
+    <div class="chart-container">
+        <div class="chart-title">Analyse du temps de travail par mois</div>
+        <svg id="working-time-chart"></svg>
+    </div>
+
+    <!-- Heatmap : Temps d'attente -->
+    <div class="chart-container">
+        <h2>Temps d'Attente Moyen par Plage Horaire et par Mois (en minutes)</h2>
+        <div style="overflow-x: auto; overflow-y: hidden; width: 100%;">
+            <div style="min-width: 1400px;">
+                <svg id="waiting-time-heatmap"></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../../doctor/charts.js"></script>
+    <script type="module" src="../../doctor/workingTimeChart.js"></script>
+    <script type="module" src="../../doctor/heatmaps.js"></script>
+    <script type="module" src="../../utilities/utils.js"></script>
+    <script type="module">
+        import { checkAuth, getLastMonthDateRange } from '../../utilities/utils.js';
+        import { updateTimeAnalysisChart } from '../../doctor/charts.js';
+        import { updateDoctorWorkTimeAnalysisChart } from '../../doctor/workingTimeChart.js';
+        import { loadWaitingTimeHeatmap } from '../../doctor/heatmaps.js';
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            checkAuth();
+
+            // Load doctors list
+            const token = localStorage.getItem('token');
+            const response = await fetch('/api/doctors', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const doctors = await response.json();
+            
+            const doctorSelect = document.getElementById('doctor-select');
+            doctorSelect.innerHTML = '<option value="all">Tous les médecins</option>';
+            doctors.forEach(doctor => {
+                const option = document.createElement('option');
+                option.value = doctor.id;
+                option.textContent = `${doctor.firstName} ${doctor.lastName}`;
+                doctorSelect.appendChild(option);
+            });
+
+            // Initialize dates - default to year 2024
+            const { startDate, endDate } = getLastMonthDateRange();
+            document.getElementById('start-date').value = '2024-01-01';
+            document.getElementById('end-date').value = '2024-12-31';
+
+            // Load initial data
+            loadData();
+
+            // Apply button
+            document.getElementById('apply-period').addEventListener('click', loadData);
+            doctorSelect.addEventListener('change', loadData);
+        });
+
+        async function loadData() {
+            const doctorId = document.getElementById('doctor-select').value;
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const token = localStorage.getItem('token');
+
+            console.time('Total Load Time');
+            
+            // Lancer toutes les requêtes en parallèle
+            console.time('Performance Data Load');
+            const perfPromise = fetch(`/api/doctor-performance?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
+
+            console.time('Time Analysis Load');
+            const timePromise = fetch(`/api/doctor-time-analysis?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
+
+            console.time('Monthly Stats Load');
+            const statsPromise = fetch(`/api/doctor/monthly-stats?doctorId=${doctorId}&startDate=${startDate}&endDate=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
+
+            console.time('Heatmap Load');
+            const heatmapPromise = fetch(`/api/waiting-times-heatmap-doctor?doctorId=${doctorId}&start=${startDate}&end=${endDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
+
+            // Attendre les résultats et les traiter au fur et à mesure
+            perfPromise.then(perfData => {
+                console.timeEnd('Performance Data Load');
+                document.getElementById('total-hours-worked').textContent = `${perfData.stats.total_hours || '0'} heures`;
+                document.getElementById('hours-worked').textContent = `${perfData.stats.hoursWorked || '0'} minutes`;
+                document.getElementById('avg-waiting-time').textContent = `${perfData.stats.avgWaitingTime || '0'} min`;
+            }).catch(error => console.error('Erreur performance:', error));
+
+            timePromise.then(timeData => {
+                console.timeEnd('Time Analysis Load');
+                updateTimeAnalysisChart(timeData);
+            }).catch(error => console.error('Erreur time analysis:', error));
+
+            statsPromise.then(monthlyStats => {
+                console.timeEnd('Monthly Stats Load');
+                if (monthlyStats && Object.keys(monthlyStats).length > 0) {
+                    updateDoctorWorkTimeAnalysisChart(monthlyStats);
+                } else {
+                    console.warn('Pas de données mensuelles disponibles pour le graphique du temps de travail');
+                    d3.select("#working-time-chart").selectAll("*").remove();
+                }
+            }).catch(error => console.error('Erreur stats:', error));
+
+            heatmapPromise.then(heatmapData => {
+                console.timeEnd('Heatmap Load');
+                loadWaitingTimeHeatmap(heatmapData);
+                console.timeEnd('Total Load Time');
+            }).catch(error => console.error('Erreur heatmap:', error));
+        }
+    </script>
+</body>
+</html>
