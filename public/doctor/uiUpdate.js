@@ -46,6 +46,7 @@ export function updateTable(data) {
         console.log('Table actes-table non trouvée, skip updateTable');
         return;
     }
+    
     const tbody = table.querySelector('tbody');
     if (!tbody) {
         console.log('tbody non trouvé dans actes-table');

@@ -35,13 +35,17 @@ export function loadWaitingTimeHeatmap(data) {
         return dateA - dateB || hourA - hourB;
     });
 
+    // Vérifier que l'élément existe
+    const heatmapElement = document.getElementById('waiting-time-heatmap');
+    if (!heatmapElement) return; // Element doesn't exist on this page
+
     // Sélectionner le conteneur du heatmap
     d3.select("#waiting-time-heatmap").selectAll("*").remove();
 
     const margin = { top: 30, right: 50, bottom: 150, left: 90 };
     
     // Obtenir la largeur du conteneur parent
-    const containerWidth = document.getElementById('waiting-time-heatmap').parentElement.offsetWidth;
+    const containerWidth = heatmapElement.parentElement.offsetWidth;
     const width = Math.max(containerWidth - margin.left - margin.right, 1000);
     
     // Calculer la hauteur en fonction du nombre de plages horaires (environ 40px par plage)
