@@ -3,6 +3,7 @@
 import { setupEventListeners, loadDashboardData } from './eventHandlers.js';
 import { checkAuth, getDataDateRange } from '../utilities/utils.js';
 import { initPunctualityKPI } from './punctualityKPI.js';
+import { createCustomFiltersUI } from '../utilities/customDateFilters.js';
 
 // Function to populate the doctor dropdown
 async function populateDoctorDropdown() {
@@ -57,6 +58,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         start: document.getElementById('start-date').value,
         end: document.getElementById('end-date').value
     });
+
+    // Initialiser le composant de filtres personnalisés
+    const customFiltersContainer = document.getElementById('custom-filters-container');
+    if (customFiltersContainer) {
+        createCustomFiltersUI(customFiltersContainer, (filterStartDate, filterEndDate) => {
+            // Callback appelée quand un filtre personnalisé est appliqué
+            // Met à jour les champs et charge les données
+            document.getElementById('start-date').value = filterStartDate;
+            document.getElementById('end-date').value = filterEndDate;
+            loadDashboardData();
+        });
+    }
 
     // Wait for doctors to be loaded before loading dashboard data
     await populateDoctorDropdown(); // Wait for doctor dropdown to populate
