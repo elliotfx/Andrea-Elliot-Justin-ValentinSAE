@@ -1,0 +1,82 @@
+{
+    "La Crèche": {
+        "lat": 46.3624,
+        "lon": -0.2971
+    },
+    "Bessines": {
+        "lat": 46.3021,
+        "lon": -0.5168
+    },
+    "Prahecq": {
+        "lat": 46.2596,
+        "lon": -0.3467
+    },
+    "Arçais": {
+        "lat": 46.2966,
+        "lon": -0.6915
+    },
+    "Frontenay-Rohan-Rohan": {
+        "lat": 46.2545,
+        "lon": -0.5404
+    },
+    "Granzay-Gript": {
+        "lat": 46.2275,
+        "lon": -0.4816
+    },
+    "Saint-Symphorien": {
+        "lat": 46.2639,
+        "lon": -0.4905
+    },
+    "Niort": {
+        "lat": 46.3239,
+        "lon": -0.4646
+    },
+    "Sciecq": {
+        "lat": 46.3736,
+        "lon": -0.4705
+    },
+    "Beauvoir-sur-Niort": {
+        "lat": 46.1802,
+        "lon": -0.4741
+    },
+    "Sansais": {
+        "lat": 46.2737,
+        "lon": -0.5857
+    },
+    "Sainte-Pezenne": {
+        "lat": 46.3469,
+        "lon": -0.4760
+    },
+    "Saint-Maxire": {
+        "lat": 46.3994,
+        "lon": -0.4767
+    },
+    "Aiffres": {
+        "lat": 46.2862,
+        "lon": -0.4164
+    },
+    "Fors": {
+        "lat": 46.2354,
+        "lon": -0.4099
+    },
+    "Chauray": {
+        "lat": 46.3607,
+        "lon": -0.3746
+    },
+    "Vouillé": {
+        "lat": 46.3143,
+        "lon": -0.3677
+    },
+    "Coulon": {
+        "lat": 46.3221,
+        "lon": -0.5861
+    },
+    "Échiré": {
+        "lat": 46.3919,
+        "lon": -0.4155
+    },
+    "Niort-Centre": {
+        "lat": 46.3243,
+        "lon": -0.4496
+    }
+}
