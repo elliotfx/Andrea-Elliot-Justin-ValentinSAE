@@ -986,7 +986,7 @@ svg {
     align-items: center;
     gap: 8px;
     padding: 10px 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #1976D2;
     color: white;
     border: none;
     font-size: 14px;
@@ -996,7 +996,7 @@ svg {
 }
 
 .custom-filters-dropdown-btn:hover {
-    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+    background: #42A5F5;
 }
 
 .custom-filters-dropdown-btn .filter-icon {
@@ -1030,7 +1030,7 @@ svg {
 }
 
 .custom-filters-add-btn:hover {
-    background: rgba(255, 255, 255, 0.35);
+    background: #42A5F5;
 }
 
 /* Dropdown menu */
