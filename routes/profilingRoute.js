@@ -38,6 +38,7 @@ module.exports = (connection) => {
         COUNT(*) as count
       FROM patient
       WHERE birthDate IS NOT NULL
+        AND YEAR(birthDate) > 1930
       GROUP BY age_group
       ORDER BY 
         CASE 
