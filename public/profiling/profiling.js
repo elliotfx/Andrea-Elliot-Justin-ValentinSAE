@@ -46,7 +46,7 @@ async function createGenderPieChart() {
         // Palette de couleurs
         const color = d3.scaleOrdinal()
             .domain(data.map(d => d.gender))
-            .range(['#667eea', '#764ba2', '#f093fb', '#4facfe']);
+            .range(['#257cc7ff', '#9e1e98ff']);
         
         // Générateur de pie
         const pie = d3.pie()
@@ -176,11 +176,11 @@ async function createAgeGroupsChart() {
         
         gradient.append('stop')
             .attr('offset', '0%')
-            .attr('stop-color', '#667eea');
+            .attr('stop-color', '#d8a928ff');
         
         gradient.append('stop')
             .attr('offset', '100%')
-            .attr('stop-color', '#764ba2');
+            .attr('stop-color', '#ca7628ff');
         
         // Créer les barres
         svg.selectAll('.bar')
