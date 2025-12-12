@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Dates récupérées:', { startDate, endDate });
 
     // Initialiser les champs de date avec les valeurs réelles
-    document.getElementById('start-date').value = startDate;
+    document.getElementById('start-date').value = "2023-01-01";
     document.getElementById('end-date').value = endDate;
 
     console.log('Valeurs assignées:', {
