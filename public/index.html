@@ -1,6 +1,7 @@
 <!-- Index.html -->
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
+
 <body>
 
     <nav class="navbar">
@@ -21,18 +23,20 @@
 
     <!-- Sélecteur de période -->
     <div class="period-selector">
+        <div id="custom-filters-container"></div>
+
         <label for="start-date">Début :</label>
         <input type="date" id="start-date" name="start-date">
-    
+
         <label for="end-date">Fin :</label>
         <input type="date" id="end-date" name="end-date">
-    
+
         <button id="apply-period">Appliquer</button>
     </div>
 
     <!-- Section des indicateurs -->
     <div class="title">Indicateurs de performance</div>
-    
+
     <div id="stats-card-container">
         <!-- Colonne 1 : Gestion des Patients -->
         <div class="indicator-column">
@@ -112,8 +116,9 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module"  src="./clinic/main.js"></script>
-    <script type="module"  src="./utilities/utils.js"></script>
+    <script type="module" src="./clinic/main.js"></script>
+    <script type="module" src="./utilities/utils.js"></script>
 
 </body>
+
 </html>
