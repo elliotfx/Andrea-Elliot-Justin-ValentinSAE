@@ -41,7 +41,10 @@ export function updateStats(stats) {
 
 
 export function updateTable(data) {
-    const tbody = document.getElementById('actes-table').querySelector('tbody');
+    const table = document.getElementById('actes-table');
+    if (!table) return; // Element doesn't exist on this page
+    
+    const tbody = table.querySelector('tbody');
     tbody.innerHTML = '';
     data.forEach(row => {
         const tr = document.createElement('tr');
